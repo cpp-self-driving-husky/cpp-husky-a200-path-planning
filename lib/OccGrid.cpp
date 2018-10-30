@@ -5,6 +5,7 @@
  * file: OccGrid.cpp
  */
 
+#include <array>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -55,10 +56,10 @@ void OccGrid::outputGrid(std::string filename) {
     outFile << "P5" << std::endl;
     outFile << GRID_WIDTH << " " << GRID_HEIGHT << std::endl << maxVal << std::endl;
 
-    int m, n;
-    for (m = 0; m != GRID_HEIGHT; ++m) {
-        for (n = 0; n != GRID_WIDTH; ++n) {
-            if (grid[m][n] == 1.0) {
+    int row, col;
+    for (row = 0; row != GRID_HEIGHT; ++row) {
+        for (col = 0; col != GRID_WIDTH; ++col) {
+            if (grid[row][col] == 1.0) {
                 outFile << char(0);
             } else {
                 outFile << char(-1);
@@ -71,9 +72,7 @@ void OccGrid::outputGrid(std::string filename) {
 
 void OccGrid::resetGrid() {
     for (auto &row : grid) {
-        for (auto &col : row) {
-            col = 0.0;
-        }
+        row.fill(0.0);
     }
 }
 
@@ -164,12 +163,9 @@ void OccGrid::growGrid(double radius) {
     growH = static_cast<int>(ceil(radius * ratioH));
     growSize = std::max(growH, growV);
 
-//    std::cout << "growV = " << growV << std::endl;
-//    std::cout << "growH = " << growH << std::endl;
-//    std::cout << "growSize = " << growSize << std::endl;
-
     // create a new 2d array to hold the result of grow.
-    double result[GRID_HEIGHT][GRID_WIDTH] = {{0.0}};
+    std::array<std::array<double, GRID_WIDTH>, GRID_HEIGHT> result {{{0.0}}};
+//    double result[GRID_HEIGHT][GRID_WIDTH] = {{0.0}};
 
     // loop through grid, looking for 1.0, then growing them on result
     int row, col, minRow, maxRow, minCol, maxCol, growRow, growCol;
@@ -192,11 +188,7 @@ void OccGrid::growGrid(double radius) {
     }
 
     // deep copy values from result into grid
-    for (row = 0; row != GRID_HEIGHT; ++row) {
-        for (col = 0; col != GRID_WIDTH; ++col) {
-            grid[row][col] = result[row][col];
-        }
-    }
+    std::copy(&result[0][0], &result[0][0] + GRID_HEIGHT * GRID_WIDTH, &grid[0][0]);
 }
 
 int OccGrid::getGridWidth() const {

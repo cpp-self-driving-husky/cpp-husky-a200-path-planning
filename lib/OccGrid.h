@@ -9,6 +9,7 @@
 #define WAVEFRONT_OCCGRID_H
 
 #include <string>
+#include <array>
 #include "Point.h"
 #include "GridCell.h"
 
@@ -64,7 +65,7 @@ public:
 protected:
     int maxVal;
     char inputLine1[80];
-    double grid[GRID_HEIGHT][GRID_WIDTH] = {{0.0}};
+    std::array<std::array<double, GRID_WIDTH>, GRID_HEIGHT> grid {{{0.0}}};
 
 private:
 

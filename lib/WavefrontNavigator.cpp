@@ -7,6 +7,7 @@
  * file: WavefrontNavigator.cpp
  */
 
+#include <array>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -128,7 +129,7 @@ GridCell WavefrontNavigator::findNextCell(GridCell currCell) {
     double currValue = gridMap.get(currCell);
 
     // currCell is the goal cell
-    if (currValue == 2) {
+    if (currValue < 3) {
         return currCell;
     }
 
