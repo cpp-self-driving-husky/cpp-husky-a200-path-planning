@@ -293,30 +293,6 @@ void findPath(WavefrontNavigator myNav, const std::string &startTitle, const std
 
 int main(int argc, char *argv[]) {
     WavefrontNavigator myNav("../bitmaps/2dmap-01.pnm");
-    findPath(myNav, "dest03", "dest07");
-
-//    WavefrontNavigator myNav2("../bitmaps/2dmap-01.pnm");
-//    findPath(myNav2, "dest01", "dest02");
-//
-//    WavefrontNavigator myNav3("../bitmaps/2dmap-01.pnm");
-//    findPath(myNav3, "dest01", "dest08");
-//
-//    WavefrontNavigator myNav4("../bitmaps/2dmap-01.pnm");
-//    findPath(myNav4, "dest03", "dest06");
-//
-//    WavefrontNavigator myNav5("../bitmaps/2dmap-01.pnm");
-//    findPath(myNav5, "dest05", "dest08");
-//
-//    WavefrontNavigator myNav6("../bitmaps/2dmap-01.pnm");
-//    findPath(myNav6, "dest04", "dest09");
-
-
-//    findPath(myNav, "dest03", "dest07");
-//    findPath(myNav, "dest03", "dest07");
-//    findPath(myNav, "dest03", "dest07");
-//    findPath(myNav, "dest03", "dest07");
-//    findPath(myNav, "dest03", "dest07");
-//    findPath(myNav, "dest03", "dest07");
-
+    findPath(myNav, "dest02", "dest09");
 
 }
