@@ -20,14 +20,14 @@ add_library(proj4lib
 
 add_executable(wavefront lib/WavefrontNavigator.cpp)
 
-#find_package(PkgConfig)
-#if (PKG_CONFIG_FOUND)
-#    pkg_check_modules(PLAYER "playerc++")
-#    if (PLAYER_FOUND)
+find_package(PkgConfig)
+if (PKG_CONFIG_FOUND)
+    pkg_check_modules(PLAYER "playerc++")
+    if (PLAYER_FOUND)
 #        target_link_libraries(test ${PLAYER_LIBRARIES})
-#        add_definitions(${PLAYER_CFLAGS} ${PLAYER_CFLAGS_OTHER})
-#    endif ()
-#endif ()
+        add_definitions(${PLAYER_CFLAGS} ${PLAYER_CFLAGS_OTHER})
+    endif ()
+endif ()
 
 target_link_libraries(wavefront proj4lib)
 target_include_directories(wavefront PUBLIC ${PLAYER_INCLUDE_DIRS})

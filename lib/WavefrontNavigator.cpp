@@ -34,11 +34,7 @@ WavefrontNavigator::WavefrontNavigator(std::string mapfilename) {
     loadDestinations("../dest_coordinates.txt");
 }
 
-WavefrontNavigator::~WavefrontNavigator() {
-    delete &gridMap;
-    delete &debugGrid;
-    delete &destinations;
-}
+WavefrontNavigator::~WavefrontNavigator() = default;
 
 bool WavefrontNavigator::planPath(Point start, Point goal) {
     GridCell startCell = OccGrid::pointToCell(start);
@@ -67,17 +63,17 @@ std::list<GridCell> WavefrontNavigator::getWayCells() {
 std::list<GridCell> WavefrontNavigator::outputPath() {
     GridCell prev, curr;
     std::list<GridCell> resultPath;
-    std::list<GridCell>::iterator i;
-    i = wayCells.begin();
+    std::list<GridCell>::iterator iter;
+    iter = wayCells.begin();
 
     do {
-        prev = *i;
-        i++;
-        curr = *i;
+        prev = *iter;
+        iter++;
+        curr = *iter;
         std::list<GridCell> lineSegment = drawLine(prev, curr);
         resultPath.splice(resultPath.end(), lineSegment);
         printCells(resultPath);
-    } while (i != wayCells.end());
+    } while (iter != wayCells.end());
 
     return resultPath;
 }
@@ -104,12 +100,16 @@ void WavefrontNavigator::loadDestinations(std::string filename) {
     Point destination;
 
     ifs.open(filename.c_str(), std::ifstream::in);
-    while (ifs >> name) {
-        ifs >> latitude >> longitude;
-        destination = Point(OccGrid::longitudeToX(longitude), OccGrid::latitudeToY(latitude));
-        destinations.insert({name, destination});
+    if (ifs) {
+
+
+        while (ifs >> name) {
+            ifs >> latitude >> longitude;
+            destination = Point(OccGrid::longitudeToX(longitude), OccGrid::latitudeToY(latitude));
+            destinations.insert({name, destination});
+        }
+        ifs.close();
     }
-    ifs.close();
 }
 
 void WavefrontNavigator::calcWayCells(GridCell start, GridCell goal) {
@@ -294,6 +294,6 @@ void findPath(WavefrontNavigator myNav, const std::string &startTitle, const std
 
 int main(int argc, char *argv[]) {
     WavefrontNavigator myNav("../bitmaps/2dmap-01.pnm");
-    findPath(myNav, "dest02", "dest09");
+    findPath(myNav, "dest07", "dest01");
 
 }
