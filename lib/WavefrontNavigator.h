@@ -21,14 +21,14 @@ public:
     WavefrontNavigator();
     explicit WavefrontNavigator(std::string mapfilename);
     ~WavefrontNavigator();
-    bool planPath(Point start, Point goal);
+    bool planPath(Point start, Point goal, std::string waveType);
     std::list<GridCell> getWayCells();
     std::list<GridCell> outputPath();
     void printCells(std::list<GridCell> cells);
     void markCells(std::list<GridCell> cells);
     void loadDestinations(std::string filename);
-    std::unordered_map<std::string, Point> destinations;
-    OccGrid gridMap;
+    std::unordered_map<std::string, Point> getDestinations();
+
 
 protected:
     char inputLine1[80];
@@ -41,6 +41,9 @@ private:
     int smoothPathHelper();
     bool isInLine(GridCell c1, GridCell c2);
     std::list<GridCell> drawLine(GridCell c0, GridCell c1);
+
+    std::unordered_map<std::string, Point> destinations;
+    OccGrid gridMap;
     OccGrid debugGrid;
 };
 

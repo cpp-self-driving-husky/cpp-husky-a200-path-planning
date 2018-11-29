@@ -11,8 +11,18 @@
 #include <cmath>
 #include <queue>
 #include <cstring>
+#include <utility>
 #include "OccGrid.h"
 
+class CompareGreater {
+public:
+    bool operator()(std::pair<double, GridCell> &p1, std::pair<double, GridCell> &p2) {
+        return p1.first > p2.first;
+    }
+    bool operator()(std::pair<int, GridCell> &p1, std::pair<int, GridCell> &p2) {
+        return p1.first > p2.first;
+    }
+};
 
 OccGrid::OccGrid() = default;
 
@@ -39,7 +49,7 @@ void OccGrid::inputGrid(std::string filename, double mapScale = SCALE_MAP) {
             ifs >> nextChar;
             // char(-1) == 255, which denotes an unoccupied pixel in input image
             if (nextChar != char(-1)) {
-                grid[static_cast<int>(inRow / mapScale)][static_cast<int>(inCol / mapScale)] = 1.0;
+                grid[static_cast<int>(inRow / mapScale)][static_cast<int>(inCol / mapScale)] = 1;
             }
         }
     }
@@ -59,7 +69,7 @@ void OccGrid::outputGrid(std::string filename) {
     int row, col;
     for (row = 0; row != GRID_HEIGHT; ++row) {
         for (col = 0; col != GRID_WIDTH; ++col) {
-            if (grid[row][col] == 1.0) {
+            if (grid[row][col] == 1) {
                 outFile << char(0);
             } else {
                 outFile << char(-1);
@@ -72,11 +82,11 @@ void OccGrid::outputGrid(std::string filename) {
 
 void OccGrid::resetGrid() {
     for (auto &row : grid) {
-        row.fill(0.0);
+        row.fill(0);
     }
 }
 
-double OccGrid::get(int row, int col) {
+int OccGrid::get(int row, int col) {
     if (row > GRID_HEIGHT || col > GRID_WIDTH) {
         std::cerr << "Grid index out of bounds." << std::endl;
         exit(1);
@@ -84,11 +94,11 @@ double OccGrid::get(int row, int col) {
     return grid[row][col];
 }
 
-double OccGrid::get(GridCell cell) {
+int OccGrid::get(GridCell cell) {
     return grid[cell.getRow()][cell.getCol()];
 }
 
-void OccGrid::set(GridCell cell, double value) {
+void OccGrid::set(GridCell cell, int value) {
     grid[cell.getRow()][cell.getCol()] = value;
 }
 
@@ -153,6 +163,11 @@ double OccGrid::latitudeToY(double latitude) {
     return HEIGHT_METERS * (MAX_LAT - latitude) / (MAX_LAT - MIN_LAT);
 }
 
+/**
+ * Expands obstacle boundaries by a certain radius. This is done so that the robot
+ * can be represented as a point rather than a 3 dimensional object.
+ * @param radius - distance in meters to expand obstacles.
+ */
 void OccGrid::growGrid(double radius) {
     // calculate # of grid cells to use for radius
     int growH, growV, growSize;
@@ -164,15 +179,14 @@ void OccGrid::growGrid(double radius) {
     growSize = std::max(growH, growV);
 
     // create a new 2d array to hold the result of grow.
-    std::array<std::array<double, GRID_WIDTH>, GRID_HEIGHT> result {{{0.0}}};
-//    double result[GRID_HEIGHT][GRID_WIDTH] = {{0.0}};
+    std::array<std::array<int, GRID_WIDTH>, GRID_HEIGHT> result {{{0}}};
 
-    // loop through grid, looking for 1.0, then growing them on result
+    // loop through grid, looking for 1, then growing them on result
     int row, col, minRow, maxRow, minCol, maxCol, growRow, growCol;
     for (row = 0; row != GRID_HEIGHT; ++row) {
         for (col = 0; col != GRID_WIDTH; ++col) {
-            if (grid[row][col] == 1.0) {
-                // set growSize # of neighboring cells in each direction to 1.0;
+            if (grid[row][col] == 1) {
+                // set growSize # of neighboring cells in each direction to 1;
                 // we are using 8-way neighbors
                 minRow = std::max(row - growSize, 0);
                 maxRow = std::min(row + growSize, GRID_HEIGHT - 1);
@@ -180,7 +194,7 @@ void OccGrid::growGrid(double radius) {
                 maxCol = std::min(col + growSize, GRID_WIDTH - 1);
                 for (growRow = minRow; growRow <= maxRow; ++growRow) {
                     for (growCol = minCol; growCol <= maxCol; ++growCol) {
-                        result[growRow][growCol] = 1.0;
+                        result[growRow][growCol] = 1;
                     }
                 }
             }
@@ -200,22 +214,22 @@ int OccGrid::getGridHeight() const {
 }
 
 /**
- * Wave propagation. Propagates waves from goal cell until start cell is reached.
+ * Basic wave propagation. 8-cell, square neighborhoods with wave values differing by 1.
  *
  * @param goal
  * @param start
  * @return true if a path between goal and start is found. false otherwise.
  */
-bool OccGrid::propWaves(GridCell goal, GridCell start) {
-    std::cout << "\n --+*%$ Propagating waves" << std::endl;
+bool OccGrid::propWavesBasic(GridCell goal, GridCell start) {
+    std::cout << "\n --+*%$ Waves - 8-cell, square neighborhood" << std::endl;
     std::cout << "     %$    start cell = (c: " << start.getCol() << ", r: " << start.getRow() << ")" << std::endl;
     std::cout << "     %$     goal cell = (c: " << goal.getCol() << ", r: " << goal.getRow() << ")\n" << std::endl;
 
-    bool reachable(false);
+//    inputGrid("../debugOutput/1-scaled input map.pnm", 1.0);
 
-    /* Wave propagation */
+    bool reachable(false);
     GridCell currCell;
-    double currValue;
+    int currValue;
     int minRow, maxRow, minCol, maxCol;
     std::queue<GridCell> waveQ;
 
@@ -223,8 +237,8 @@ bool OccGrid::propWaves(GridCell goal, GridCell start) {
     set(goal, 2);
     waveQ.push(goal);
 
-    // if waveQ.empty(), that means that the wave has stopped propagating
-    // before the start cell was reached
+    // if waveQ.empty(), wave has stopped propagating before the start cell was reached.
+    // goal is unreachable from start
     while (!waveQ.empty()) {
         currCell = waveQ.front();
         currValue = get(currCell);
@@ -256,6 +270,127 @@ bool OccGrid::propWaves(GridCell goal, GridCell start) {
     return reachable;
 }
 
+/**
+ * Optimally Focused Wave Front propagation.
+ * Cost(i,j) = Weight(i,j) + heuristic(i,j)
+ * Uses Cost(i,j) to determine priority for expansion.
+ *
+ * @param goal
+ * @param start
+ * @return true if a path between goal and start is found, false otherwise.
+ */
+bool OccGrid::propOFWF(GridCell goal, GridCell start) {
+    std::cout << "\n --+*%$ Waves - Optimally Focused Wave Front" << std::endl;
+    std::cout << "     %$    start cell = (c: " << start.getCol() << ", r: " << start.getRow() << ")" << std::endl;
+    std::cout << "     %$     goal cell = (c: " << goal.getCol() << ", r: " << goal.getRow() << ")\n" << std::endl;
+
+//    inputGrid("../debugOutput/1-scaled input map.pnm", 1.0);
+
+    bool reachable(false);
+    GridCell currCell, tempNeighborCell;
+    double dx, dy;
+    int currWeight;
+    double tempCost, tempHeuristic;
+    int currRow, currCol;
+    int minRow, maxRow, minCol, maxCol;
+    std::priority_queue<std::pair<double, GridCell>,
+                        std::vector<std::pair<double, GridCell>>,
+                        CompareGreater
+                       >
+                       waveQ;
+    std::pair<double, GridCell> currPair;
+
+    // set goal cell value to 2
+    currCell = goal;
+    set(goal, 2);
+    dx = static_cast<double>(std::abs(currCell.getCol() - start.getCol()));
+    dy = static_cast<double>(std::abs(currCell.getRow() - start.getRow()));
+    tempHeuristic = 3 * ((dx + dy) + (std::sqrt(2) - 2) * std::min(dx, dy));
+    tempCost = 2 + tempHeuristic;
+    waveQ.push(std::make_pair(tempCost, goal));
+
+    // if waveQ.empty(), wave has stopped propagating before the start cell was reached.
+    // goal is unreachable from start
+    while (!waveQ.empty()) {
+        currPair = waveQ.top();
+        currCell = currPair.second;
+        currRow = currCell.getRow();
+        currCol = currCell.getCol();
+        currWeight = get(currCell);
+
+//        std::cout << "expanding node (" << currCell.getCol() << ", " << currCell.getRow() << ") -- weight = " << currWeight << std::endl;
+
+        // find free neighbors, update weights, calculate costs, push onto priority queue
+        minRow = std::max(currRow - 1, 0);
+        maxRow = std::min(currRow + 1, getGridHeight() - 1);
+        minCol = std::max(currCol - 1, 0);
+        maxCol = std::min(currCol + 1, getGridWidth() - 1);
+        for (int nRow = minRow; nRow <= maxRow; ++nRow) {
+            for (int nCol = minCol; nCol <= maxCol; ++nCol) {
+                // if neighbor's weight == 0, it is free
+                if (get(nRow, nCol) == 0) {
+                    tempNeighborCell = GridCell(nRow, nCol);
+                    setWeightMWF(tempNeighborCell);
+
+                    std::cout << "(" << nCol << ", " << nRow << ") set to " << get(tempNeighborCell);
+
+                    dx = std::abs(nCol - start.getCol());
+                    dy = std::abs(nRow - start.getRow());
+                    tempHeuristic = 3 * (static_cast<double>(dx + dy) + (std::sqrt(2) - 2) * static_cast<double>(std::min(dx, dy)));
+                    tempCost = static_cast<double>(get(tempNeighborCell)) + tempHeuristic;
+                    waveQ.push(std::make_pair(tempCost, tempNeighborCell));
+
+                    std::cout << "     (" << tempNeighborCell.getCol() << ", " << tempNeighborCell.getRow() << ") cost = " << tempCost << std::endl;
+
+                    // once we've enqueued the start cell, we're done
+                    if (start.equals(tempNeighborCell)) {
+                        reachable = true;
+                        return reachable;
+                    }
+
+                }
+            }
+        }
+        waveQ.pop();
+    }
+    return reachable;
+}
+
+/**
+ * Calculates cell's weight according to Modified Wave Front (MWF)
+ * @param cell
+ */
+void OccGrid::setWeightMWF(GridCell cell) {
+    std::priority_queue<std::pair<int, GridCell>,
+                        std::vector<std::pair<int, GridCell>>,
+                        CompareGreater
+                       > candidates;
+    int minRow, maxRow, minCol, maxCol;
+    minRow = std::max(cell.getRow() - 1, 0);
+    maxRow = std::min(cell.getRow() + 1, getGridHeight() - 1);
+    minCol = std::max(cell.getCol() - 1, 0);
+    maxCol = std::min(cell.getCol() + 1, getGridWidth() - 1);
+    for (int nRow = minRow; nRow <= maxRow; ++nRow) {
+        for (int nCol = minCol; nCol <= maxCol; ++nCol) {
+            if (nRow == cell.getRow() && nCol == cell.getCol()) {
+                continue;
+            }
+            if (get(nRow, nCol) >= 2) {
+                candidates.push(std::make_pair(get(nRow, nCol), GridCell(nRow, nCol)));
+            }
+        }
+    }
+    GridCell minNeighbor = candidates.top().second;
+    int minWeight = candidates.top().first;
+    if ((cell.getRow() == minNeighbor.getRow()) || (cell.getCol() == minNeighbor.getCol())) {
+        set(cell, minWeight + 3);
+    } else {
+        set(cell, minWeight + 4);
+    }
+}
+
+
+
 
 //int main(int argc, char *argv[]) {
 //   OccGrid myGrid;
@@ -267,5 +402,5 @@ bool OccGrid::propWaves(GridCell goal, GridCell start) {
 //   GridCell goalCell = myGrid.pointToCell(goal);
 //   Point start(4, 63.6);
 //   GridCell startCell = myGrid.pointToCell(start);
-//   myGrid.propWaves(goalCell, startCell);
+//   myGrid.propWavesBasic(goalCell, startCell);
 //}

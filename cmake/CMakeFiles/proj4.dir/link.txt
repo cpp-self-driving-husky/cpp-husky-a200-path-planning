@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=c++11 -Wall -g   CMakeFiles/proj4.dir/src/proj4.cc.o  -o proj4 -lplayerc++ -lboost_thread -lboost_system -lboost_signals -lm -lplayerc -lm -lz -lgeos -lgeos_c -lplayerinterface -lplayerwkb -lgeos -lgeos_c -lplayercommon libproj4lib.a -lplayerc -lz -lgeos -lgeos_c -lplayerinterface -lplayerwkb -lgeos -lgeos_c -lplayerinterface -lplayerwkb -lplayercommon 

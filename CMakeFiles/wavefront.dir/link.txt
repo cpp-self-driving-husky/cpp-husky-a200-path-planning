@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=c++11 -Wall   CMakeFiles/wavefront.dir/lib/WavefrontNavigator.cpp.o  -o wavefront libproj4lib.a 

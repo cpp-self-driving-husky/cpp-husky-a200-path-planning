@@ -13,6 +13,7 @@
 #include <fstream>
 #include <queue>
 #include <unordered_map>
+#include <limits>
 #include "WavefrontNavigator.h"
 #include "Point.h"
 #include "GridCell.h"
@@ -25,22 +26,38 @@ WavefrontNavigator::WavefrontNavigator(std::string mapfilename) {
     gridMap.inputGrid(std::move(mapfilename), SCALE_MAP);
     gridMap.outputGrid("../debugOutput/1-scaled input map.pnm");
 
+    loadDestinations("../dest_coordinates.txt");
+}
+
+WavefrontNavigator::~WavefrontNavigator() = default;
+
+bool WavefrontNavigator::planPath(Point start, Point goal, std::string waveType) {
+    gridMap.inputGrid("../debugOutput/1-scaled input map.pnm", 1.0);
+
     // expand the boundaries of the obstacles so we can represent the Husky as a point
     gridMap.growGrid(0.30);
     gridMap.outputGrid("../debugOutput/2-grow.pnm");
 
     // debugGrid is used to visually mark the results of the various steps of the program
     debugGrid.inputGrid("../debugOutput/1-scaled input map.pnm", 1.0);
-    loadDestinations("../dest_coordinates.txt");
-}
 
-WavefrontNavigator::~WavefrontNavigator() = default;
-
-bool WavefrontNavigator::planPath(Point start, Point goal) {
     GridCell startCell = OccGrid::pointToCell(start);
     GridCell goalCell = OccGrid::pointToCell(goal);
 
-    if (gridMap.propWaves(goalCell, startCell)) {
+    bool waveResult = false;
+
+    if ((gridMap.get(goalCell) == 1) || (gridMap.get(startCell) == 1)) {
+        std::cout << "   +*%$   Goal and Start locations must both be unoccupied.";
+        return waveResult;
+    }
+
+    if (waveType == "Basic") {
+        waveResult = gridMap.propWavesBasic(goalCell, startCell);
+    } else if (waveType == "OFWF") {
+        waveResult = gridMap.propOFWF(goalCell, startCell);
+    }
+
+    if (waveResult) {
         calcWayCells(startCell, goalCell);
         smoothPath();
         std::cout << "\nSmoothed path:";
@@ -88,7 +105,7 @@ void WavefrontNavigator::printCells(std::list<GridCell> cells) {
 
 void WavefrontNavigator::markCells(std::list<GridCell> cells) {
     for (const auto &cell : cells) {
-        debugGrid.set(cell, 1.0);
+        debugGrid.set(cell, 1);
     }
 
 }
@@ -101,8 +118,6 @@ void WavefrontNavigator::loadDestinations(std::string filename) {
 
     ifs.open(filename.c_str(), std::ifstream::in);
     if (ifs) {
-
-
         while (ifs >> name) {
             ifs >> latitude >> longitude;
             destination = Point(OccGrid::longitudeToX(longitude), OccGrid::latitudeToY(latitude));
@@ -116,7 +131,7 @@ void WavefrontNavigator::calcWayCells(GridCell start, GridCell goal) {
     GridCell nextCell;
     for (GridCell currCell = start; !currCell.equals(goal); currCell = nextCell) {
         wayCells.push_back(currCell);
-        debugGrid.set(currCell, 1.0);
+        debugGrid.set(currCell, 1);
         nextCell = findNextCell(currCell);
     }
     wayCells.push_back(goal);
@@ -128,26 +143,33 @@ void WavefrontNavigator::calcWayCells(GridCell start, GridCell goal) {
 GridCell WavefrontNavigator::findNextCell(GridCell currCell) {
     double currValue = gridMap.get(currCell);
 
-    // currCell is the goal cell
+    // currCell is the goal cell or is part of an obstacle
     if (currValue < 3) {
         return currCell;
     }
 
-    // search currCell neighbors for a value == currValue - 1
+    // find the neighboring cell with the minimum value
     int minRow, maxRow, minCol, maxCol;
     minRow = std::max(currCell.getRow() - 1, 0);
     maxRow = std::min(currCell.getRow() + 1, gridMap.getGridHeight() - 1);
     minCol = std::max(currCell.getCol() - 1, 0);
     maxCol = std::min(currCell.getCol() + 1, gridMap.getGridWidth() - 1);
-    for (int nRow = minRow; nRow <= maxRow; ++nRow) {
-        for (int nCol = minCol; nCol <= maxCol; ++nCol) {
-            if (gridMap.get(nRow, nCol) == currValue - 1) {
-                return GridCell(nRow, nCol);
+    double tempMin = currValue;
+    GridCell tempMinCell;
+    int nRow, nCol;
+    for (nRow = minRow; nRow <= maxRow; ++nRow) {
+        for (nCol = minCol; nCol <= maxCol; ++nCol) {
+            currValue = gridMap.get(nRow, nCol);
+            if (currValue < tempMin && currValue > 1) {
+                tempMin = currValue;
+                tempMinCell = GridCell(nRow, nCol);
             }
         }
     }
-    std::cout << "      $ ERROR: no neighboring cell has a lower value than current cell." << std::endl;
-    return currCell;
+    if (tempMinCell.equals(currCell)) {
+        std::cout << "      $ ERROR: no neighboring cell has a lower value than current cell." << std::endl;
+    }
+    return tempMinCell;
 }
 
 void WavefrontNavigator::smoothPath() {
@@ -218,17 +240,8 @@ bool WavefrontNavigator::isInLine(GridCell c0, GridCell c1) {
  * @return std::list<GridCell> list of GridCells that approximate a straight line between c0 and c1
  */
 std::list<GridCell> WavefrontNavigator::drawLine(GridCell c0, GridCell c1) {
-    int row0, row1, col0, col1, dRow, dCol;
-    row0 = c0.getRow();
-    row1 = c1.getRow();
-    col0 = c0.getCol();
-    col1 = c1.getCol();
-    dRow = abs(row1 - row0);
-    dCol = abs(col1 - col0);
-
-    int currRow = row0;
-    int currCol = col0;
-    int cellCount = 1 + dRow + dCol;
+    int row0{c0.getRow()}, row1{c1.getRow()}, col0{c0.getCol()}, col1{c1.getCol()};
+    int dRow{abs(row1 - row0)}, dCol{abs(col1 - col0)};
 
     int col_increment{0};
     if (col1 > col0) {
@@ -237,7 +250,7 @@ std::list<GridCell> WavefrontNavigator::drawLine(GridCell c0, GridCell c1) {
         col_increment = -1;
     }
 
-    int row_increment = 0;
+    int row_increment{0};
     if (row1 > row0) {
         row_increment = 1;
     } else if (row1 < row0) {
@@ -249,8 +262,9 @@ std::list<GridCell> WavefrontNavigator::drawLine(GridCell c0, GridCell c1) {
     dRow *= 2;
 
     std::list<GridCell> lineOfCells;
+    int currRow{row0}, currCol{col0};
 
-    for (; cellCount > 0; --cellCount) {
+    for (int cellCount = 1 + dRow + dCol; cellCount > 0; --cellCount) {
         lineOfCells.emplace_back(currRow, currCol);
 
         // error value basically tells us if the current cell lies above or below the actual line.
@@ -272,6 +286,10 @@ std::list<GridCell> WavefrontNavigator::drawLine(GridCell c0, GridCell c1) {
     return lineOfCells;
 }
 
+std::unordered_map<std::string, Point> WavefrontNavigator::getDestinations() {
+    return destinations;
+}
+
 /**
  * Main program driver
  *
@@ -280,20 +298,21 @@ std::list<GridCell> WavefrontNavigator::drawLine(GridCell c0, GridCell c1) {
  * @param goalTitle
  */
 
-void findPath(WavefrontNavigator myNav, const std::string &startTitle, const std::string &goalTitle) {
+void findPath(WavefrontNavigator &myNav, const std::string waveOption, const std::string &startTitle, const std::string &goalTitle) {
     std::cout << "\n--+*%$ Finding Path between " << startTitle << " and " << goalTitle << std::endl;
-    Point start = myNav.destinations[startTitle];
-    Point goal = myNav.destinations[goalTitle];
+    Point start = myNav.getDestinations()[startTitle];
+    Point goal = myNav.getDestinations()[goalTitle];
     std::cout << "       " << startTitle << ": " << start.getX() << ", " << start.getY() << std::endl;
     std::cout << "       " << goalTitle << ": " << goal.getX() << ", " << goal.getY() << std::endl;
-    if (myNav.planPath(start, goal)) {
+    if (myNav.planPath(start, goal, waveOption)) {
         std::cout << "SUCCESS\n";
-    };
+    }
 }
 
 
 int main(int argc, char *argv[]) {
-    WavefrontNavigator myNav("../bitmaps/2dmap-01.pnm");
-    findPath(myNav, "dest07", "dest01");
+    WavefrontNavigator myNav("../bitmaps/2dmap-03.pnm");
+    findPath(myNav, "OFWF", "dest01", "dest06");
+//    findPath(myNav, "Basic", "dest01", "dest06");
 
 }

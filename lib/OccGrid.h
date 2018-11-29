@@ -25,9 +25,9 @@
 
 
 /**
- * Occupancy Grid class. Contains methods for converting a location's cartesian coordinates
- * to occupancy grid coordinates and vice versa. Also includes methods for manipulating
- * occupancy grids (i.e., growing obstacles, propagating waves).
+ * Occupancy Grid class. Contains methods for converting GPS coordinates into (x, y) cartesian
+ * coordinates and grid cell coordinates. Also includes methods for manipulating occupancy grids
+ * (i.e., growing obstacles, propagating waves).
  *
  * (Note: this class is designed to work only with the "2dmap-01.pnm" bitmap.)
  */
@@ -40,9 +40,9 @@ public:
     void inputGrid(std::string filename, double mapScale);
     void outputGrid(std::string filename);
     void resetGrid();
-    double get(int row, int col);
-    double get(GridCell cell);
-    void set(GridCell cell, double value);
+    int get(int row, int col);
+    int get(GridCell cell);
+    void set(GridCell cell, int value);
     static GridCell pointToCell(Point pt);
     static Point cellToPoint(GridCell cell);
     static GridCell coordToCell(Point coord);
@@ -50,7 +50,8 @@ public:
     void growGrid(double radius);
     int getGridWidth() const;
     int getGridHeight() const;
-    bool propWaves(GridCell goal, GridCell start);
+    bool propWavesBasic(GridCell goal, GridCell start);
+    bool propOFWF(GridCell goal, GridCell start);
 
     static int xToCol(double x);
     static int yToRow(double y);
@@ -65,10 +66,10 @@ public:
 protected:
     int maxVal;
     char inputLine1[80];
-    std::array<std::array<double, GRID_WIDTH>, GRID_HEIGHT> grid {{{0.0}}};
+    std::array<std::array<int, GRID_WIDTH>, GRID_HEIGHT> grid {{{0}}};
 
 private:
-
+    void setWeightMWF(GridCell cell);
 };
 
 

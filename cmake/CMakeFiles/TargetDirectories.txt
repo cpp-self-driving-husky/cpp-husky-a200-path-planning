@@ -1,0 +1,4 @@
+/home/fartblood/Documents/Masters/Wavefront/cmake/CMakeFiles/rebuild_cache.dir
+/home/fartblood/Documents/Masters/Wavefront/cmake/CMakeFiles/edit_cache.dir
+/home/fartblood/Documents/Masters/Wavefront/cmake/CMakeFiles/proj4lib.dir
+/home/fartblood/Documents/Masters/Wavefront/cmake/CMakeFiles/wavefront.dir

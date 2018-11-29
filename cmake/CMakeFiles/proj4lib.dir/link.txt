@@ -1,0 +1,2 @@
+/usr/bin/ar qc libproj4lib.a  CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o CMakeFiles/proj4lib.dir/lib/OccGrid.cpp.o CMakeFiles/proj4lib.dir/lib/GridCell.cpp.o CMakeFiles/proj4lib.dir/lib/Point.cpp.o
+/usr/bin/ranlib libproj4lib.a

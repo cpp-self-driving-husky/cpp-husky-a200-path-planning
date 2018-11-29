@@ -10,6 +10,11 @@
 
 #include <string>
 
+/**
+ * A Point stores the (x, y) coordinates of a location. The origin is the top left
+ * corner of the map. Positive x direction is to the right; positive y direction is
+ * downward (similar to OccGrid).
+ */
 
 class Point {
 public:
