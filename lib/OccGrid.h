@@ -10,6 +10,8 @@
 
 #include <string>
 #include <array>
+#include <list>
+#include <queue>
 #include "Point.h"
 #include "GridCell.h"
 
@@ -50,8 +52,8 @@ public:
     void growGrid(double radius);
     int getGridWidth() const;
     int getGridHeight() const;
-    bool propWavesBasic(GridCell goal, GridCell start);
-    bool propOFWF(GridCell goal, GridCell start);
+    GridCell propWavesBasic(GridCell goal, GridCell start);
+    GridCell propOFWF(GridCell goal, GridCell start);
 
     static int xToCol(double x);
     static int yToRow(double y);
@@ -70,6 +72,8 @@ protected:
 
 private:
     void setWeightMWF(GridCell cell);
+    bool isNear(GridCell c1, GridCell c2);
+    GridCell findClosestFreeCell(GridCell cell);
 };
 
 

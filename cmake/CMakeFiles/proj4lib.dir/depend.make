@@ -14,6 +14,7 @@ CMakeFiles/proj4lib.dir/lib/Point.cpp.o: ../lib/Point.cpp
 CMakeFiles/proj4lib.dir/lib/Point.cpp.o: ../lib/Point.h
 
 CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o: ../lib/GridCell.h
+CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o: ../lib/OccGrid.cpp
 CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o: ../lib/OccGrid.h
 CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o: ../lib/Point.h
 CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o: ../lib/WavefrontNavigator.cpp

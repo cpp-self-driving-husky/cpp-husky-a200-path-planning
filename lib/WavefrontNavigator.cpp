@@ -27,6 +27,7 @@ WavefrontNavigator::WavefrontNavigator(std::string mapfilename) {
     gridMap.outputGrid("../debugOutput/1-scaled input map.pnm");
 
     loadDestinations("../dest_coordinates.txt");
+    loadTestXY("../test_xy.txt");
 }
 
 WavefrontNavigator::~WavefrontNavigator() = default;
@@ -44,11 +45,12 @@ bool WavefrontNavigator::planPath(Point start, Point goal, std::string waveType)
     GridCell startCell = OccGrid::pointToCell(start);
     GridCell goalCell = OccGrid::pointToCell(goal);
 
-    bool waveResult = false;
+    GridCell waveResult;
+    bool pathFound{false};
 
     if ((gridMap.get(goalCell) == 1) || (gridMap.get(startCell) == 1)) {
         std::cout << "   +*%$   Goal and Start locations must both be unoccupied.";
-        return waveResult;
+        return pathFound;
     }
 
     if (waveType == "Basic") {
@@ -57,8 +59,8 @@ bool WavefrontNavigator::planPath(Point start, Point goal, std::string waveType)
         waveResult = gridMap.propOFWF(goalCell, startCell);
     }
 
-    if (waveResult) {
-        calcWayCells(startCell, goalCell);
+    if (!waveResult.equals(goalCell)) {
+        calcWayCells(waveResult, goalCell);
         smoothPath();
         std::cout << "\nSmoothed path:";
         printCells(wayCells);
@@ -66,10 +68,11 @@ bool WavefrontNavigator::planPath(Point start, Point goal, std::string waveType)
 //        markCells(outputPath());
         debugGrid.outputGrid("../debugOutput/4-smoothpath.pnm");
         debugGrid.inputGrid("../debugOutput/1-scaled input map.pnm", 1.0);
-        return true;
+        pathFound = true;
+        return pathFound;
     } else {
         std::cout << "      $ ERROR: cannot find a path to that location.\n" << std::endl;
-        return false;
+        return pathFound;
     }
 }
 
@@ -122,6 +125,23 @@ void WavefrontNavigator::loadDestinations(std::string filename) {
             ifs >> latitude >> longitude;
             destination = Point(OccGrid::longitudeToX(longitude), OccGrid::latitudeToY(latitude));
             destinations.insert({name, destination});
+        }
+        ifs.close();
+    }
+}
+
+void WavefrontNavigator::loadTestXY(std::string filename) {
+    std::ifstream ifs;
+    std::string name;
+    double x, y;
+    Point destination;
+
+    ifs.open(filename.c_str(), std::ifstream::in);
+    if (ifs) {
+        while (ifs >> name) {
+            ifs >> x >> y;
+            destination = Point(x, y);
+            testXY.insert({name, destination});
         }
         ifs.close();
     }
@@ -290,6 +310,10 @@ std::unordered_map<std::string, Point> WavefrontNavigator::getDestinations() {
     return destinations;
 }
 
+std::unordered_map<std::string, Point> WavefrontNavigator::getTestXY() {
+    return testXY;
+}
+
 /**
  * Main program driver
  *
@@ -298,10 +322,16 @@ std::unordered_map<std::string, Point> WavefrontNavigator::getDestinations() {
  * @param goalTitle
  */
 
-void findPath(WavefrontNavigator &myNav, const std::string waveOption, const std::string &startTitle, const std::string &goalTitle) {
+void findPath(WavefrontNavigator &myNav, const std::string &waveOption, const std::string &startTitle, const std::string &goalTitle) {
     std::cout << "\n--+*%$ Finding Path between " << startTitle << " and " << goalTitle << std::endl;
-    Point start = myNav.getDestinations()[startTitle];
-    Point goal = myNav.getDestinations()[goalTitle];
+    Point start, goal;
+    try {
+        start = myNav.getDestinations().at(startTitle);
+        goal = myNav.getDestinations().at(goalTitle);
+    } catch (const std::out_of_range &oor) {
+        start = myNav.getTestXY().at(startTitle);
+        goal = myNav.getTestXY().at(goalTitle);
+    }
     std::cout << "       " << startTitle << ": " << start.getX() << ", " << start.getY() << std::endl;
     std::cout << "       " << goalTitle << ": " << goal.getX() << ", " << goal.getY() << std::endl;
     if (myNav.planPath(start, goal, waveOption)) {
@@ -309,10 +339,16 @@ void findPath(WavefrontNavigator &myNav, const std::string waveOption, const std
     }
 }
 
-
 int main(int argc, char *argv[]) {
-    WavefrontNavigator myNav("../bitmaps/2dmap-03.pnm");
-    findPath(myNav, "OFWF", "dest01", "dest06");
-//    findPath(myNav, "Basic", "dest01", "dest06");
+    WavefrontNavigator myNav("../bitmaps/2dmap-01.pnm");
+    findPath(myNav, "OFWF", "dest01", "dest02");
+    findPath(myNav, "OFWF", "dest01", "dest03");
+    findPath(myNav, "OFWF", "dest01", "dest04");
+    findPath(myNav, "OFWF", "dest06", "dest01");
+    findPath(myNav, "OFWF", "dest06", "dest09");
+    findPath(myNav, "OFWF", "dest06", "dest10");
+    findPath(myNav, "OFWF", "dest01", "dest10");
+//    findPath(myNav, "Basic", "dest01", "dest10");
 
 }
+

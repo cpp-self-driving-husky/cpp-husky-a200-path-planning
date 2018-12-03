@@ -15,6 +15,7 @@ CMakeFiles/proj4lib.dir/lib/Point.cpp.o
  /home/fartblood/Documents/Masters/Wavefront/lib/Point.h
 CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o
  /home/fartblood/Documents/Masters/Wavefront/lib/GridCell.h
+ /home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.cpp
  /home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.h
  /home/fartblood/Documents/Masters/Wavefront/lib/Point.h
  /home/fartblood/Documents/Masters/Wavefront/lib/WavefrontNavigator.cpp

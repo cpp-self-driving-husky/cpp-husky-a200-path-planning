@@ -218,16 +218,13 @@ int OccGrid::getGridHeight() const {
  *
  * @param goal
  * @param start
- * @return true if a path between goal and start is found. false otherwise.
+ * @return If path is found, return the GridCell that the search stopped on. If path is not found, return goal.
  */
-bool OccGrid::propWavesBasic(GridCell goal, GridCell start) {
+GridCell OccGrid::propWavesBasic(GridCell goal, GridCell start) {
     std::cout << "\n --+*%$ Waves - 8-cell, square neighborhood" << std::endl;
     std::cout << "     %$    start cell = (c: " << start.getCol() << ", r: " << start.getRow() << ")" << std::endl;
     std::cout << "     %$     goal cell = (c: " << goal.getCol() << ", r: " << goal.getRow() << ")\n" << std::endl;
 
-//    inputGrid("../debugOutput/1-scaled input map.pnm", 1.0);
-
-    bool reachable(false);
     GridCell currCell;
     int currValue;
     int minRow, maxRow, minCol, maxCol;
@@ -257,17 +254,16 @@ bool OccGrid::propWavesBasic(GridCell goal, GridCell start) {
                     set(tempNeighborCell, currValue + 1);
                     waveQ.push(tempNeighborCell);
 
-                    // once we've enqueued the start cell, we're done
-                    if (start.equals(tempNeighborCell)) {
-                        reachable = true;
-                        return reachable;
+                    // once we've enqueued a cell close to the start cell, we're done
+                    if (isNear(start, tempNeighborCell)) {
+                        return tempNeighborCell;
                     }
                 }
             }
         }
         waveQ.pop();
     }
-    return reachable;
+    return goal;
 }
 
 /**
@@ -279,33 +275,32 @@ bool OccGrid::propWavesBasic(GridCell goal, GridCell start) {
  * @param start
  * @return true if a path between goal and start is found, false otherwise.
  */
-bool OccGrid::propOFWF(GridCell goal, GridCell start) {
+GridCell OccGrid::propOFWF(GridCell goal, GridCell start) {
     std::cout << "\n --+*%$ Waves - Optimally Focused Wave Front" << std::endl;
     std::cout << "     %$    start cell = (c: " << start.getCol() << ", r: " << start.getRow() << ")" << std::endl;
     std::cout << "     %$     goal cell = (c: " << goal.getCol() << ", r: " << goal.getRow() << ")\n" << std::endl;
 
 //    inputGrid("../debugOutput/1-scaled input map.pnm", 1.0);
 
-    bool reachable(false);
     GridCell currCell, tempNeighborCell;
-    double dx, dy;
-    int currWeight;
-    double tempCost, tempHeuristic;
+    int dx, dy;
+    int tempCost, tempHeuristic;
     int currRow, currCol;
     int minRow, maxRow, minCol, maxCol;
-    std::priority_queue<std::pair<double, GridCell>,
-                        std::vector<std::pair<double, GridCell>>,
+    std::priority_queue<std::pair<int, GridCell>,
+                        std::vector<std::pair<int, GridCell>>,
                         CompareGreater
                        >
-                       waveQ;
+                        waveQ;
     std::pair<double, GridCell> currPair;
 
     // set goal cell value to 2
     currCell = goal;
     set(goal, 2);
-    dx = static_cast<double>(std::abs(currCell.getCol() - start.getCol()));
-    dy = static_cast<double>(std::abs(currCell.getRow() - start.getRow()));
-    tempHeuristic = 3 * ((dx + dy) + (std::sqrt(2) - 2) * std::min(dx, dy));
+    dx = abs(currCell.getCol() - start.getCol());
+    dy = abs(currCell.getRow() - start.getRow());
+//    tempHeuristic = 3 * ((dx + dy) + (std::sqrt(2) - 2) * std::min(dx, dy));
+    tempHeuristic = 3 * (dx + dy) + (4 - 2 * 3) * std::min(dx, dy);
     tempCost = 2 + tempHeuristic;
     waveQ.push(std::make_pair(tempCost, goal));
 
@@ -332,20 +327,21 @@ bool OccGrid::propOFWF(GridCell goal, GridCell start) {
                     tempNeighborCell = GridCell(nRow, nCol);
                     setWeightMWF(tempNeighborCell);
 
-                    std::cout << "(" << nCol << ", " << nRow << ") set to " << get(tempNeighborCell);
+//                    std::cout << "(" << nCol << ", " << nRow << ") set to " << get(tempNeighborCell);
 
-                    dx = std::abs(nCol - start.getCol());
-                    dy = std::abs(nRow - start.getRow());
-                    tempHeuristic = 3 * (static_cast<double>(dx + dy) + (std::sqrt(2) - 2) * static_cast<double>(std::min(dx, dy)));
-                    tempCost = static_cast<double>(get(tempNeighborCell)) + tempHeuristic;
+                    dx = abs(nCol - start.getCol());
+                    dy = abs(nRow - start.getRow());
+//                    tempHeuristic = 3 * ((dx + dy) + (std::sqrt(2) - 2) * (std::min(dx, dy)));
+                    tempHeuristic = 3 * (dx + dy) + (4 - 2 * 3) * std::min(dx, dy);
+                    tempCost = get(tempNeighborCell) + tempHeuristic;
                     waveQ.push(std::make_pair(tempCost, tempNeighborCell));
 
-                    std::cout << "     (" << tempNeighborCell.getCol() << ", " << tempNeighborCell.getRow() << ") cost = " << tempCost << std::endl;
+//                    std::cout << "     (" << tempNeighborCell.getCol() << ", " << tempNeighborCell.getRow()
+//                              << ") cost = " << tempCost << std::endl;
 
-                    // once we've enqueued the start cell, we're done
-                    if (start.equals(tempNeighborCell)) {
-                        reachable = true;
-                        return reachable;
+                    // once we've enqueued a cell near the start cell, we're done
+                    if (isNear(start, tempNeighborCell)) {
+                        return tempNeighborCell;
                     }
 
                 }
@@ -353,11 +349,11 @@ bool OccGrid::propOFWF(GridCell goal, GridCell start) {
         }
         waveQ.pop();
     }
-    return reachable;
+    return goal;
 }
 
 /**
- * Calculates cell's weight according to Modified Wave Front (MWF)
+ * Calculates cell's weight according to Modified Wave Front (MWF).
  * @param cell
  */
 void OccGrid::setWeightMWF(GridCell cell) {
@@ -386,6 +382,60 @@ void OccGrid::setWeightMWF(GridCell cell) {
         set(cell, minWeight + 3);
     } else {
         set(cell, minWeight + 4);
+    }
+}
+
+/**
+ * Tests if GridCells c1 and c2 are near each other. c1 is near c2 if it is within c2's depth-2 square neighborhood.
+ * -  -  -  -  -  -  -
+ * -  +  +  +  +  +  -
+ * -  +  +  +  +  +  -
+ * -  +  +  c2 +  +  -
+ * -  +  +  +  +  +  -
+ * -  +  +  +  +  +  -
+ * -  -  -  -  -  -  -
+ * 
+ * @param c1 
+ * @param c2 
+ * @return true if c1 and c2 are within each other's depth-2 square neighborhood. otherwise, false
+ */
+bool OccGrid::isNear(GridCell c1, GridCell c2) {
+    return ((std::abs(c1.getCol() - c2.getCol()) <= 2) && (std::abs(c1.getRow() - c2.getRow()) <= 2));
+}
+
+/**
+ * Finds the closest open GridCell. Use when a start or goal point lies within obstacles.
+ *
+ * @param cell
+ * @return
+ */
+GridCell OccGrid::findClosestFreeCell(GridCell cell) {
+    GridCell currCell;
+    std::list<GridCell> visited;
+    std::queue<GridCell> cellQ;
+    cellQ.push(cell);
+    while (!cellQ.empty()) {
+        currCell = cellQ.pop();
+        visited.push(currCell);
+        if (get(currCell) == 1) {
+            int minRow, maxRow, minCol, maxCol;
+            minRow = std::max(cell.getRow() - 1, 0);
+            maxRow = std::min(cell.getRow() + 1, getGridHeight() - 1);
+            minCol = std::max(cell.getCol() - 1, 0);
+            maxCol = std::min(cell.getCol() + 1, getGridWidth() - 1);
+            for (int nRow = minRow; nRow <= maxRow; ++nRow) {
+                for (int nCol = minCol; nCol <= maxCol; ++nCol) {
+                    std::list<GridCell>::iterator it = visited.find(GridCell(nRow, nCol));
+                    if (get(nRow, nCol) == 0) {
+                        return GridCell(nRow, nCol);
+                    }
+                    if (it == visited.end()) {
+                        cellQ.push(GridCell(nRow, nCol));
+                    }
+                }
+            }
+        } else {
+        return currCell;
     }
 }
 
