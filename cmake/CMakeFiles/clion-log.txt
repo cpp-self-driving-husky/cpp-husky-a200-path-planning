@@ -1,4 +1,5 @@
-/home/fartblood/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/182.4892.24/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/fartblood/Documents/Masters/Wavefront
+C:\Users\ak\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\183.4284.156\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" C:\masters\pathplanning
+-- Could NOT find PkgConfig (missing: PKG_CONFIG_EXECUTABLE) 
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/fartblood/Documents/Masters/Wavefront/cmake
+-- Build files have been written to: C:/masters/pathplanning/cmake

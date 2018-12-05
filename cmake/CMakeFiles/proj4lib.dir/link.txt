@@ -1,2 +1,2 @@
-/usr/bin/ar qc libproj4lib.a  CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.o CMakeFiles/proj4lib.dir/lib/OccGrid.cpp.o CMakeFiles/proj4lib.dir/lib/GridCell.cpp.o CMakeFiles/proj4lib.dir/lib/Point.cpp.o
-/usr/bin/ranlib libproj4lib.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-W\mingw64\bin\ar.exe qc libproj4lib.a  CMakeFiles/proj4lib.dir/lib/WavefrontNavigator.cpp.obj CMakeFiles/proj4lib.dir/lib/OccGrid.cpp.obj CMakeFiles/proj4lib.dir/lib/GridCell.cpp.obj CMakeFiles/proj4lib.dir/lib/Point.cpp.obj CMakeFiles/proj4lib.dir/lib/Coord.cpp.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-W\mingw64\bin\ranlib.exe libproj4lib.a

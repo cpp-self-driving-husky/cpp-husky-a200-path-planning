@@ -14,24 +14,27 @@
 #include <list>
 #include "OccGrid.h"
 #include "OccGrid.cpp"
+#include "Coord.h"
 
 
 class WavefrontNavigator {
 
 public:
     WavefrontNavigator();
-    explicit WavefrontNavigator(std::string mapfilename);
+    explicit WavefrontNavigator(std::string filename);
     ~WavefrontNavigator();
-    bool planPath(Point start, Point goal, std::string waveType);
+    std::unordered_map<std::string, Point> getDestinations();
+    std::unordered_map<std::string, Point> getTestXY();
+    OccGrid* getGridMap();
+    OccGrid* getDebugGrid();
     std::list<GridCell> getWayCells();
     std::list<GridCell> outputPath();
+    bool planPath(Point start, Point goal, std::string waveType);
+    bool planPath(GridCell start, GridCell goal, std::string waveType);
     void printCells(std::list<GridCell> cells);
     void markCells(std::list<GridCell> cells);
     void loadDestinations(std::string filename);
     void loadTestXY(std::string filename);
-    std::unordered_map<std::string, Point> getDestinations();
-    std::unordered_map<std::string, Point> getTestXY();
-
 
 protected:
     char inputLine1[80];
@@ -42,12 +45,15 @@ private:
     std::unordered_map<std::string, Point> testXY;
     OccGrid gridMap;
     OccGrid debugGrid;
-    void calcWayCells(GridCell start, GridCell goal);
-    GridCell findNextCell(GridCell currCell);
+    std::string mapfilename;
+    void initializeNavigator();
+    void calcWayCells(const GridCell &start, const GridCell &goal);
+    GridCell findNextCell(const GridCell &currCell);
     void smoothPath();
     int smoothPathHelper();
-    bool isInLine(GridCell c1, GridCell c2);
-    std::list<GridCell> drawLine(GridCell c0, GridCell c1);
+    int smoothPathHelperReverse();
+    bool isInLine(const GridCell &c1, const GridCell &c2);
+    std::list<GridCell> drawLine(const GridCell &c0, const GridCell &c1);
 };
 
 

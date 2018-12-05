@@ -14,6 +14,7 @@
 #include <queue>
 #include "Point.h"
 #include "GridCell.h"
+#include "Coord.h"
 
 #define SCALE_MAP 5.0
 #define WIDTH_METERS 186.23
@@ -47,8 +48,9 @@ public:
     void set(GridCell cell, int value);
     static GridCell pointToCell(Point pt);
     static Point cellToPoint(GridCell cell);
-    static GridCell coordToCell(Point coord);
-    static Point coordToPoint(Point coord);
+    static GridCell coordToCell(Coord coord);
+    static Point coordToPoint(const Coord &coord);
+
     void growGrid(double radius);
     int getGridWidth() const;
     int getGridHeight() const;
@@ -63,6 +65,7 @@ public:
     static double yToLatitude(double y);
     static double longitudeToX(double longitude);
     static double latitudeToY(double latitude);
+    void normCell(GridCell& cell);
 
 
 protected:
@@ -71,9 +74,11 @@ protected:
     std::array<std::array<int, GRID_WIDTH>, GRID_HEIGHT> grid {{{0}}};
 
 private:
-    void setWeightMWF(GridCell cell);
-    bool isNear(GridCell c1, GridCell c2);
-    GridCell findClosestFreeCell(GridCell cell);
+    void setWeightMWF(GridCell& cell);
+    bool isNear(const GridCell& c1, const GridCell& c2);
+    GridCell findClosestFreeCell(GridCell &cell);
+    void fitInGrid(GridCell &cell);
+
 };
 
 

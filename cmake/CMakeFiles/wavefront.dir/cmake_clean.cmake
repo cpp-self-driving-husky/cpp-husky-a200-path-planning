@@ -1,7 +1,9 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/wavefront.dir/lib/WavefrontNavigator.cpp.o"
+  "CMakeFiles/wavefront.dir/lib/WavefrontNavigator.cpp.obj"
   "wavefront.pdb"
-  "wavefront"
+  "wavefront.exe"
+  "wavefront.exe.manifest"
+  "libwavefront.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

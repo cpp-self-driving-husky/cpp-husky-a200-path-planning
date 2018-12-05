@@ -20,12 +20,13 @@ public:
     GridCell();
     GridCell(int row, int col);
     virtual ~GridCell() = default;
-    int getRow();
+    int getRow() const;
     void setRow(int row);
-    int getCol();
+    int getCol() const;
     void setCol(int col);
-    bool equals(GridCell cell);
-    void printCell();
+    bool operator == (const GridCell& cell);
+    bool equals(GridCell cell) const;
+    void printCell() const;
 
 protected:
 

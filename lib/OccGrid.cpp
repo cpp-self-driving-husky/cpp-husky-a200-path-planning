@@ -6,6 +6,7 @@
  */
 
 #include <array>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -28,7 +29,7 @@ OccGrid::OccGrid() = default;
 
 OccGrid::~OccGrid() = default;
 
-void OccGrid::inputGrid(std::string filename, double mapScale = SCALE_MAP) {
+void OccGrid::inputGrid(const std::string filename, const double mapScale = SCALE_MAP) {
     resetGrid();
     int inRow, inCol;
     int inputWidth, inputHeight;
@@ -87,19 +88,19 @@ void OccGrid::resetGrid() {
 }
 
 int OccGrid::get(int row, int col) {
-    if (row > GRID_HEIGHT || col > GRID_WIDTH) {
-        std::cerr << "Grid index out of bounds." << std::endl;
-        exit(1);
-    }
     return grid[row][col];
 }
 
 int OccGrid::get(GridCell cell) {
-    return grid[cell.getRow()][cell.getCol()];
+    int row{cell.getRow()};
+    int col{cell.getCol()};
+    return OccGrid::get(row, col);
 }
 
 void OccGrid::set(GridCell cell, int value) {
-    grid[cell.getRow()][cell.getCol()] = value;
+    int row{cell.getRow()};
+    int col{cell.getCol()};
+    grid[row][col] = value;
 }
 
 GridCell OccGrid::pointToCell(Point pt) {
@@ -110,14 +111,14 @@ Point OccGrid::cellToPoint(GridCell cell) {
     return Point(colToX(cell.getCol()), rowToY(cell.getRow()));
 }
 
-GridCell OccGrid::coordToCell(Point coord) {
+GridCell OccGrid::coordToCell(Coord coord) {
     return pointToCell(coordToPoint(coord));
 }
 
-Point OccGrid::coordToPoint(Point coord) {
+Point OccGrid::coordToPoint(const Coord &coord) {
     double longitude, latitude, x, y;
-    longitude = coord.getX();
-    latitude = coord.getY();
+    longitude = coord.getLong();
+    latitude = coord.getLat();
     double widthLong = MAX_LONG - MIN_LONG;
     double heightLat = MAX_LAT - MIN_LAT;
     x = ((longitude - MIN_LONG) / widthLong) * WIDTH_METERS;
@@ -294,15 +295,9 @@ GridCell OccGrid::propOFWF(GridCell goal, GridCell start) {
                         waveQ;
     std::pair<double, GridCell> currPair;
 
-    // set goal cell value to 2
-    currCell = goal;
+    // set goal cell value to 2 and push to waveQ
     set(goal, 2);
-    dx = abs(currCell.getCol() - start.getCol());
-    dy = abs(currCell.getRow() - start.getRow());
-//    tempHeuristic = 3 * ((dx + dy) + (std::sqrt(2) - 2) * std::min(dx, dy));
-    tempHeuristic = 3 * (dx + dy) + (4 - 2 * 3) * std::min(dx, dy);
-    tempCost = 2 + tempHeuristic;
-    waveQ.push(std::make_pair(tempCost, goal));
+    waveQ.push(std::make_pair(2, goal));
 
     // if waveQ.empty(), wave has stopped propagating before the start cell was reached.
     // goal is unreachable from start
@@ -311,9 +306,7 @@ GridCell OccGrid::propOFWF(GridCell goal, GridCell start) {
         currCell = currPair.second;
         currRow = currCell.getRow();
         currCol = currCell.getCol();
-        currWeight = get(currCell);
-
-//        std::cout << "expanding node (" << currCell.getCol() << ", " << currCell.getRow() << ") -- weight = " << currWeight << std::endl;
+//        currWeight = get(currCell);
 
         // find free neighbors, update weights, calculate costs, push onto priority queue
         minRow = std::max(currRow - 1, 0);
@@ -322,16 +315,15 @@ GridCell OccGrid::propOFWF(GridCell goal, GridCell start) {
         maxCol = std::min(currCol + 1, getGridWidth() - 1);
         for (int nRow = minRow; nRow <= maxRow; ++nRow) {
             for (int nCol = minCol; nCol <= maxCol; ++nCol) {
+                tempNeighborCell = GridCell(nRow, nCol);
+                if (tempNeighborCell.equals(currCell)) {
+                    continue;
+                }
                 // if neighbor's weight == 0, it is free
-                if (get(nRow, nCol) == 0) {
-                    tempNeighborCell = GridCell(nRow, nCol);
+                if (get(tempNeighborCell) == 0) {
                     setWeightMWF(tempNeighborCell);
-
-//                    std::cout << "(" << nCol << ", " << nRow << ") set to " << get(tempNeighborCell);
-
                     dx = abs(nCol - start.getCol());
                     dy = abs(nRow - start.getRow());
-//                    tempHeuristic = 3 * ((dx + dy) + (std::sqrt(2) - 2) * (std::min(dx, dy)));
                     tempHeuristic = 3 * (dx + dy) + (4 - 2 * 3) * std::min(dx, dy);
                     tempCost = get(tempNeighborCell) + tempHeuristic;
                     waveQ.push(std::make_pair(tempCost, tempNeighborCell));
@@ -353,10 +345,12 @@ GridCell OccGrid::propOFWF(GridCell goal, GridCell start) {
 }
 
 /**
- * Calculates cell's weight according to Modified Wave Front (MWF).
+ * Calculates cell's weight according to Modified Wave Front (MWF). Finds the neighboring cell with the lowest weight,
+ * then updates its weight accordingly.
+ *
  * @param cell
  */
-void OccGrid::setWeightMWF(GridCell cell) {
+void OccGrid::setWeightMWF(GridCell& cell) {
     std::priority_queue<std::pair<int, GridCell>,
                         std::vector<std::pair<int, GridCell>>,
                         CompareGreater
@@ -399,43 +393,85 @@ void OccGrid::setWeightMWF(GridCell cell) {
  * @param c2 
  * @return true if c1 and c2 are within each other's depth-2 square neighborhood. otherwise, false
  */
-bool OccGrid::isNear(GridCell c1, GridCell c2) {
+bool OccGrid::isNear(const GridCell& c1, const GridCell& c2) {
     return ((std::abs(c1.getCol() - c2.getCol()) <= 2) && (std::abs(c1.getRow() - c2.getRow()) <= 2));
 }
 
 /**
  * Finds the closest open GridCell. Use when a start or goal point lies within obstacles.
+ * Basically, searches in the 4 cardinal directions for an open cell.
  *
  * @param cell
- * @return
+ * @return GridCell - nearest free cell
  */
-GridCell OccGrid::findClosestFreeCell(GridCell cell) {
-    GridCell currCell;
-    std::list<GridCell> visited;
-    std::queue<GridCell> cellQ;
-    cellQ.push(cell);
-    while (!cellQ.empty()) {
-        currCell = cellQ.pop();
-        visited.push(currCell);
-        if (get(currCell) == 1) {
-            int minRow, maxRow, minCol, maxCol;
-            minRow = std::max(cell.getRow() - 1, 0);
-            maxRow = std::min(cell.getRow() + 1, getGridHeight() - 1);
-            minCol = std::max(cell.getCol() - 1, 0);
-            maxCol = std::min(cell.getCol() + 1, getGridWidth() - 1);
-            for (int nRow = minRow; nRow <= maxRow; ++nRow) {
-                for (int nCol = minCol; nCol <= maxCol; ++nCol) {
-                    std::list<GridCell>::iterator it = visited.find(GridCell(nRow, nCol));
-                    if (get(nRow, nCol) == 0) {
-                        return GridCell(nRow, nCol);
-                    }
-                    if (it == visited.end()) {
-                        cellQ.push(GridCell(nRow, nCol));
-                    }
-                }
-            }
-        } else {
-        return currCell;
+GridCell OccGrid::findClosestFreeCell(GridCell& cell) {
+    if (get(cell) == 0) {
+        return cell;
+    }
+
+    int n{cell.getRow() - 1};
+    int w{cell.getCol() - 1};
+    int s{cell.getRow() + 1};
+    int e{cell.getCol() + 1};
+
+    GridCell north, south, west, east;
+    for(int i = 0; i < 150; ++i) {
+        north = GridCell(n--, cell.getCol());
+        fitInGrid(north);
+        south = GridCell(s++, cell.getCol());
+        fitInGrid(south);
+        west = GridCell(cell.getRow(), w--);
+        fitInGrid(west);
+        east = GridCell(cell.getRow(), e++);
+        fitInGrid(east);
+
+        if (get(north) == 0) {
+            return north;
+        }
+        if (get(south) == 0) {
+            return south;
+        }
+        if (get(west) == 0) {
+            return west;
+        }
+        if (get(east) == 0) {
+            return east;
+        }
+    }
+    return cell;
+}
+
+/**
+ * Normalizes a GridCell. If the GridCell points outside the grid, it gets reassigned to the closest edge cell on the grid.
+ * Then, if the GridCell is occupied, it gets reassigned to the closest open cell on the grid. This is so you can find
+ * a path between any 2 points in the map.
+ *
+ * @param cell
+ */
+void OccGrid::normCell(GridCell& cell) {
+    fitInGrid(cell);
+    if (get(cell) == 1) {
+        cell = findClosestFreeCell(cell);
+    }
+}
+
+void OccGrid::fitInGrid(GridCell& cell) {
+    int row{cell.getRow()};
+    int col{cell.getCol()};
+    if (row < 0 || row >= GRID_HEIGHT || col < 0 || col >= GRID_WIDTH) {
+        std::cout << "Grid index out of bounds. Using closest border cell" << std::endl;
+        if (row < 0) {
+            cell.setRow(0);
+        }
+        if (row >= GRID_HEIGHT) {
+            cell.setRow(GRID_HEIGHT - 1);
+        }
+        if (col < 0) {
+            cell.setCol(0);
+        }
+        if (col >= GRID_WIDTH) {
+            cell.setCol(GRID_WIDTH - 1);
+        }
     }
 }
 

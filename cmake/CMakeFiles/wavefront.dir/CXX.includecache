@@ -6,12 +6,18 @@
 
 #IncludeRegexTransform: 
 
-/home/fartblood/Documents/Masters/Wavefront/lib/GridCell.h
+C:/masters/pathplanning/lib/Coord.h
 Point.h
-/home/fartblood/Documents/Masters/Wavefront/lib/Point.h
+C:/masters/pathplanning/lib/Point.h
 
-/home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.cpp
+C:/masters/pathplanning/lib/GridCell.h
+Point.h
+C:/masters/pathplanning/lib/Point.h
+
+C:/masters/pathplanning/lib/OccGrid.cpp
 array
+-
+algorithm
 -
 iostream
 -
@@ -26,23 +32,29 @@ cstring
 utility
 -
 OccGrid.h
-/home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.h
+C:/masters/pathplanning/lib/OccGrid.h
 
-/home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.h
+C:/masters/pathplanning/lib/OccGrid.h
 string
 -
 array
 -
+list
+-
+queue
+-
 Point.h
-/home/fartblood/Documents/Masters/Wavefront/lib/Point.h
+C:/masters/pathplanning/lib/Point.h
 GridCell.h
-/home/fartblood/Documents/Masters/Wavefront/lib/GridCell.h
+C:/masters/pathplanning/lib/GridCell.h
+Coord.h
+C:/masters/pathplanning/lib/Coord.h
 
-/home/fartblood/Documents/Masters/Wavefront/lib/Point.h
+C:/masters/pathplanning/lib/Point.h
 string
 -
 
-/home/fartblood/Documents/Masters/Wavefront/lib/WavefrontNavigator.cpp
+C:/masters/pathplanning/lib/WavefrontNavigator.cpp
 utility
 -
 array
@@ -60,15 +72,15 @@ unordered_map
 limits
 -
 WavefrontNavigator.h
-/home/fartblood/Documents/Masters/Wavefront/lib/WavefrontNavigator.h
+C:/masters/pathplanning/lib/WavefrontNavigator.h
 Point.h
-/home/fartblood/Documents/Masters/Wavefront/lib/Point.h
+C:/masters/pathplanning/lib/Point.h
 GridCell.h
-/home/fartblood/Documents/Masters/Wavefront/lib/GridCell.h
+C:/masters/pathplanning/lib/GridCell.h
 OccGrid.h
-/home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.h
+C:/masters/pathplanning/lib/OccGrid.h
 
-/home/fartblood/Documents/Masters/Wavefront/lib/WavefrontNavigator.h
+C:/masters/pathplanning/lib/WavefrontNavigator.h
 string
 -
 unordered_map
@@ -76,7 +88,9 @@ unordered_map
 list
 -
 OccGrid.h
-/home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.h
+C:/masters/pathplanning/lib/OccGrid.h
 OccGrid.cpp
-/home/fartblood/Documents/Masters/Wavefront/lib/OccGrid.cpp
+C:/masters/pathplanning/lib/OccGrid.cpp
+Coord.h
+C:/masters/pathplanning/lib/Coord.h
 
