@@ -18,76 +18,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="accef389-d669-4a05-a861-b33c5d1fa995" name="Default" comment="resolved conflicts">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.10.2/CMakeCCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.10.2/CMakeCXXCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.10.2/CMakeDetermineCompilerABI_C.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.10.2/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.10.2/CMakeSystem.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.10.2/CompilerIdC/CMakeCCompilerId.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.10.2/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeCCompiler.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeCCompiler.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeCXXCompiler.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeCXXCompiler.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeSystem.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/3.12.3/CMakeSystem.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/CMakeOutput.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/Makefile.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/TargetDirectories.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/clion-environment.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/clion-environment.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/clion-log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/feature_tests.bin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/feature_tests.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/flags.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/proj4lib.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/test.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/flags.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake/CMakeFiles/wavefront.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/debugOutput/1-scaled input map.pnm" beforeDir="false" afterPath="$PROJECT_DIR$/debugOutput/1-scaled input map.pnm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/debugOutput/2-grow.pnm" beforeDir="false" afterPath="$PROJECT_DIR$/debugOutput/2-grow.pnm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/debugOutput/3-initialPath.pnm" beforeDir="false" afterPath="$PROJECT_DIR$/debugOutput/3-initialPath.pnm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/debugOutput/4-smoothpath.pnm" beforeDir="false" afterPath="$PROJECT_DIR$/debugOutput/4-smoothpath.pnm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/GridCell.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lib/GridCell.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/GridCell.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/GridCell.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/OccGrid.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lib/OccGrid.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/OccGrid.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/OccGrid.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/WavefrontNavigator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lib/WavefrontNavigator.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/WavefrontNavigator.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/WavefrontNavigator.h" afterDir="false" />
-    </list>
+    <list default="true" id="accef389-d669-4a05-a861-b33c5d1fa995" name="Default" comment="resolved conflicts" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/cmake/" />
     <ignored path=".idea/vcs.xml" />
@@ -190,8 +121,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/OccGrid.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="160">
-              <caret line="426" lean-forward="true" selection-start-line="426" selection-end-line="426" />
+            <state relative-caret-position="420">
+              <caret line="439" column="5" lean-forward="true" selection-start-line="439" selection-start-column="5" selection-end-line="439" selection-end-column="5" />
               <folding>
                 <element signature="e#104#120#0" expanded="true" />
               </folding>
@@ -396,16 +327,6 @@
             <path>
               <item name="Wavefront" type="b2602c69:ProjectViewProjectNode" />
               <item name="pathplanning" type="462c0819:PsiDirectoryNode" />
-              <item name="cmake" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Wavefront" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pathplanning" type="462c0819:PsiDirectoryNode" />
-              <item name="CMakeFiles" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Wavefront" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pathplanning" type="462c0819:PsiDirectoryNode" />
               <item name="lib" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -429,7 +350,7 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="js.eslint.eslintPackage" value="" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.tabs" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -555,7 +476,7 @@
       <workItem from="1543934041397" duration="75000" />
       <workItem from="1543934997548" duration="1408000" />
       <workItem from="1543936454080" duration="20000" />
-      <workItem from="1543936556371" duration="28229000" />
+      <workItem from="1543936556371" duration="28752000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1540901207354</created>
@@ -603,7 +524,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="451053000" />
+    <option name="totallyTimeSpent" value="451576000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -617,7 +538,7 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49616858" visible="true" weight="0.17643923" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49616858" visible="true" weight="0.17643923" />
       <window_info id="Structure" order="1" sideWeight="0.50383145" side_tool="true" visible="true" weight="0.17643923" />
       <window_info id="Favorites" order="2" side_tool="true" weight="0.32958478" />
       <window_info id="Designer" order="3" />
@@ -628,7 +549,7 @@
       <window_info anchor="bottom" id="Database Changes" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" sideWeight="0.49967638" weight="0.3275862" />
-      <window_info active="true" anchor="bottom" id="Run" order="3" sideWeight="0.4970874" visible="true" weight="0.41666666" />
+      <window_info anchor="bottom" id="Run" order="3" sideWeight="0.4970874" visible="true" weight="0.41666666" />
       <window_info anchor="bottom" id="Debug" order="4" sideWeight="0.49841473" weight="0.39954337" />
       <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
@@ -865,8 +786,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/OccGrid.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="426" lean-forward="true" selection-start-line="426" selection-end-line="426" />
+        <state relative-caret-position="420">
+          <caret line="439" column="5" lean-forward="true" selection-start-line="439" selection-start-column="5" selection-end-line="439" selection-end-column="5" />
           <folding>
             <element signature="e#104#120#0" expanded="true" />
           </folding>

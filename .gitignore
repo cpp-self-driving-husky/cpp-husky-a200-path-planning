@@ -37,5 +37,5 @@ Makefile
 wavefront
 Wavefront.cbp
 
-./cmake/*
-./CMakeFiles/*
+/cmake/
+/CMakeFiles/
