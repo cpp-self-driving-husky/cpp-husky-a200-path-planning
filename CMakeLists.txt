@@ -16,7 +16,9 @@ add_library(proj4lib
         lib/GridCell.cpp
         lib/GridCell.h
         lib/Point.cpp
-        lib/Point.h lib/Coord.h lib/Coord.cpp)
+        lib/Point.h
+        lib/Coord.h
+        lib/Coord.cpp)
 
 add_executable(wavefront lib/WavefrontNavigator.cpp)
 
