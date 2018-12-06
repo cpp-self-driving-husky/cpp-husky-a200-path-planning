@@ -1,4 +1,0 @@
-C:/masters/pathplanning/cmake/CMakeFiles/rebuild_cache.dir
-C:/masters/pathplanning/cmake/CMakeFiles/proj4lib.dir
-C:/masters/pathplanning/cmake/CMakeFiles/wavefront.dir
-C:/masters/pathplanning/cmake/CMakeFiles/edit_cache.dir

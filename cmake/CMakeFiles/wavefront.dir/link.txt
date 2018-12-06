@@ -1,3 +1,0 @@
-C:\Users\ak\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\183.4284.156\bin\cmake\win\bin\cmake.exe -E remove -f CMakeFiles\wavefront.dir/objects.a
-C:\PROGRA~1\MINGW-~1\X86_64~1.0-W\mingw64\bin\ar.exe cr CMakeFiles\wavefront.dir/objects.a @CMakeFiles\wavefront.dir\objects1.rsp
-C:\PROGRA~1\MINGW-~1\X86_64~1.0-W\mingw64\bin\G__~1.EXE -std=c++11 -Wall -g   -Wl,--whole-archive CMakeFiles\wavefront.dir/objects.a -Wl,--no-whole-archive  -o wavefront.exe -Wl,--out-implib,libwavefront.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\wavefront.dir\linklibs.rsp
