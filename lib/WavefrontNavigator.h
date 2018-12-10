@@ -13,9 +13,6 @@
 #include <unordered_map>
 #include <list>
 #include "OccGrid.h"
-#include "OccGrid.cpp"
-#include "Coord.h"
-
 
 class WavefrontNavigator {
 
@@ -28,16 +25,12 @@ public:
     OccGrid* getGridMap();
     OccGrid* getDebugGrid();
     std::list<GridCell> getWayCells();
-    std::list<GridCell> outputPath();
-    bool planPath(Point start, Point goal, std::string waveType);
-    bool planPath(GridCell start, GridCell goal, std::string waveType);
+    std::vector<GridCell> outputPath();
+  bool planPath(GridCell start, GridCell goal, std::string waveType);
     void printCells(std::list<GridCell> cells);
     void markCells(std::list<GridCell> cells);
     void loadDestinations(std::string filename);
     void loadTestXY(std::string filename);
-
-protected:
-    char inputLine1[80];
 
 private:
     std::list<GridCell> wayCells;
@@ -46,14 +39,14 @@ private:
     OccGrid gridMap;
     OccGrid debugGrid;
     std::string mapfilename;
-    void initializeNavigator();
+    void resetNavigator();
     void calcWayCells(const GridCell &start, const GridCell &goal);
-    GridCell findNextCell(const GridCell &currCell);
+    GridCell findNextCell(const GridCell &curr);
     void smoothPath();
     int smoothPathHelper();
     int smoothPathHelperReverse();
     bool isInLine(const GridCell &c1, const GridCell &c2);
-    std::list<GridCell> drawLine(const GridCell &c0, const GridCell &c1);
+    std::vector<GridCell> drawLine(const GridCell &c0, const GridCell &c1);
 };
 
 
