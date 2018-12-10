@@ -9,8 +9,7 @@
 #include <vector>
 #include <string>
 #include "Pilot.h"
-#include "Point.h"
-
+#include "Coordinates.h"
 
 class Navigator {
 public:

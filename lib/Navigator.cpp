@@ -6,7 +6,6 @@
 #include <libplayerc++/playerc++.h>
 #include <fstream>
 
-#include "Point.h"
 #include "Navigator.h"
 
 using namespace std;
