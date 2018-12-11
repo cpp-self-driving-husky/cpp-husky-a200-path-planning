@@ -4,7 +4,7 @@
 // proj4.cc
 
 #include <libplayerc++/playerc++.h>
-#include <WavefrontNavigator.h>
+#include <WaveNav.h>
 
 
 void printIntro() {

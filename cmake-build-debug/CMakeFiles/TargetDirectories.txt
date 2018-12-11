@@ -1,0 +1,4 @@
+/home/snorlax6000/Documents/masters/pathplanning/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/snorlax6000/Documents/masters/pathplanning/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/snorlax6000/Documents/masters/pathplanning/cmake-build-debug/CMakeFiles/proj4lib.dir
+/home/snorlax6000/Documents/masters/pathplanning/cmake-build-debug/CMakeFiles/wavefront.dir

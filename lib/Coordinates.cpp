@@ -41,26 +41,26 @@ GridCell::GridCell() : col(0), row(0) {
 }
 
 
-GridCell::GridCell(int col, int row) : col(col), row(row) {
+GridCell::GridCell(long col, long row) : col(col), row(row) {
 }
 
 
-int GridCell::getRow() const {
+long GridCell::getRow() const {
   return row;
 }
 
 
-void GridCell::setRow(int row) {
+void GridCell::setRow(long row) {
   GridCell::row = row;
 }
 
 
-int GridCell::getCol() const {
+long GridCell::getCol() const {
   return col;
 }
 
 
-void GridCell::setCol(int col) {
+void GridCell::setCol(long col) {
   GridCell::col = col;
 }
 
@@ -70,20 +70,20 @@ bool GridCell::equals(const GridCell cell) const {
 }
 
 
-bool GridCell::operator==(const GridCell &cell) {
-  return (col == cell.getCol() && row == cell.getRow());
-}
-
-
-bool GridCell::operator!=(const GridCell &cell) {
-  return (col != cell.getCol() || row != cell.getRow());
-}
-
-
 std::string GridCell::toString() const {
   std::ostringstream resultStream;
   resultStream << "(c: " << col << ", r: " << row << ")";
   return resultStream.str();
+}
+
+
+bool operator==(const GridCell &cell1, const GridCell &cell2) {
+  return (cell1.getCol() == cell2.getCol() && cell1.getRow() == cell2.getRow());
+}
+
+
+bool operator!=(const GridCell &cell1, const GridCell &cell2) {
+  return (cell1.getCol() != cell2.getCol() || cell1.getRow() != cell2.getRow());
 }
 
 

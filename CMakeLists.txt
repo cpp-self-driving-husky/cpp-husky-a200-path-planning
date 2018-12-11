@@ -9,14 +9,14 @@ include_directories(${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 
 add_library(proj4lib
-        lib/WavefrontNavigator.cpp
-        lib/WavefrontNavigator.h
+        lib/WaveNav.cpp
+        lib/WaveNav.h
         lib/OccGrid.cpp
         lib/OccGrid.h
         lib/Coordinates.cpp
         lib/Coordinates.h
         )
-add_executable(wavefront lib/WavefrontNavigator.cpp)
+add_executable(wavefront lib/WaveNav.cpp)
 
 #find_package(PkgConfig)
 #if (PKG_CONFIG_FOUND)
