@@ -10,10 +10,10 @@
  *
  *    GPS: (longitude, latitude) GPS coordinates as decimal degrees.
  *
- *    Point: (x, y) coordinates as doubles. Origin is at top left of the map, with positive x direction pointing to the right,
- *        and positive y direction pointing down. x and y are in units of 1 meter.
+ *    Point: (x, y) coordinates as doubles. Origin is at top left of the map, with positive x direction Pointing to the right,
+ *        and positive y direction Pointing down. x and y are in units of 1 meter.
  *
- *    GridCell: (col, row) as int indices of 2D array that represents a lower-resolution grid. Same orientation as the (x, y)
+ *    GridCell: (col, row) as long indices of 2D array that represents a lower-resolution grid. Same orientation as the (x, y)
  *        grid used for Points. In this implementation, a grid cell is 0.2m x 0.2m.
  *
  * Note the order in which the coordinate pairs are listed. They all reference the horizontal component first,
@@ -53,23 +53,25 @@ private:
 class GridCell {
 public:
   GridCell();
-  GridCell(int col, int row);
+  GridCell(long col, long row);
   virtual ~GridCell() = default;
-  int getRow() const;
-  void setRow(int row);
-  int getCol() const;
-  void setCol(int col);
-  bool operator==(const GridCell &cell);
-  bool operator!=(const GridCell &cell);
+  long getRow() const;
+  void setRow(long row);
+  long getCol() const;
+  void setCol(long col);
+
   bool equals(GridCell cell) const;
   std::string toString() const;
 
 protected:
 
 private:
-  int col;
-  int row;
+  long col;
+  long row;
 };
+
+bool operator==(const GridCell &cell1, const GridCell &cell2);
+bool operator!=(const GridCell &cell1, const GridCell &cell2);
 
 
 /**
