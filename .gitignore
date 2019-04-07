@@ -37,6 +37,10 @@ Makefile
 wavefront
 Wavefront.cbp
 
-/cmake/
+/cmake/*.*
 /CMakeFiles/
 /.idea/
+/build/
+/cmake-build-debug/
+/debugOutput/
+/lib/

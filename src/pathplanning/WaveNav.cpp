@@ -17,7 +17,7 @@
 #include <unordered_map>
 #include <climits>
 
-#include "WaveNav.h"
+#include "../../include/pathplanning/WaveNav.h"
 
 
 
@@ -436,23 +436,23 @@ int main() {
 //  printOutput(path2d);
 //
 //
-//  std::cout << "\ntest3\n";
-//  WaveNav myNav3("../bitmaps/2dmap-test3.pnm", "test3OFWF");
-//  WaveNav::PathPlannerOutput path3o = findAnyPath(myNav3, "OFWF", topLeft, bottomRight);
-//  printOutput(path3o);
-//  myNav3.changeOutPath("test3Basic");
-//  WaveNav::PathPlannerOutput path3b = findAnyPath(myNav3, "Basic", topLeft, bottomRight);
-//  printOutput(path3b);
-//
-//  std::cout << "\ntest4\n";
-//  WaveNav myNav4("../bitmaps/2dmap-test4.pnm", "test4OFWF");
-//  WaveNav::PathPlannerOutput path4o = findAnyPath(myNav4, "OFWF", topLeft, bottomRight);
-//  printOutput(path4o);
-//  myNav4.changeOutPath("test4Basic");
-//  WaveNav::PathPlannerOutput path4b = findAnyPath(myNav4, "Basic", topLeft, bottomRight);
-//  printOutput(path4b);
+  std::cout << "\ntest3\n";
+  WaveNav myNav3("../bitmaps/2dmap-test3.pnm", "test3OFWF");
+  WaveNav::PathPlannerOutput path3o = findAnyPath(myNav3, "OFWF", topLeft, bottomRight);
+  printOutput(path3o);
+  myNav3.changeOutPath("test3Basic");
+  WaveNav::PathPlannerOutput path3b = findAnyPath(myNav3, "Basic", topLeft, bottomRight);
+  printOutput(path3b);
 
-  std::cout << "\ntest5";
+  std::cout << "\ntest4\n";
+  WaveNav myNav4("../bitmaps/2dmap-test4.pnm", "test4OFWF");
+  WaveNav::PathPlannerOutput path4o = findAnyPath(myNav4, "OFWF", topLeft, bottomRight);
+  printOutput(path4o);
+  myNav4.changeOutPath("test4Basic");
+  WaveNav::PathPlannerOutput path4b = findAnyPath(myNav4, "Basic", topLeft, bottomRight);
+  printOutput(path4b);
+
+  std::cout << "\ntest5\n";
   WaveNav myNav5("../bitmaps/2dmap-test5.pnm", "test5OFWF");
   WaveNav::PathPlannerOutput path5o = findAnyPath(myNav5, "OFWF", topLeft, bottomRight);
   printOutput(path5o);
@@ -460,7 +460,7 @@ int main() {
   WaveNav::PathPlannerOutput path5b = findAnyPath(myNav5, "Basic", topLeft, bottomRight);
   printOutput(path5b);
 
-  std::cout << "\ntest6";
+  std::cout << "\ntest6\n";
   WaveNav myNav6("../bitmaps/2dmap-test6.pnm", "test6OFWF");
   WaveNav::PathPlannerOutput path6o = findAnyPath(myNav6, "OFWF", topLeft, bottomRight);
   printOutput(path6o);

@@ -4,7 +4,7 @@
 // proj4.cc
 
 #include <libplayerc++/playerc++.h>
-#include <WaveNav.h>
+#include "../include/pathplanning/WaveNav.h"
 
 
 void printIntro() {

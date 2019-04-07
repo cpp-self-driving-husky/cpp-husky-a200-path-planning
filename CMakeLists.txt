@@ -8,15 +8,15 @@ include_directories(${PROJECT_SOURCE_DIR}/lib)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 
-add_library(proj4lib
-        lib/WaveNav.cpp
-        lib/WaveNav.h
-        lib/OccGrid.cpp
-        lib/OccGrid.h
-        lib/Coordinates.cpp
-        lib/Coordinates.h
+add_library(pplibrary
+        src/pathplanning/WaveNav.cpp
+        include/pathplanning/WaveNav.h
+        src/pathplanning/OccGrid.cpp
+        include/pathplanning/OccGrid.h
+        src/pathplanning/Coordinates.cpp
+        include/pathplanning/Coordinates.h
         )
-add_executable(wavefront lib/WaveNav.cpp)
+add_executable(wavefront src/pathplanning/WaveNav.cpp)
 
 #find_package(PkgConfig)
 #if (PKG_CONFIG_FOUND)
@@ -27,6 +27,6 @@ add_executable(wavefront lib/WaveNav.cpp)
 #    endif ()
 #endif ()
 
-target_link_libraries(wavefront proj4lib)
+target_link_libraries(wavefront pplibrary)
 #target_include_directories(wavefront PUBLIC ${PLAYER_INCLUDE_DIRS})
 #target_compile_options(wavefront PUBLIC ${PLAYER_CFLAGS_OTHER})

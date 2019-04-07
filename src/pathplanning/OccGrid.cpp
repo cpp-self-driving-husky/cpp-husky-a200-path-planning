@@ -15,7 +15,7 @@
 #include <cstring>
 #include <utility>
 
-#include "OccGrid.h"
+#include "../../include/pathplanning/OccGrid.h"
 
 class CompareGreater {
 public:

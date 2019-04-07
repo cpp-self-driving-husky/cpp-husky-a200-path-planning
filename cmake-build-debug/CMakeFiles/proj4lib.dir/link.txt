@@ -1,2 +1,0 @@
-/usr/bin/ar qc libproj4lib.a  CMakeFiles/proj4lib.dir/lib/WaveNav.cpp.o CMakeFiles/proj4lib.dir/lib/OccGrid.cpp.o CMakeFiles/proj4lib.dir/lib/Coordinates.cpp.o
-/usr/bin/ranlib libproj4lib.a

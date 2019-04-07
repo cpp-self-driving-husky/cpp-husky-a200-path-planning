@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string>
 
-#include "Coordinates.h"
+#include "../../include/pathplanning/Coordinates.h"
 
 
 Point::Point() : xCoord(0), yCoord(0) {

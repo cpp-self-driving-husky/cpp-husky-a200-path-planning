@@ -1,4 +1,0 @@
-/home/snorlax6000/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/183.4588.63/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/snorlax6000/Documents/masters/pathplanning
--- Configuring done
--- Generating done
--- Build files have been written to: /home/snorlax6000/Documents/masters/pathplanning/cmake-build-debug
