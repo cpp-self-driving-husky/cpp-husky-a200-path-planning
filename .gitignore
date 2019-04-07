@@ -40,3 +40,7 @@ Wavefront.cbp
 /cmake/
 /CMakeFiles/
 /.idea/
+/build/
+/cmake-build-debug/
+/debugOutput/
+/lib/
