@@ -30,7 +30,7 @@ public:
   ~WaveNav();
   void changeOutPath(std::string newOutName);
   std::pair<std::vector<GridCell>, double> outputPath();
-  PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType);
+  PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string waveType);
   void printCells(std::list<GridCell> cells);
   void markCells(std::list<GridCell> cells, long value);
 
