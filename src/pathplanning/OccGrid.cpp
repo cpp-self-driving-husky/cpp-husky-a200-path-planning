@@ -30,7 +30,9 @@ public:
   }
 };
 
-OccGrid::OccGrid() = default;
+OccGrid::OccGrid() {
+
+}
 
 OccGrid::~OccGrid() = default;
 
@@ -94,7 +96,7 @@ void OccGrid::convertToDebugGrid() {
  * 
  * @param filename 
  */
-void OccGrid::outputGrid(std::string filename) {
+void OccGrid::outputGrid(const std::string& filename) {
   std::ofstream outFile(filename.c_str(), std::ofstream::out);
   outFile << "P2" << std::endl;
   outFile << GRID_WIDTH << " " << GRID_HEIGHT << std::endl << 255 << std::endl;
@@ -113,7 +115,7 @@ void OccGrid::outputGrid(std::string filename) {
 }
 
 
-void OccGrid::outputDebugGrid(std::string filename) {
+void OccGrid::outputDebugGrid(const std::string& filename) {
   std::ofstream outFile(filename.c_str(), std::ofstream::out);
   outFile << "P2" << std::endl;
   outFile << GRID_WIDTH << " " << GRID_HEIGHT << std::endl << 255 << std::endl;
@@ -167,14 +169,14 @@ void OccGrid::growGrid(double radius) {
   growSize = std::max(growH, growV);
 
   // create a new 2d array to hold the result of grow.
-  std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> result{{{0}}};
+  std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> result{{{}}};
 
   // loop through grid, looking for 1, then growing them on result
   long row, col;
   for (row = 0; row != GRID_HEIGHT; ++row) {
     for (col = 0; col != GRID_WIDTH; ++col) {
       if (grid[row][col] == 1) {
-        for (const auto &neighbor : getNeighbors(GridCell(col, row), growSize)) {
+        for (const auto &neighbor : getNeighborhood(GridCell(col, row), growSize)) {
           result[neighbor.getRow()][neighbor.getCol()] = 1;
         }
       }
@@ -211,7 +213,7 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
     currCell = waveQ.front();
     numCellsVisited++;
     // find free neighbors, update weights, calculate costs, push onto queue
-    for (auto &neighbor : getNeighbors(currCell, 1)) {
+    for (auto &neighbor : getNeighborhood(currCell, 1)) {
       if (get(neighbor) == 0) {
         setWeight(neighbor, orthoDist, diagDist);
         waveQ.emplace(neighbor);
@@ -264,12 +266,12 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
     numCellsVisited++;
 
     // find free neighbors, update weights, calculate costs, push onto priority queue
-    for (auto &neighbor : getNeighbors(currCell, 1)) {
+    for (auto &neighbor : getNeighborhood(currCell, 1)) {
       if (get(neighbor) == 0) {
         setWeight(neighbor, orthoDist, diagDist);
         dx = static_cast<double>(std::labs(neighbor.getCol() - start.getCol()));
         dy = static_cast<double>(std::labs(neighbor.getRow() - start.getRow()));
-        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.01;
+        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.0001;
         cost = static_cast<double>(get(neighbor)) + heuristic;
         waveQ.emplace(cost, neighbor);
 
@@ -296,7 +298,7 @@ void OccGrid::setWeight(GridCell &cell, long orthoDist, long diagDist) {
   GridCell minNeighbor {};
   long minSoFar = LONG_MAX;
   long currWeight;
-  for (const auto &neighbor : getNeighbors(cell, 1)) {
+  for (const auto &neighbor : getNeighborhood(cell, 1)) {
     currWeight = get(neighbor);
     if ((currWeight < minSoFar) && (currWeight > 1)) {
       minSoFar = currWeight;
@@ -354,6 +356,7 @@ GridCell OccGrid::findClosestFreeCell(GridCell &cell) {
   GridCell minCellSoFar {cell};
   for (auto &distCell : distCells) {
     if (distCell.first < minSoFar) {
+      minSoFar = distCell.first;
       minCellSoFar = distCell.second;
     }
   }
@@ -361,7 +364,7 @@ GridCell OccGrid::findClosestFreeCell(GridCell &cell) {
 }
 
 
-std::pair<long, GridCell> OccGrid::findFree(GridCell &cell, std::string direction) {
+std::pair<long, GridCell> OccGrid::findFree(GridCell &cell, const std::string& direction) {
   long stepCounter = 0;
   long currCol {cell.getCol()};
   long currRow {cell.getRow()};
@@ -383,7 +386,7 @@ std::pair<long, GridCell> OccGrid::findFree(GridCell &cell, std::string directio
       break;
     }
   }
-  std::pair<long, GridCell> freeCell =  std::make_pair(stepCounter, GridCell(currCol, currRow));
+  std::pair<long, GridCell> freeCell = std::make_pair(stepCounter, GridCell(currCol, currRow));
   return freeCell;
 }
 
@@ -431,17 +434,17 @@ void OccGrid::fitInGrid(GridCell &cell) {
  * @param layers - how many layers of neighbors to return
  * @return
  */
-std::vector<GridCell> OccGrid::getNeighbors(const GridCell &cell, int layers) {
+std::vector<GridCell> OccGrid::getNeighborhood(const GridCell &cell, long layers) {
   std::vector<GridCell> neighbors;
-  int col = static_cast<int>(cell.getCol());
-  int row = static_cast<int>(cell.getRow());
+  long col = cell.getCol();
+  long row = cell.getRow();
 
-  int minRow = std::max(row - layers, 0);
-  int maxRow = std::min(row + layers, static_cast<int>(GRID_HEIGHT - 1));
-  int minCol = std::max(col - layers, 0);
-  int maxCol = std::min(col + layers, static_cast<int>(GRID_WIDTH - 1));
-  for (int tempRow = minRow; tempRow <= maxRow; ++tempRow) {
-    for (int tempCol = minCol; tempCol <= maxCol; ++tempCol) {
+  long minRow = std::max(row - layers, 0l);
+  long maxRow = std::min(row + layers, GRID_HEIGHT - 1l);
+  long minCol = std::max(col - layers, 0l);
+  long maxCol = std::min(col + layers, GRID_WIDTH - 1l);
+  for (long tempRow = minRow; tempRow <= maxRow; ++tempRow) {
+    for (long tempCol = minCol; tempCol <= maxCol; ++tempCol) {
       if (!((tempCol == col) && (tempRow == row))) {
         neighbors.emplace_back(GridCell(tempCol, tempRow));
       }
@@ -455,12 +458,12 @@ std::vector<GridCell> OccGrid::getNeighbors(const GridCell &cell, int layers) {
 //                  Conversion Functions
 // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 
-GridCell PointToCell(const Point &pt) {
+GridCell pointToCell(const Point &pt) {
   return GridCell(xToCol(pt.getX()), yToRow(pt.getY()));
 }
 
 
-GPS PointToGPS(const Point &pt) {
+GPS pointToGPS(const Point &pt) {
   return GPS(xToLongitude(pt.getX()), yToLatitude(pt.getY()));
 }
 
@@ -471,14 +474,14 @@ Point cellToPoint(const GridCell &cell) {
 
 
 GPS cellToGPS(const GridCell &cell) {
-  return PointToGPS(Point(colToX(cell.getCol()), rowToY(cell.getRow())));
+  return pointToGPS(Point(colToX(cell.getCol()), rowToY(cell.getRow())));
 }
 
 
 GridCell gpsToCell(const GPS &gps) {
-  GridCell c = PointToCell(gpsToPoint(gps));
+  GridCell c = pointToCell(gpsToPoint(gps));
   std::cout << gps.toString() << " --> " << c.toString() << std::endl;
-  return PointToCell(gpsToPoint(gps));
+  return c;
 }
 
 

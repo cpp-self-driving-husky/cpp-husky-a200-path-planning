@@ -13,7 +13,7 @@
 #include <list>
 #include <queue>
 
-#include "Coordinates.h"
+#include "../../include/pathplanning/Coordinates.h"
 
 const double SCALE_MAP = 5.0;
 const double WIDTH_METERS = 186.23;
@@ -40,8 +40,8 @@ public:
     virtual ~OccGrid();
     void inputGrid(std::string filename, double mapScale);
     void convertToDebugGrid();
-    void outputGrid(std::string filename);
-    void outputDebugGrid(std::string filename);
+    void outputGrid(const std::string& filename);
+    void outputDebugGrid(const std::string& filename);
     void resetGrid();
     long get(long col, long row);
     long get(GridCell cell);
@@ -49,24 +49,24 @@ public:
     void growGrid(double radius);
     std::pair<GridCell, long> propWavesBasic(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
     std::pair<GridCell, long> propOFWF(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
-    std::vector<GridCell> getNeighbors(const GridCell &cell, int layers);
+    static std::vector<GridCell> getNeighborhood(const GridCell &cell, long layers);
     void normCell(GridCell& cell);
 
 protected:
-    long maxVal;
-    char inputLine1[80];
-    std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> grid;
+    long maxVal{};
+    char inputLine1[80]{};
+    std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> grid{};
 
 private:
     void setWeight(GridCell &cell, long orthoDist, long diagDist);
     bool isNear(const GridCell& c1, const GridCell& c2);
     GridCell findClosestFreeCell(GridCell& cell);
-    std::pair<long, GridCell> findFree(GridCell &cell, std::string direction);
+    std::pair<long, GridCell> findFree(GridCell &cell, const std::string& direction);
     void fitInGrid(GridCell& cell);
 };
 
-GridCell PointToCell(const Point &pt);
-GPS PointToGPS(const Point &pt);
+GridCell pointToCell(const Point &pt);
+GPS pointToGPS(const Point &pt);
 Point cellToPoint(const GridCell &cell);
 GPS cellToGPS(const GridCell &cell);
 GridCell gpsToCell(const GPS &gps);
