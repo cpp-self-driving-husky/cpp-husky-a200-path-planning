@@ -13,7 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <list>
-#include "OccGrid.h"
+#include "../../include/pathplanning/OccGrid.h"
 
 class WaveNav {
 
@@ -30,13 +30,15 @@ public:
   ~WaveNav();
   void changeOutPath(std::string newOutName);
   std::pair<std::vector<GridCell>, double> outputPath();
-  PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string waveType);
+  PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string& waveType);
   void printCells(std::list<GridCell> cells);
-  void markCells(std::list<GridCell> cells, long value);
+  void markCells(const std::list<GridCell>& cells, long value);
+  void markCells(const std::vector<GridCell> &cells, long value);
 
 private:
   std::string outPath;
   std::list<GridCell> wayCells;
+  std::list<GridCell> smoothedPath;
   OccGrid gridMap;
   OccGrid debugGrid;
   std::string mapfilename;
@@ -46,6 +48,7 @@ private:
   void smoothestPath();
   void smoothPath();
   long smoothPathHelper();
+  long smoothPathHelper2();
   long smoothPathHelperReverse();
   bool isInLine(const GridCell &c1, const GridCell &c2);
   std::vector<GridCell> drawLine(const GridCell &c0, const GridCell &c1);
