@@ -10,7 +10,6 @@ include_directories(${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v")
 
 
-
 add_library(pplibrary
         src/pathplanning/WaveNav.cpp
         include/pathplanning/WaveNav.h
@@ -20,7 +19,7 @@ add_library(pplibrary
         include/pathplanning/Coordinates.h
         )
 
-find_package(Boost 1.68.0 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.67.0 COMPONENTS system filesystem REQUIRED)
 
 message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")

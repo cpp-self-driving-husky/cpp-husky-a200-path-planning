@@ -526,22 +526,22 @@ int main() {
 //
   try {
     std::cout << "\ntest2\n";
-    WaveNav myNav2("../bitmaps/2dmap-test2.pnm", "test2.1_OFWF");
+    WaveNav myNav2("../bitmaps/2dmap-test2.pnm", "output/test2.1_OFWF");
     WaveNav::PathPlannerOutput path21o = findAnyPath(myNav2, "OFWF", topLeft, bottomRight);
     printOutput(path21o);
-    myNav2.changeOutPath("test2.1_Basic");
+    myNav2.changeOutPath("output/test2.1_Basic");
     WaveNav::PathPlannerOutput path21b = findAnyPath(myNav2, "Basic", topLeft, bottomRight);
     printOutput(path21b);
-    myNav2.changeOutPath("test2.2_OFWF");
+    myNav2.changeOutPath("output/test2.2_OFWF");
     WaveNav::PathPlannerOutput path22o = findAnyPath(myNav2, "OFWF", midLeft, midRight);
     printOutput(path22o);
-    myNav2.changeOutPath("test2.2_Basic");
+    myNav2.changeOutPath("output/test2.2_Basic");
     WaveNav::PathPlannerOutput path22b = findAnyPath(myNav2, "Basic", midLeft, midRight);
     printOutput(path22b);
-    myNav2.changeOutPath("test2.3_OFWF");
+    myNav2.changeOutPath("output/test2.3_OFWF");
     WaveNav::PathPlannerOutput path23o = findAnyPath(myNav2, "OFWF", midRight, midLeft);
     printOutput(path22o);
-    myNav2.changeOutPath("test2.3_Basic");
+    myNav2.changeOutPath("output/test2.3_Basic");
     WaveNav::PathPlannerOutput path23b = findAnyPath(myNav2, "Basic", midRight, midLeft);
     printOutput(path22b);
   } catch (std::runtime_error &e) {
