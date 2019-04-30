@@ -29,9 +29,10 @@ public:
   WaveNav(std::string filename, std::string outName);
   ~WaveNav();
   void changeOutPath(std::string newOutName);
-  std::pair<std::vector<GridCell>, double> outputPath();
+  std::pair<std::vector<GridCell>, double> drawSmoothedPath();
   PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string& waveType);
   void printCells(std::list<GridCell> cells);
+  void markCell(const GridCell& cell, long value);
   void markCells(const std::list<GridCell>& cells, long value);
   void markCells(const std::vector<GridCell> &cells, long value);
 
@@ -49,6 +50,7 @@ private:
   void smoothPath();
   long smoothPathHelper();
   long smoothPathHelper2();
+  long smoothPathHelper3();
   long smoothPathHelperReverse();
   bool isInLine(const GridCell &c1, const GridCell &c2);
   std::vector<GridCell> drawLine(const GridCell &c0, const GridCell &c1);

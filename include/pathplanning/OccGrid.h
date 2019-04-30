@@ -44,13 +44,14 @@ public:
     void outputDebugGrid(const std::string& filename);
     void resetGrid();
     long get(long col, long row);
-    long get(GridCell cell);
-    void set(GridCell cell, long value);
+    long get(const GridCell& cell);
+    void set(const GridCell& cell, long value);
     void growGrid(double radius);
     std::pair<GridCell, long> propWavesBasic(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
     std::pair<GridCell, long> propOFWF(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
     static std::vector<GridCell> getNeighborhood(const GridCell &cell, long layers);
     void normCell(GridCell& cell);
+    static bool isNear(const GridCell &c1, const GridCell &c2);
 
 protected:
     long maxVal{};
@@ -59,7 +60,6 @@ protected:
 
 private:
     void setWeight(GridCell &cell, long orthoDist, long diagDist);
-    bool isNear(const GridCell& c1, const GridCell& c2);
     GridCell findClosestFreeCell(GridCell& cell);
     std::pair<long, GridCell> findFree(GridCell &cell, const std::string& direction);
     void fitInGrid(GridCell& cell);

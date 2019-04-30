@@ -139,18 +139,13 @@ long OccGrid::get(long col, long row) {
   return grid[row][col];
 }
 
-long OccGrid::get(GridCell cell) {
-  long row{cell.getRow()};
-  long col{cell.getCol()};
-  return OccGrid::get(col, row);
+long OccGrid::get(const GridCell& cell) {
+  return OccGrid::get(cell.getCol(), cell.getRow());
 }
 
-void OccGrid::set(GridCell cell, long value) {
-  long row{cell.getRow()};
-  long col{cell.getCol()};
-  grid[row][col] = value;
+void OccGrid::set(const GridCell& cell, long value) {
+  grid[cell.getRow()][cell.getCol()] = value;
 }
-
 
 
 /**
@@ -182,7 +177,7 @@ void OccGrid::growGrid(double radius) {
       }
     }
   }
-  // deep copy values from result longo grid
+  // deep copy values from result long grid
   std::copy(&result[0][0], &result[0][0] + GRID_HEIGHT * GRID_WIDTH, &grid[0][0]);
 }
 
@@ -219,15 +214,14 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
         waveQ.emplace(neighbor);
 
         // once we've enqueued a cell near the start cell, we're done
-//        if (isNear(start, neighbor)) {
-        if (start == neighbor) {
-          return {neighbor, numCellsVisited};
+        if (isNear(start, neighbor)) {
+          return std::make_pair(neighbor, numCellsVisited);
         }
       }
     }
     waveQ.pop();
   }
-  return {goal, numCellsVisited};
+  return std::make_pair(currCell, numCellsVisited);
 }
 
 
@@ -271,19 +265,19 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
         setWeight(neighbor, orthoDist, diagDist);
         dx = static_cast<double>(std::labs(neighbor.getCol() - start.getCol()));
         dy = static_cast<double>(std::labs(neighbor.getRow() - start.getRow()));
-        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.0001;
+        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
         cost = static_cast<double>(get(neighbor)) + heuristic;
         waveQ.emplace(cost, neighbor);
 
         // once we've enqueued a cell near the start cell, we're done
-        if (start == neighbor) {
+        if (isNear(start, neighbor)) {
           return std::make_pair(neighbor, numCellsVisited);
         }
       }
     }
     waveQ.pop();
   }
-  return std::make_pair(goal, numCellsVisited);
+  return std::make_pair(currCell, numCellsVisited);
 }
 
 
@@ -445,9 +439,7 @@ std::vector<GridCell> OccGrid::getNeighborhood(const GridCell &cell, long layers
   long maxCol = std::min(col + layers, GRID_WIDTH - 1l);
   for (long tempRow = minRow; tempRow <= maxRow; ++tempRow) {
     for (long tempCol = minCol; tempCol <= maxCol; ++tempCol) {
-      if (!((tempCol == col) && (tempRow == row))) {
-        neighbors.emplace_back(GridCell(tempCol, tempRow));
-      }
+      neighbors.emplace_back(GridCell(tempCol, tempRow));
     }
   }
   return neighbors;
