@@ -5,6 +5,13 @@
  * file: OccGrid.cpp
  */
 
+#include "../../include/pathplanning/OccGrid.h"
+#include "../../include/pathplanning/WaveNav.h"
+#include <boost/filesystem.hpp>
+#include <unordered_map>
+#include <list>
+#include <string>
+#include <exception>
 #include <array>
 #include <algorithm>
 #include <iostream>
@@ -15,7 +22,6 @@
 #include <cstring>
 #include <utility>
 
-#include "../../include/pathplanning/OccGrid.h"
 
 class CompareGreater {
 public:
@@ -30,9 +36,7 @@ public:
   }
 };
 
-OccGrid::OccGrid() {
-
-}
+OccGrid::OccGrid() = default;
 
 OccGrid::~OccGrid() = default;
 
@@ -41,8 +45,6 @@ void OccGrid::inputGrid(const std::string filename, const double mapScale = SCAL
   long inRow, inCol;
   long inputWidth, inputHeight;
   std::string fileFormat;
-  char nextChar;
-
   std::ifstream ifs;
   ifs.open(filename.c_str(), std::ifstream::in);
 
@@ -52,6 +54,7 @@ void OccGrid::inputGrid(const std::string filename, const double mapScale = SCAL
   ifs >> inputWidth >> inputHeight >> maxVal;
 
   if (fileFormat == "P5") {
+    char nextChar;
     for (inRow = 0; inRow < inputHeight; ++inRow) {
       for (inCol = 0; inCol < inputWidth; ++inCol) {
         ifs >> nextChar;
@@ -63,12 +66,12 @@ void OccGrid::inputGrid(const std::string filename, const double mapScale = SCAL
     }
   }
 
-  long nextlong;
   if (fileFormat == "P2") {
+    long nextLong;
     for (inRow = 0; inRow < inputHeight; ++inRow) {
       for (inCol = 0; inCol < inputWidth; ++inCol) {
-        ifs >> nextlong;
-        if (nextlong == 0) {
+        ifs >> nextLong;
+        if (nextLong == 0) {
           grid[static_cast<long>(inRow / mapScale)][static_cast<long>(inCol / mapScale)] = 1;
         }
       }
@@ -105,8 +108,10 @@ void OccGrid::outputGrid(const std::string& filename) {
     for (long col = 0; col < GRID_WIDTH; ++col) {
       if (grid[row][col] == 1) {
         outFile << 0 << " ";
-      } else {
+      } else if (grid[row][col] == 0) {
         outFile << 255 << " ";
+      } else {
+        outFile << grid[row][col] << " ";
       }
     }
   }
@@ -164,7 +169,7 @@ void OccGrid::growGrid(double radius) {
   growSize = std::max(growH, growV);
 
   // create a new 2d array to hold the result of grow.
-  std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> result{{{}}};
+  std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> result {};
 
   // loop through grid, looking for 1, then growing them on result
   long row, col;
@@ -531,4 +536,90 @@ double longitudeToX(double longitude) {
 
 double latitudeToY(double latitude) {
   return HEIGHT_METERS * (MAX_LAT - latitude) / (MAX_LAT - MIN_LAT);
+}
+
+
+/**
+ * Checks to see if there is a clear line of sight between c0 and c1.
+ *
+ * @param c0
+ * @param c1
+ * @return true if there is a clear line of sight between c0 and c1
+ */
+bool OccGrid::isInLine(const GridCell &c0, const GridCell &c1) {
+  // check if any cell in the line between c0 and c1 is occupied by an obstacle.
+  for (const auto &gc : drawLine(c0, c1)) {
+    if (get(gc) == 1) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+/**
+ * Makes a vector of the GridCells that are traversed while making a straight
+ * line between two GridCells. Uses Bresenham's algorithm.
+ *
+ * @param c0 source GridCell
+ * @param c1 destination GridCell
+ * @return std::vector<GridCell> vector of GridCells, approximating a straight line between c0 and c1
+ */
+std::vector<GridCell> OccGrid::drawLine(const GridCell &c0, const GridCell &c1) {
+  long col0 {c0.getCol()};
+  long col1 {c1.getCol()};
+  long row0 {c0.getRow()};
+  long row1 {c1.getRow()};
+  long dCol {llabs(col1 - col0)};
+  long dRow {llabs(row1 - row0)};
+
+  long col_increment {0};
+  if (col1 > col0) {
+    col_increment = 1;
+  } else if (col1 < col0) {
+    col_increment = -1;
+  }
+
+  long row_increment {0};
+  if (row1 > row0) {
+    row_increment = 1;
+  } else if (row1 < row0) {
+    row_increment = -1;
+  }
+
+  long error {dCol - dRow};
+  long colAdjustment {dCol * 2};
+  long rowAdjustment {dRow * 2};
+  long currRow {row0};
+  long currCol {col0};
+  GridCell currCell(currCol, currRow);
+
+  std::vector<GridCell> lineOfCells;
+  while (currCell != c1) {
+    lineOfCells.emplace_back(currCell);
+    if (error > 0) {
+      currCol += col_increment;
+      error -= rowAdjustment;
+    } else if (error < 0) {
+      currRow += row_increment;
+      error += colAdjustment;
+    } else if (error == 0) {
+      currCol += col_increment;
+      error -= rowAdjustment;
+      currRow += row_increment;
+      error += colAdjustment;
+    }
+    currCell = GridCell(currCol, currRow);
+  }
+  lineOfCells.emplace_back(c1);
+  return lineOfCells;
+}
+
+
+double OccGrid::euclideanDist(const GridCell &c0, const GridCell &c1) {
+  long dRow = c0.getRow() - c1.getRow();
+  long dCol = c0.getCol() - c1.getCol();
+  auto dRowSq = static_cast<double>(dRow * dRow);
+  auto dColSq = static_cast<double>(dCol * dCol);
+  return sqrt(dRowSq + dColSq);
 }
