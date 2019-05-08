@@ -36,11 +36,11 @@ public:
   void markCells(const std::list<GridCell>& cells, long value);
   void markCells(const std::vector<GridCell> &cells, long value);
 
+  OccGrid gridMap;
 private:
   std::string outPath;
   std::list<GridCell> wayCells;
   std::list<GridCell> smoothedPath;
-  OccGrid gridMap;
   OccGrid debugGrid;
   std::string mapfilename;
   void resetNavigator();
@@ -52,9 +52,6 @@ private:
   long smoothPathHelper2();
   long smoothPathHelper3();
   long smoothPathHelperReverse();
-  bool isInLine(const GridCell &c1, const GridCell &c2);
-  std::vector<GridCell> drawLine(const GridCell &c0, const GridCell &c1);
-  double euclideanDist(const GridCell &c0, const GridCell &c1);
 };
 
 

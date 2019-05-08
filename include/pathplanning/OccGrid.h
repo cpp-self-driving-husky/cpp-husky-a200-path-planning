@@ -12,8 +12,11 @@
 #include <array>
 #include <list>
 #include <queue>
+#include <chrono>
+#include <unordered_map>
 
 #include "../../include/pathplanning/Coordinates.h"
+#include "../../include/pathplanning/OccGrid.h"
 
 const double SCALE_MAP = 5.0;
 const double WIDTH_METERS = 186.23;
@@ -36,33 +39,36 @@ const double MAX_LONG = -117.822673;
 class OccGrid {
 
 public:
-    OccGrid();
-    virtual ~OccGrid();
-    void inputGrid(std::string filename, double mapScale);
-    void convertToDebugGrid();
-    void outputGrid(const std::string& filename);
-    void outputDebugGrid(const std::string& filename);
-    void resetGrid();
-    long get(long col, long row);
-    long get(const GridCell& cell);
-    void set(const GridCell& cell, long value);
-    void growGrid(double radius);
-    std::pair<GridCell, long> propWavesBasic(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
-    std::pair<GridCell, long> propOFWF(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
-    static std::vector<GridCell> getNeighborhood(const GridCell &cell, long layers);
-    void normCell(GridCell& cell);
-    static bool isNear(const GridCell &c1, const GridCell &c2);
+  OccGrid();
+  virtual ~OccGrid();
+  void inputGrid(std::string filename, double mapScale);
+  void convertToDebugGrid();
+  void outputGrid(const std::string &filename);
+  void outputDebugGrid(const std::string &filename);
+  void resetGrid();
+  long get(long col, long row);
+  long get(const GridCell &cell);
+  void set(const GridCell &cell, long value);
+  void growGrid(double radius);
+  std::pair<GridCell, long> propWavesBasic(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
+  std::pair<GridCell, long> propOFWF(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
+  static std::vector<GridCell> getNeighborhood(const GridCell &cell, long layers);
+  void normCell(GridCell &cell);
+  static bool isNear(const GridCell &c1, const GridCell &c2);
+  static std::vector<GridCell> drawLine(const GridCell &c0, const GridCell &c1);
+  static double euclideanDist(const GridCell &c0, const GridCell &c1);
+  bool isInLine(const GridCell &c1, const GridCell &c2);
 
 protected:
-    long maxVal{};
-    char inputLine1[80]{};
-    std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> grid{};
+  long maxVal {};
+  char inputLine1[80] {};
+  std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> grid {};
 
 private:
-    void setWeight(GridCell &cell, long orthoDist, long diagDist);
-    GridCell findClosestFreeCell(GridCell& cell);
-    std::pair<long, GridCell> findFree(GridCell &cell, const std::string& direction);
-    void fitInGrid(GridCell& cell);
+  void setWeight(GridCell &cell, long orthoDist, long diagDist);
+  GridCell findClosestFreeCell(GridCell &cell);
+  std::pair<long, GridCell> findFree(GridCell &cell, const std::string &direction);
+  void fitInGrid(GridCell &cell);
 };
 
 GridCell pointToCell(const Point &pt);

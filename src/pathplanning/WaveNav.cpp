@@ -19,7 +19,7 @@
 #include <boost/filesystem.hpp>
 
 #include "../../include/pathplanning/WaveNav.h"
-
+#include "../../include/pathplanning/OccGrid.h"
 
 
 WaveNav::WaveNav() = default;
@@ -67,10 +67,10 @@ std::pair<std::vector<GridCell>, double> WaveNav::drawSmoothedPath() {
   double pathLength = 0.0;
 
   while (it1 != smoothedPath.end()) {
-    for (const auto &cell : drawLine(*it0, *it1)) {
+    for (const auto &cell : OccGrid::drawLine(*it0, *it1)) {
       markCell(cell, 190);
     }
-    pathLength += euclideanDist(*it0, *it1);
+    pathLength += OccGrid::euclideanDist(*it0, *it1);
     it0++;
     it1++;
   }
@@ -105,6 +105,9 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
     debugGrid.resetGrid();
     debugGrid.inputGrid(outPath + "_1-scaled input map.pnm", 1.0);
     debugGrid.convertToDebugGrid();
+
+    gridMap.resetGrid();
+    gridMap.inputGrid(outPath + "_1-scaled input map.pnm", 1.0);
     smoothestPath();
 
     auto pathResults = drawSmoothedPath();
@@ -220,12 +223,12 @@ GridCell WaveNav::findNextCell(const GridCell &curr) {
 
 void WaveNav::smoothestPath() {
   smoothedPath = wayCells;
-  std::list<GridCell> oldPath, newPath;
+  int oldNodeCount, newNodeCount;
   do {
-    oldPath = smoothedPath;
+    oldNodeCount = smoothedPath.size();
     smoothPath();
-    newPath = smoothedPath;
-  } while (oldPath != newPath);
+    newNodeCount = smoothedPath.size();
+  } while (oldNodeCount != newNodeCount);
 }
 
 
@@ -252,7 +255,7 @@ long WaveNav::smoothPathHelper2() {
   it2++;
 
   while ((it0 != it_end) && (it1 != it_end) && (it2 != it_end)) {
-    if (isInLine(*it0, *it2)) {
+    if (gridMap.isInLine(*it0, *it2)) {
       it1 = smoothedPath.erase(it1);
       modificationCount++;
       it0++;
@@ -287,8 +290,8 @@ long WaveNav::smoothPathHelper3() {
   it2++;
 
   while ((it0 != it_end) && (it1 != it_end) && (it2 != it_end)) {
-    if (isInLine(*it0, *it2)) {
-      while ((it2 != it_end) && (isInLine(*it0, *it2))) {
+    if (gridMap.isInLine(*it0, *it2)) {
+      while ((it2 != it_end) && (gridMap.isInLine(*it0, *it2))) {
         it2++;
       }
       it2--;
@@ -299,10 +302,10 @@ long WaveNav::smoothPathHelper3() {
       it2++;
       it2++;
     } else {
-      auto line = drawLine(*it0, *it1);
+      auto line = OccGrid::drawLine(*it0, *it1);
       auto line_it = line.begin();
       while (line_it != line.end()) {
-        if (isInLine(*line_it, *it2)) {
+        if (gridMap.isInLine(*line_it, *it2)) {
           smoothedPath.insert(it1, *line_it);
           smoothedPath.erase(it1);
           modificationCount++;
@@ -339,7 +342,7 @@ long WaveNav::smoothPathHelperReverse() {
   it2--;
   it2--;
   while ((it0 != it_begin) && (it1 != it_begin) && (it2 != it_begin)) {
-    if (isInLine(*it0, *it2)) {
+    if (gridMap.isInLine(*it0, *it2)) {
       smoothedPath.erase(it1);
 //      it1 = std::list<GridCell>::reverse_iterator(it);
       modificationCount++;
@@ -359,100 +362,6 @@ long WaveNav::smoothPathHelperReverse() {
   }
   return modificationCount;
 }
-
-
-/**
- * Checks to see if there is a clear line of sight between c0 and c1.
- * If a clear line exists, then any wayCells between c0 and c1 in the wayCells
- * list can be removed.
- *
- * @param c0
- * @param c1
- * @return true if there is a clear line of sight between c0 and c1
- */
-bool WaveNav::isInLine(const GridCell &c0, const GridCell &c1) {
-  // find the cells that lie on the line between c0 and c1.
-//  std::list<GridCell> lineSegment = drawLine(c0, c1);
-
-  // check if any cell in the list is occupied by an obstacle.
-  for (const auto &gc : drawLine(c0, c1)) {
-    if (gridMap.get(gc) == 1) {
-      return false;
-    }
-  }
-  return true;
-}
-
-
-/**
- * Makes a list of the GridCells that are traversed while making a straight
- * line between two GridCells. Uses Bresenham's algorithm.
- *
- * @param c0 source GridCell
- * @param c1 destination GridCell
- * @return std::list<GridCell> list of GridCells that approximate a straight line between c0 and c1
- */
-std::vector<GridCell> WaveNav::drawLine(const GridCell &c0, const GridCell &c1) {
-  long col0 {c0.getCol()};
-  long col1 {c1.getCol()};
-  long row0 {c0.getRow()};
-  long row1 {c1.getRow()};
-  long dCol {llabs(col1 - col0)};
-  long dRow {llabs(row1 - row0)};
-
-  long col_increment {0};
-  if (col1 > col0) {
-    col_increment = 1;
-  } else if (col1 < col0) {
-    col_increment = -1;
-  }
-
-  long row_increment {0};
-  if (row1 > row0) {
-    row_increment = 1;
-  } else if (row1 < row0) {
-    row_increment = -1;
-  }
-
-  long error {dCol - dRow};
-  long colAdjustment {dCol * 2};
-  long rowAdjustment {dRow * 2};
-  long currRow {row0};
-  long currCol {col0};
-  GridCell currCell(currCol, currRow);
-
-  std::vector<GridCell> lineOfCells;
-  while (currCell != c1) {
-    lineOfCells.emplace_back(currCell);
-    if (error > 0) {
-      currCol += col_increment;
-      error -= rowAdjustment;
-    } else if (error < 0) {
-      currRow += row_increment;
-      error += colAdjustment;
-    } else if (error == 0) {
-      currCol += col_increment;
-      error -= rowAdjustment;
-      currRow += row_increment;
-      error += colAdjustment;
-    }
-    currCell = GridCell(currCol, currRow);
-  }
-  lineOfCells.emplace_back(c1);
-  return lineOfCells;
-}
-
-
-double WaveNav::euclideanDist(const GridCell &c0, const GridCell &c1) {
-  long dRow = c0.getRow() - c1.getRow();
-  long dCol = c0.getCol() - c1.getCol();
-  auto dRowSq = static_cast<double>(dRow * dRow);
-  auto dColSq = static_cast<double>(dCol * dCol);
-  return sqrt(dRowSq + dColSq);
-}
-
-
-
 
 
 WaveNav::PathPlannerOutput findAnyPath(WaveNav &myNav,
