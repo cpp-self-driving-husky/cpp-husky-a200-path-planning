@@ -31,7 +31,8 @@ public:
   void changeOutPath(std::string newOutName);
   std::pair<std::vector<GridCell>, double> drawSmoothedPath();
   PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string& waveType);
-  void printCells(std::list<GridCell> cells);
+  static void printCells(const std::list<GridCell>& cells);
+  static void printCells(const std::vector<GridCell>& cells);
   void markCell(const GridCell& cell, long value);
   void markCells(const std::list<GridCell>& cells, long value);
   void markCells(const std::vector<GridCell> &cells, long value);

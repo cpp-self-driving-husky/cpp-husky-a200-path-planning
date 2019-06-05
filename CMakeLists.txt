@@ -19,7 +19,7 @@ add_library(pplibrary
         include/pathplanning/Coordinates.h
         )
 
-find_package(Boost 1.67.0 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)
 
 message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")

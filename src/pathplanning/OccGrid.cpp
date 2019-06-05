@@ -561,57 +561,85 @@ bool OccGrid::isInLine(const GridCell &c0, const GridCell &c1) {
  * Makes a vector of the GridCells that are traversed while making a straight
  * line between two GridCells. Uses Bresenham's algorithm.
  *
- * @param c0 source GridCell
- * @param c1 destination GridCell
+ * @param cell0 source GridCell
+ * @param cell1 destination GridCell
  * @return std::vector<GridCell> vector of GridCells, approximating a straight line between c0 and c1
  */
-std::vector<GridCell> OccGrid::drawLine(const GridCell &c0, const GridCell &c1) {
-  long col0 {c0.getCol()};
-  long col1 {c1.getCol()};
-  long row0 {c0.getRow()};
-  long row1 {c1.getRow()};
-  long dCol {llabs(col1 - col0)};
-  long dRow {llabs(row1 - row0)};
-
-  long col_increment {0};
-  if (col1 > col0) {
-    col_increment = 1;
-  } else if (col1 < col0) {
-    col_increment = -1;
-  }
-
-  long row_increment {0};
-  if (row1 > row0) {
-    row_increment = 1;
-  } else if (row1 < row0) {
-    row_increment = -1;
-  }
-
-  long error {dCol - dRow};
-  long colAdjustment {dCol * 2};
-  long rowAdjustment {dRow * 2};
-  long currRow {row0};
-  long currCol {col0};
-  GridCell currCell(currCol, currRow);
+std::vector<GridCell> OccGrid::drawLine(const GridCell &cell0, const GridCell &cell1) {
+  long c0 {cell0.getCol()};
+  long c1 {cell1.getCol()};
+  long r0 {cell0.getRow()};
+  long r1 {cell1.getRow()};
+  long dCol {llabs(c1 - c0)};
+  long dRow {llabs(r1 - r0)};
 
   std::vector<GridCell> lineOfCells;
-  while (currCell != c1) {
-    lineOfCells.emplace_back(currCell);
-    if (error > 0) {
-      currCol += col_increment;
-      error -= rowAdjustment;
-    } else if (error < 0) {
-      currRow += row_increment;
-      error += colAdjustment;
-    } else if (error == 0) {
-      currCol += col_increment;
-      error -= rowAdjustment;
-      currRow += row_increment;
-      error += colAdjustment;
+
+  if (dRow < dCol) {
+    if (c0 > c1) {
+      lineOfCells = drawLineLow(c1, r1, c0, r0);
+    } else {
+      lineOfCells = drawLineLow(c0, r0, c1, r1);
     }
-    currCell = GridCell(currCol, currRow);
+  } else {
+    if (r0 > r1) {
+      lineOfCells = drawLineHigh(c1, r1, c0, r0);
+    } else {
+      lineOfCells = drawLineHigh(c0, r0, c1, r1);
+    }
   }
-  lineOfCells.emplace_back(c1);
+  return lineOfCells;
+}
+
+
+std::vector<GridCell> OccGrid::drawLineLow(const long c0, const long r0, const long c1, const long r1) {
+  long dCol = c1 - c0;
+  long dRow = r1 - r0;
+  long rowIncrement = 1;
+  if (dRow < 0) {
+    rowIncrement = -1;
+    dRow *= -1;
+  }
+  long error = 2 * dRow - dCol;
+  long currRow = r0;
+
+  std::vector<GridCell> lineOfCells;
+
+  for (long currCol = c0; currCol <= c1; currCol++) {
+    lineOfCells.emplace_back(GridCell(currCol, currRow));
+    if (error > 0) {
+      currRow = currRow + rowIncrement;
+      error = error - 2 * dCol;
+    }
+    error = error + 2 * dRow;
+  }
+
+  return lineOfCells;
+}
+
+
+std::vector<GridCell> OccGrid::drawLineHigh(const long c0, const long r0, const long c1, const long r1) {
+  long dCol = c1 - c0;
+  long dRow = r1 - r0;
+  long colIncrement = 1;
+  if (dCol < 0) {
+    colIncrement = -1;
+    dCol *= -1;
+  }
+  long error = 2 * dCol - dRow;
+  long currCol = c0;
+
+  std::vector<GridCell> lineOfCells;
+
+  for (long currRow = r0; currRow <= r1; currRow++) {
+    lineOfCells.emplace_back(GridCell(currCol, currRow));
+    if (error > 0) {
+      currCol = currCol + colIncrement;
+      error = error - 2 * dRow;
+    }
+    error = error + 2 * dCol;
+  }
+
   return lineOfCells;
 }
 
