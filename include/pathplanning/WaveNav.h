@@ -47,12 +47,8 @@ private:
   void resetNavigator();
   void calcWayCells(const GridCell &start, const GridCell &goal);
   GridCell findNextCell(const GridCell &curr);
-  void smoothestPath();
   void smoothPath();
   long smoothPathHelper();
-  long smoothPathHelper2();
-  long smoothPathHelper3();
-  long smoothPathHelperReverse();
 };
 
 

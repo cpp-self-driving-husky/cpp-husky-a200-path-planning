@@ -427,7 +427,8 @@ void OccGrid::fitInGrid(GridCell &cell) {
 
 
 /**
- * Returns all neighboring cells. For layers == 1, it is the 8 immediate neighbors
+ * Returns a vector<GridCell> of a cell's neighborhood (includes cell itself).
+ * For layers == 1, it is the 8 immediate neighbors
  *
  * @param cell
  * @param layers - how many layers of neighbors to return
@@ -566,12 +567,12 @@ bool OccGrid::isInLine(const GridCell &c0, const GridCell &c1) {
  * @return std::vector<GridCell> vector of GridCells, approximating a straight line between c0 and c1
  */
 std::vector<GridCell> OccGrid::drawLine(const GridCell &cell0, const GridCell &cell1) {
-  long c0 {cell0.getCol()};
-  long c1 {cell1.getCol()};
-  long r0 {cell0.getRow()};
-  long r1 {cell1.getRow()};
-  long dCol {llabs(c1 - c0)};
-  long dRow {llabs(r1 - r0)};
+  const long c0 {cell0.getCol()};
+  const long c1 {cell1.getCol()};
+  const long r0 {cell0.getRow()};
+  const long r1 {cell1.getRow()};
+  const long dCol {llabs(c1 - c0)};
+  const long dRow {llabs(r1 - r0)};
 
   std::vector<GridCell> lineOfCells;
 
