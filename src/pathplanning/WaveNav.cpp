@@ -87,15 +87,15 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
 
   auto begin = std::chrono::high_resolution_clock::now();
   auto waveResult = (waveType == "Basic") ?
-      gridMap.propWavesBasic(goal, start, 5, 7) :
-      gridMap.propOFWF(goal, start, 5, 7);
+      gridMap.propWavesBasic(goal, start, 500, 707) :
+      gridMap.propOFWF(goal, start, 500, 707);
   auto stop = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - begin);
   toReturn.cpuTime = duration.count();
 
   GridCell finalCell = waveResult.first;
   toReturn.numCellsVisited = waveResult.second;
-  toReturn.initialPathLength = static_cast<double>(gridMap.get(finalCell)) / 5;
+  toReturn.initialPathLength = static_cast<double>(gridMap.get(finalCell)) / 500;
 
 
   if (OccGrid::isNear(finalCell, start)) {
@@ -108,7 +108,7 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
 
     gridMap.resetGrid();
     gridMap.inputGrid(outPath + "_1-scaled input map.pnm", 1.0);
-    smoothestPath();
+    smoothPath();
 
     auto pathResults = drawSmoothedPath();
     toReturn.smoothPathLength = pathResults.second;
@@ -234,147 +234,49 @@ GridCell WaveNav::findNextCell(const GridCell &curr) {
  *    (3) total path length is minimized
  *
  */
-void WaveNav::smoothestPath() {
-  smoothedPath = wayCells;
-  int oldNodeCount, newNodeCount;
+void WaveNav::smoothPath() {
+  smoothedPath.assign(wayCells.begin(), wayCells.end());
+  int oldNodeCount, newNodeCount, editCount;
   do {
     oldNodeCount = smoothedPath.size();
-    smoothPath();
+    smoothPathHelper();
     newNodeCount = smoothedPath.size();
-  } while (oldNodeCount != newNodeCount);
+    editCount = oldNodeCount - newNodeCount;
+  } while (editCount != 0);
 }
 
 
-void WaveNav::smoothPath() {
-  long editCount = 1;
-  while (editCount > 0) {
-    editCount = smoothPathHelper3();
-  }
-}
-
-
-long WaveNav::smoothPathHelper2() {
+long WaveNav::smoothPathHelper() {
   if (smoothedPath.size() < 3) {
     return 0;
   }
 
   long modificationCount {0};
   auto it0 = smoothedPath.begin();
-  auto it1 = smoothedPath.begin();
   auto it2 = smoothedPath.begin();
   auto it_end = smoothedPath.end();
-  it1++;
-  it2++;
-  it2++;
+//  it2++;
+//  it2++;
 
-  while ((it0 != it_end) && (it1 != it_end) && (it2 != it_end)) {
-    if (gridMap.isInLine(*it0, *it2)) {
-      it1 = smoothedPath.erase(it1);
+  while ((it0 != it_end) && (it2 != it_end)) {
+    if (smoothedPath.size() < 3) {
+      break;
+    }
+
+    it2++;
+    it2++;
+    while ((it2 != it_end) && (gridMap.isInLine(*it0, *it2))) {
+      it2++;
       modificationCount++;
-      it0++;
-      it1++;
-      it2++;
-      it2++;
-    } else {
-      it0++;
-      it0++;
-      it1++;
-      it1++;
-      it2++;
-      it2++;
     }
+    modificationCount--;
+    it2--;
+    it0++;
+    it0 = smoothedPath.erase(it0, it2);
   }
   return modificationCount;
 }
 
-
-long WaveNav::smoothPathHelper3() {
-  if (smoothedPath.size() < 3) {
-    return 0;
-  }
-
-  long modificationCount {0};
-  auto it0 = smoothedPath.begin();
-  auto it1 = smoothedPath.begin();
-  auto it2 = smoothedPath.begin();
-  auto it_end = smoothedPath.end();
-  it1++;
-  it2++;
-  it2++;
-
-  while ((it0 != it_end) && (it1 != it_end) && (it2 != it_end)) {
-    if (gridMap.isInLine(*it0, *it2)) {
-      while ((it2 != it_end) && (gridMap.isInLine(*it0, *it2))) {
-        it2++;
-      }
-      it2--;
-      it0 = smoothedPath.erase(it1, it2);
-      it1 = it0;
-      it2 = it0;
-      it1++;
-      it2++;
-      it2++;
-    } else {
-      auto line = OccGrid::drawLine(*it0, *it1);
-      auto line_it = line.begin();
-      while (line_it != line.end()) {
-        if (gridMap.isInLine(*line_it, *it2)) {
-          smoothedPath.insert(it1, *line_it);
-          smoothedPath.erase(it1);
-          modificationCount++;
-        }
-        ++line_it;
-      }
-      it0++;
-      it0++;
-      it1++;
-      it1++;
-      it2++;
-      it2++;
-    }
-  }
-  return modificationCount;
-}
-
-
-long WaveNav::smoothPathHelperReverse() {
-  if (smoothedPath.size() < 3) {
-    return 0;
-  }
-
-  long modificationCount {0};
-  auto it0 = smoothedPath.end();
-  auto it1 = smoothedPath.end();
-  auto it2 = smoothedPath.end();
-  auto it_begin = smoothedPath.begin();
-
-  it0--;
-  it1--;
-  it1--;
-  it2--;
-  it2--;
-  it2--;
-  while ((it0 != it_begin) && (it1 != it_begin) && (it2 != it_begin)) {
-    if (gridMap.isInLine(*it0, *it2)) {
-      smoothedPath.erase(it1);
-//      it1 = std::list<GridCell>::reverse_iterator(it);
-      modificationCount++;
-      it0--;
-      it1--;
-      it1--;
-      it2--;
-      it2--;
-    } else {
-      it0--;
-      it0--;
-      it1--;
-      it1--;
-      it2--;
-      it2--;
-    }
-  }
-  return modificationCount;
-}
 
 
 WaveNav::PathPlannerOutput findAnyPath(WaveNav &myNav,
@@ -398,34 +300,34 @@ void printOutput(const WaveNav::PathPlannerOutput& out) {
 
 int main() {
 
-  GridCell c1 = GridCell(10, 15);
-  GridCell c0 = GridCell(20, 70);
-
-  WaveNav::printCells(OccGrid::drawLine(c0, c1));
-
-
-//  boost::filesystem::path p{"output/"};
-//  boost::filesystem::create_directory(p);
+//  GridCell c1 = GridCell(10, 15);
+//  GridCell c0 = GridCell(10, 70);
 //
-//
-//  Point topLeft {8, 6};
-//  Point bottomRight {185, 183};
-//  Point bottomLeft {12, 175};
-//  Point midRight {180, 90};
-//  Point midLeft {10, 90};
-//
+//  WaveNav::printCells(OccGrid::drawLine(c0, c1));
+
+
+  boost::filesystem::path p{"output/"};
+  boost::filesystem::create_directory(p);
+
+
+  Point topLeft {8, 6};
+  Point bottomRight {185, 183};
+  Point bottomLeft {12, 175};
+  Point midRight {180, 90};
+  Point midLeft {10, 90};
+
 //  try {
 //    std::cout << "\ntest1\n";
-//    WaveNav myNav1("../bitmaps/2dmap-test1.pnm", "test1.1_OFWF");
+//    WaveNav myNav1("../bitmaps/2dmap-test1.pnm", "output/test1.1_OFWF");
 //    WaveNav::PathPlannerOutput path11o = findAnyPath(myNav1, "OFWF", topLeft, bottomRight);
 //    printOutput(path11o);
-//    myNav1.changeOutPath("test1.1_Basic");
+//    myNav1.changeOutPath("output/test1.1_Basic");
 //    WaveNav::PathPlannerOutput path11b = findAnyPath(myNav1, "Basic", topLeft, bottomRight);
 //    printOutput(path11b);
-//    myNav1.changeOutPath("test1.2_OFWF");
+//    myNav1.changeOutPath("output/test1.2_OFWF");
 //    WaveNav::PathPlannerOutput path12o = findAnyPath(myNav1, "OFWF", bottomLeft, midRight);
 //    printOutput(path12o);
-//    myNav1.changeOutPath("test1.2_Basic");
+//    myNav1.changeOutPath("output/test1.2_Basic");
 //    WaveNav::PathPlannerOutput path12b = findAnyPath(myNav1, "Basic", bottomLeft, midRight);
 //    printOutput(path12b);
 //  } catch (std::runtime_error& e) {
@@ -456,7 +358,7 @@ int main() {
 //  } catch (std::runtime_error &e) {
 //    std::cout << e.what() << std::endl;
 //  }
-////
+//
 //  try {
 //    std::cout << "\ntest3\n";
 //    WaveNav myNav3("../bitmaps/2dmap-test3.pnm", "output/test3.1_OFWF");
@@ -474,78 +376,62 @@ int main() {
 //  } catch (std::runtime_error &e) {
 //    std::cout << e.what() << std::endl;
 //  }
-//
-//  try {
-//    std::cout << "\ntest4\n";
-//    WaveNav myNav4("../bitmaps/2dmap-test4.pnm", "output/test4.1_OFWF");
-//    WaveNav::PathPlannerOutput path41o = findAnyPath(myNav4, "OFWF", topLeft, bottomRight);
-//    printOutput(path41o);
-//    myNav4.changeOutPath("output/test4.1_Basic");
-//    WaveNav::PathPlannerOutput path41b = findAnyPath(myNav4, "Basic", topLeft, bottomRight);
-//    printOutput(path41b);
-//    myNav4.changeOutPath("output/test4.2_OFWF");
-//    WaveNav::PathPlannerOutput path42o = findAnyPath(myNav4, "OFWF", midRight, midLeft);
-//    printOutput(path42o);
-//    myNav4.changeOutPath("output/test4.2_Basic");
-//    WaveNav::PathPlannerOutput path42b = findAnyPath(myNav4, "Basic", midRight, midLeft);
-//    printOutput(path42b);
-//  } catch (std::runtime_error &e) {
-//    std::cout << e.what() << std::endl;
-//  }
 
-//  try {
-//    std::cout << "\ntest5\n";
-//    WaveNav myNav5("../bitmaps/2dmap-test5.pnm", "output/test5.1_OFWF");
-//    WaveNav::PathPlannerOutput path51o = findAnyPath(myNav5, "OFWF", topLeft, bottomRight);
-//    printOutput(path51o);
-//    myNav5.changeOutPath("output/test5.1_Basic");
-//    WaveNav::PathPlannerOutput path51b = findAnyPath(myNav5, "Basic", topLeft, bottomRight);
-//    printOutput(path51b);
-//    myNav5.changeOutPath("output/test5.2_OFWF");
-//    WaveNav::PathPlannerOutput path52o = findAnyPath(myNav5, "OFWF", bottomLeft, midRight);
-//    printOutput(path52o);
-//    myNav5.changeOutPath("output/test5.2_Basic");
-//    WaveNav::PathPlannerOutput path52b = findAnyPath(myNav5, "Basic", bottomLeft, midRight);
-//    printOutput(path52b);
-//  } catch (std::runtime_error &e) {
-//    std::cout << e.what() << std::endl;
-//  }
+  try {
+    std::cout << "\ntest4\n";
+    WaveNav myNav4("../bitmaps/2dmap-test4.pnm", "output/test4.1_OFWF");
+    WaveNav::PathPlannerOutput path41o = findAnyPath(myNav4, "OFWF", topLeft, bottomRight);
+    printOutput(path41o);
+    myNav4.changeOutPath("output/test4.1_Basic");
+    WaveNav::PathPlannerOutput path41b = findAnyPath(myNav4, "Basic", topLeft, bottomRight);
+    printOutput(path41b);
+    myNav4.changeOutPath("output/test4.2_OFWF");
+    WaveNav::PathPlannerOutput path42o = findAnyPath(myNav4, "OFWF", midRight, midLeft);
+    printOutput(path42o);
+    myNav4.changeOutPath("output/test4.2_Basic");
+    WaveNav::PathPlannerOutput path42b = findAnyPath(myNav4, "Basic", midRight, midLeft);
+    printOutput(path42b);
+  } catch (std::runtime_error &e) {
+    std::cout << e.what() << std::endl;
+  }
 
-//  try {
-//    std::cout << "\ntest6\n";
-//    WaveNav myNav6("../bitmaps/2dmap-test6.pnm", "output/test6.1_OFWF");
-//    WaveNav::PathPlannerOutput path61o = findAnyPath(myNav6, "OFWF", topLeft, bottomRight);
-//    printOutput(path61o);
-//    myNav6.changeOutPath("output/test6.1_Basic");
-//    WaveNav::PathPlannerOutput path61b = findAnyPath(myNav6, "Basic", topLeft, bottomRight);
-//    printOutput(path61b);
-//    myNav6.changeOutPath("output/test6.2_OFWF");
-//    WaveNav::PathPlannerOutput path62o = findAnyPath(myNav6, "OFWF", bottomLeft, midRight);
-//    printOutput(path62o);
-//    myNav6.changeOutPath("output/test6.2_Basic");
-//    WaveNav::PathPlannerOutput path62b = findAnyPath(myNav6, "Basic", bottomLeft, midRight);
-//    printOutput(path62b);
-//  } catch (std::runtime_error &e) {
-//    std::cout << e.what() << std::endl;
-//  }
+  try {
+    std::cout << "\ntest5\n";
+    WaveNav myNav5("../bitmaps/2dmap-test5.pnm", "output/test5.1_OFWF");
+    WaveNav::PathPlannerOutput path51o = findAnyPath(myNav5, "OFWF", topLeft, bottomRight);
+    printOutput(path51o);
+    myNav5.changeOutPath("output/test5.1_Basic");
+    WaveNav::PathPlannerOutput path51b = findAnyPath(myNav5, "Basic", topLeft, bottomRight);
+    printOutput(path51b);
+    myNav5.changeOutPath("output/test5.2_OFWF");
+    WaveNav::PathPlannerOutput path52o = findAnyPath(myNav5, "OFWF", bottomLeft, midRight);
+    printOutput(path52o);
+    myNav5.changeOutPath("output/test5.2_Basic");
+    WaveNav::PathPlannerOutput path52b = findAnyPath(myNav5, "Basic", bottomLeft, midRight);
+    printOutput(path52b);
+  } catch (std::runtime_error &e) {
+    std::cout << e.what() << std::endl;
+  }
 
-//  try {
-//    std::cout << "\ntest 2d map01\n";
-//    WaveNav myNav1("../bitmaps/2dmap-01.pnm", "2dmap1.1_OFWF");
-//    WaveNav::PathPlannerOutput path11o = findAnyPath(myNav1, "OFWF", topLeft, bottomRight);
-//    printOutput(path11o);
-//    myNav1.changeOutPath("2dmap1.1_Basic");
-//    WaveNav::PathPlannerOutput path11b = findAnyPath(myNav1, "Basic", topLeft, bottomRight);
-//    printOutput(path11b);
-//    myNav1.changeOutPath("2dmap1.2_OFWF");
-//    WaveNav::PathPlannerOutput path12o = findAnyPath(myNav1, "OFWF", bottomLeft, midRight);
-//    printOutput(path12o);
-//    myNav1.changeOutPath("2dmap1.2_Basic");
-//    WaveNav::PathPlannerOutput path12b = findAnyPath(myNav1, "Basic", bottomLeft, midRight);
-//    printOutput(path12b);
-//  } catch (std::runtime_error &e) {
-//    std::cout << e.what() << std::endl;
-//  }
+  try {
+    std::cout << "\ntest6\n";
+    WaveNav myNav6("../bitmaps/2dmap-test6.pnm", "output/test6.1_OFWF");
+    WaveNav::PathPlannerOutput path61o = findAnyPath(myNav6, "OFWF", topLeft, bottomRight);
+    printOutput(path61o);
+    myNav6.changeOutPath("output/test6.1_Basic");
+    WaveNav::PathPlannerOutput path61b = findAnyPath(myNav6, "Basic", topLeft, bottomRight);
+    printOutput(path61b);
+    myNav6.changeOutPath("output/test6.2_OFWF");
+    WaveNav::PathPlannerOutput path62o = findAnyPath(myNav6, "OFWF", bottomLeft, midRight);
+    printOutput(path62o);
+    myNav6.changeOutPath("output/test6.2_Basic");
+    WaveNav::PathPlannerOutput path62b = findAnyPath(myNav6, "Basic", bottomLeft, midRight);
+    printOutput(path62b);
+  } catch (std::runtime_error &e) {
+    std::cout << e.what() << std::endl;
+  }
+
+
 
 }
 
