@@ -59,7 +59,9 @@ public:
   static bool isNear(const GridCell &c1, const GridCell &c2);
   static std::vector<GridCell> drawLine(const GridCell &cell0, const GridCell &cell1);
   static double euclideanDist(const GridCell &c0, const GridCell &c1);
-
+  void markCell(const GridCell& cell, long value);
+  void markCells(const std::list<GridCell>& cells, long value);
+  void markCells(const std::vector<GridCell> &cells, long value);
 
 private:
   std::vector<std::vector<long> > grid;
