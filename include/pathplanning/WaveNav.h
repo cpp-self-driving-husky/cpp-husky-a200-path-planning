@@ -34,9 +34,6 @@ public:
   PathPlannerOutput planPath(GPS &start, GPS &goal, const std::string& waveType);
   static void printCells(const std::list<GridCell>& cells);
   static void printCells(const std::vector<GridCell>& cells);
-  void markCell(const GridCell& cell, long value);
-  void markCells(const std::list<GridCell>& cells, long value);
-  void markCells(const std::vector<GridCell> &cells, long value);
 
 private:
   std::string mapfilename;

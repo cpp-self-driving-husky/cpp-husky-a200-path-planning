@@ -5,6 +5,7 @@
  * file: OccGrid.cpp
  */
 
+#include <vector>
 #include <boost/filesystem.hpp>
 #include <unordered_map>
 #include <list>
@@ -641,7 +642,23 @@ double OccGrid::euclideanDist(const GridCell &c0, const GridCell &c1) {
 }
 
 
+void OccGrid::markCell(const GridCell &cell, long value) {
+  set(cell, value);
+}
 
+
+void OccGrid::markCells(const std::list<GridCell> &cells, long value) {
+  for (const auto &cell : cells) {
+    set(cell, value);
+  }
+}
+
+
+void OccGrid::markCells(const std::vector<GridCell> &cells, long value) {
+  for (const auto &cell : cells) {
+    set(cell, value);
+  }
+}
 
 
 // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
@@ -713,4 +730,6 @@ double longitudeToX(double longitude) {
 double latitudeToY(double latitude) {
   return HEIGHT_METERS * (MAX_LAT - latitude) / (MAX_LAT - MIN_LAT);
 }
+
+
 

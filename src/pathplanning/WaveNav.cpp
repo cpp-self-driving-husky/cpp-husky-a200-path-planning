@@ -63,9 +63,7 @@ std::pair<std::vector<GridCell>, double> WaveNav::drawSmoothedPath() {
   double pathLength = 0.0;
 
   while (it1 != smoothedPath.end()) {
-    for (const auto &cell : OccGrid::drawLine(*it0, *it1)) {
-      markCell(cell, 190);
-    }
+    debugGrid.markCells(OccGrid::drawLine(*it0, *it1), 190);
     pathLength += OccGrid::euclideanDist(*it0, *it1);
     it0++;
     it1++;
@@ -101,7 +99,7 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
 
   if (finalCell.equals(start)) {
     calcWayCells(finalCell, goal);
-    markCells(wayCells, 120);
+    debugGrid.markCells(wayCells, 120);
     debugGrid.outputDebugGrid(outPath + "_2-initialpath.pnm");
     debugGrid = OccGrid(outPath + "_1-scaled input map.pnm", 1.0);
     debugGrid.convertToDebugGrid();
@@ -113,9 +111,9 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
 
     auto pathResults = drawSmoothedPath();
     toReturn.smoothPathLength = pathResults.second;
-    markCells(pathResults.first, 190);
+    debugGrid.markCells(pathResults.first, 190);
     for (const auto &cell : smoothedPath) {
-      markCells(OccGrid::getNeighborhood(cell, 1l), 2);
+      debugGrid.markCells(OccGrid::getNeighborhood(cell, 1l), 2);
     }
 
     debugGrid.outputDebugGrid(outPath + "_3-smoothpath.pnm");
@@ -151,25 +149,6 @@ void WaveNav::printCells(const std::list<GridCell>& cells) {
 void WaveNav::printCells(const std::vector<GridCell>& cells) {
   for (const auto &cell : cells) {
     std::cout << "        " << cell.toString() << std::endl;
-  }
-}
-
-
-void WaveNav::markCell(const GridCell & cell, long value) {
-  debugGrid.set(cell, value);
-}
-
-
-void WaveNav::markCells(const std::list<GridCell>& cells, long value) {
-  for (const auto &cell : cells) {
-    debugGrid.set(cell, value);
-  }
-}
-
-
-void WaveNav::markCells(const std::vector<GridCell>& cells, long value) {
-  for (const auto &cell : cells) {
-    debugGrid.set(cell, value);
   }
 }
 
@@ -265,6 +244,7 @@ void WaveNav::smoothPath() {
 
 
 long WaveNav::smoothPathHelper() {
+  std::cout << "smoothPathHelper\n";
   if (smoothedPath.size() < 3) {
     return 0;
   }
@@ -293,9 +273,6 @@ long WaveNav::smoothPathHelper() {
 }
 
 
-
-
-
 WaveNav::PathPlannerOutput findAnyPath(WaveNav& myNav,
                                        const std::string& waveOption,
                                        Point& startC,
@@ -308,9 +285,10 @@ WaveNav::PathPlannerOutput findAnyPath(WaveNav& myNav,
 
 void printOutput(const WaveNav::PathPlannerOutput& out) {
   std::cout << out.waveType << ": \n    cells visited = " << out.numCellsVisited
+            << "\n    CPU time = " << out.cpuTime
             << "\n    initial path length = " << out.initialPathLength
-            << "\n    smoothed path length = " << out.smoothPathLength
-            << "\n    CPU time = " << out.cpuTime << std::endl;
+            << "\n    smoothed path length = " << out.smoothPathLength << std::endl;
+
 }
 
 
