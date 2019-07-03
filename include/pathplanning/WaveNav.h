@@ -25,30 +25,34 @@ public:
     double smoothPathLength;
     double cpuTime;
   };
-  WaveNav();
   WaveNav(std::string filename, std::string outName);
   ~WaveNav();
-  void changeOutPath(std::string newOutName);
+  void changeOutPath(std::string newOutPath);
   std::pair<std::vector<GridCell>, double> drawSmoothedPath();
   PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string& waveType);
+  PathPlannerOutput planPath(Point &start, Point &goal, const std::string& waveType);
+  PathPlannerOutput planPath(GPS &start, GPS &goal, const std::string& waveType);
   static void printCells(const std::list<GridCell>& cells);
   static void printCells(const std::vector<GridCell>& cells);
   void markCell(const GridCell& cell, long value);
   void markCells(const std::list<GridCell>& cells, long value);
   void markCells(const std::vector<GridCell> &cells, long value);
 
-  OccGrid gridMap;
 private:
+  std::string mapfilename;
   std::string outPath;
+  OccGrid gridMap;
+  OccGrid debugGrid;
   std::list<GridCell> wayCells;
   std::list<GridCell> smoothedPath;
-  OccGrid debugGrid;
-  std::string mapfilename;
-  void resetNavigator();
+  std::unordered_map<std::string, Point> destinations;
+
+  void initializeNavigator();
   void calcWayCells(const GridCell &start, const GridCell &goal);
   GridCell findNextCell(const GridCell &curr);
   void smoothPath();
   long smoothPathHelper();
+  void loadDestinations(std::string& filename);
 };
 
 

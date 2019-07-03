@@ -14,6 +14,7 @@
 #include <queue>
 #include <chrono>
 #include <unordered_map>
+#include <vector>
 
 #include "../../include/pathplanning/Coordinates.h"
 #include "../../include/pathplanning/OccGrid.h"
@@ -40,35 +41,33 @@ class OccGrid {
 
 public:
   OccGrid();
+  OccGrid(const std::string &filename, double mapScale);
   virtual ~OccGrid();
-  void inputGrid(std::string filename, double mapScale);
-  void convertToDebugGrid();
-  void outputGrid(const std::string &filename);
-  void outputDebugGrid(const std::string &filename);
-  void resetGrid();
   long get(long col, long row);
   long get(const GridCell &cell);
   void set(const GridCell &cell, long value);
+  void convertToDebugGrid();
+  void outputGrid(const std::string &filename);
+  void outputDebugGrid(const std::string &filename);
+  void outputWaves(const std::string &filename, const std::string &color);
   void growGrid(double radius);
   std::pair<GridCell, long> propWavesBasic(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
   std::pair<GridCell, long> propOFWF(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
   static std::vector<GridCell> getNeighborhood(const GridCell &cell, long layers);
   void normCell(GridCell &cell);
+  bool isInLine(const GridCell &c1, const GridCell &c2);
   static bool isNear(const GridCell &c1, const GridCell &c2);
   static std::vector<GridCell> drawLine(const GridCell &cell0, const GridCell &cell1);
   static double euclideanDist(const GridCell &c0, const GridCell &c1);
-  bool isInLine(const GridCell &c1, const GridCell &c2);
 
-protected:
-  long maxVal {};
-  char inputLine1[80] {};
-  std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> grid {};
 
 private:
+  std::vector<std::vector<long> > grid;
   void setWeight(GridCell &cell, long orthoDist, long diagDist);
   GridCell findClosestFreeCell(GridCell &cell);
   std::pair<long, GridCell> findFree(GridCell &cell, const std::string &direction);
   void fitInGrid(GridCell &cell);
+  long findMaxDistance();
   static std::vector<GridCell> drawLineLow(const long c0, const long r0, const long c1, const long r1);
   static std::vector<GridCell> drawLineHigh(const long c0, const long r0, const long c1, const long r1);
 };

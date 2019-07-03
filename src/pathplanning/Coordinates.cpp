@@ -20,12 +20,12 @@ Point::Point(double x, double y) : xCoord(x), yCoord(y) {
 }
 
 
-double Point::getX() const {
+double Point::x() const {
   return xCoord;
 }
 
 
-double Point::getY() const {
+double Point::y() const {
   return yCoord;
 }
 
@@ -50,8 +50,8 @@ long GridCell::getRow() const {
 }
 
 
-void GridCell::setRow(long row) {
-  GridCell::row = row;
+void GridCell::setRow(long newRow) {
+  GridCell::row = newRow;
 }
 
 
@@ -60,12 +60,12 @@ long GridCell::getCol() const {
 }
 
 
-void GridCell::setCol(long col) {
-  GridCell::col = col;
+void GridCell::setCol(long newCol) {
+  GridCell::col = newCol;
 }
 
 
-bool GridCell::equals(const GridCell cell) const {
+bool GridCell::equals(const GridCell& cell) const {
   return (col == cell.getCol() && row == cell.getRow());
 }
 

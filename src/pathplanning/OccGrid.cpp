@@ -5,8 +5,6 @@
  * file: OccGrid.cpp
  */
 
-#include "../../include/pathplanning/OccGrid.h"
-#include "../../include/pathplanning/WaveNav.h"
 #include <boost/filesystem.hpp>
 #include <unordered_map>
 #include <list>
@@ -22,6 +20,9 @@
 #include <cstring>
 #include <utility>
 
+#include "../../include/pathplanning/OccGrid.h"
+#include "../../include/pathplanning/WaveNav.h"
+
 
 class CompareGreater {
 public:
@@ -36,14 +37,23 @@ public:
   }
 };
 
-OccGrid::OccGrid() = default;
 
-OccGrid::~OccGrid() = default;
+OccGrid::OccGrid() {
+  grid.resize(GRID_HEIGHT);
+  for (auto &row : grid) {
+    row.resize(GRID_WIDTH, 0);
+  }
+}
 
-void OccGrid::inputGrid(const std::string filename, const double mapScale = SCALE_MAP) {
-  resetGrid();
+
+OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
+  grid.resize(GRID_HEIGHT);
+  for (auto & row : grid) {
+    row.resize(GRID_WIDTH, 0);
+  }
+
   long inRow, inCol;
-  long inputWidth, inputHeight;
+  long inputWidth, inputHeight, maxVal;
   std::string fileFormat;
   std::ifstream ifs;
   ifs.open(filename.c_str(), std::ifstream::in);
@@ -78,6 +88,24 @@ void OccGrid::inputGrid(const std::string filename, const double mapScale = SCAL
     }
   }
   ifs.close();
+}
+
+
+OccGrid::~OccGrid() = default;
+
+
+long OccGrid::get(long col, long row) {
+  return grid[row][col];
+}
+
+
+long OccGrid::get(const GridCell &cell) {
+  return OccGrid::get(cell.getCol(), cell.getRow());
+}
+
+
+void OccGrid::set(const GridCell &cell, long value) {
+  grid[cell.getRow()][cell.getCol()] = value;
 }
 
 
@@ -134,24 +162,33 @@ void OccGrid::outputDebugGrid(const std::string& filename) {
   outFile.close();
 }
 
-void OccGrid::resetGrid() {
-  for (auto &row : grid) {
-    row.fill(0);
+
+void OccGrid::outputWaves(const std::string &filename, const std::string &color) {
+  std::ofstream outFile(filename.c_str(), std::ofstream::out);
+  outFile << "P3" << std::endl;
+  outFile << GRID_WIDTH << " " << GRID_HEIGHT << std::endl << 255 << std::endl;
+
+  long maxDistance = findMaxDistance();
+  double tintMultiplier = 255.0 / maxDistance;
+  long tintColor;
+
+  for (long row = 0; row < GRID_HEIGHT; ++row) {
+    for (long col = 0; col < GRID_WIDTH; ++col) {
+      if (grid[row][col] == 1) {
+        outFile << 0 << " " << 0 << " " << 0 << " ";
+      } else {
+        tintColor = static_cast<long>((maxDistance - grid[row][col]) * tintMultiplier);
+        if (color == "R") {
+          outFile << 255 << " " << tintColor << " " << tintColor << " ";
+        }
+        if (color == "B") {
+          outFile << tintColor << " " << tintColor << " " << 255 << " ";
+        }
+      }
+    }
   }
+  outFile.close();
 }
-
-long OccGrid::get(long col, long row) {
-  return grid[row][col];
-}
-
-long OccGrid::get(const GridCell& cell) {
-  return OccGrid::get(cell.getCol(), cell.getRow());
-}
-
-void OccGrid::set(const GridCell& cell, long value) {
-  grid[cell.getRow()][cell.getCol()] = value;
-}
-
 
 /**
  * Expands obstacle boundaries by a certain radius. This is done so that the robot
@@ -169,7 +206,11 @@ void OccGrid::growGrid(double radius) {
   growSize = std::max(growH, growV);
 
   // create a new 2d array to hold the result of grow.
-  std::array<std::array<long, GRID_WIDTH>, GRID_HEIGHT> result {};
+  std::vector<std::vector<long> > result;
+  result.resize(GRID_HEIGHT);
+  for (auto &row : result) {
+    row.resize(GRID_WIDTH, 0);
+  }
 
   // loop through grid, looking for 1, then growing them on result
   long row, col;
@@ -183,7 +224,7 @@ void OccGrid::growGrid(double radius) {
     }
   }
   // deep copy values from result long grid
-  std::copy(&result[0][0], &result[0][0] + GRID_HEIGHT * GRID_WIDTH, &grid[0][0]);
+  grid = result;
 }
 
 
@@ -199,12 +240,13 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
 //  std::cout << "       start = (c: " << start.getCol() << ", r: " << start.getRow() << ")";
 //  std::cout << "    goal = (c: " << goal.getCol() << ", r: " << goal.getRow() << ")\n" << std::endl;
 
-  GridCell currCell;
   std::queue<GridCell> waveQ;
 
   // set goal cell value to 2
   set(goal, 2);
   waveQ.push(goal);
+
+  GridCell currCell;
 
   // if waveQ.empty(), wave has stopped propagating before the start cell was reached.
   // goal is unreachable from start
@@ -218,8 +260,8 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
         setWeight(neighbor, orthoDist, diagDist);
         waveQ.emplace(neighbor);
 
-        // once we've enqueued a cell near the start cell, we're done
-        if (isNear(start, neighbor)) {
+        // once we've enqueued the start cell, we're done
+        if (start.equals(neighbor)) {
           return std::make_pair(neighbor, numCellsVisited);
         }
       }
@@ -270,12 +312,16 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
         setWeight(neighbor, orthoDist, diagDist);
         dx = static_cast<double>(std::labs(neighbor.getCol() - start.getCol()));
         dy = static_cast<double>(std::labs(neighbor.getRow() - start.getRow()));
-        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
+//        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
+//        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
+        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) * 0.9999;
         cost = static_cast<double>(get(neighbor)) + heuristic;
+
+        // Use cost to set priority of neighbor.
         waveQ.emplace(cost, neighbor);
 
-        // once we've enqueued a cell near the start cell, we're done
-        if (isNear(start, neighbor)) {
+        // once we've enqueued the start cell, we're done
+        if (start.equals(neighbor)) {
           return std::make_pair(neighbor, numCellsVisited);
         }
       }
@@ -311,6 +357,7 @@ void OccGrid::setWeight(GridCell &cell, long orthoDist, long diagDist) {
   }
 }
 
+
 /**
  * Tests if GridCells c1 and c2 are near each other. c1 is near c2 if it is within c2's depth-2 square neighborhood.
  * -  -  -  -  -  -  -
@@ -328,6 +375,7 @@ void OccGrid::setWeight(GridCell &cell, long orthoDist, long diagDist) {
 bool OccGrid::isNear(const GridCell &c1, const GridCell &c2) {
   return ((std::abs(c1.getCol() - c2.getCol()) <= 2) && (std::abs(c1.getRow() - c2.getRow()) <= 2));
 }
+
 
 /**
  * Finds the closest open GridCell. Use when a start or goal Point lies within obstacles.
@@ -426,9 +474,19 @@ void OccGrid::fitInGrid(GridCell &cell) {
 }
 
 
+long OccGrid::findMaxDistance() {
+  std::vector<long> rowMaxValues;
+  for (auto &row : grid) {
+    rowMaxValues.emplace_back(*std::max_element(row.begin(), row.end()));
+  }
+
+  return *std::max_element(rowMaxValues.begin(), rowMaxValues.end());
+}
+
+
 /**
  * Returns a vector<GridCell> of a cell's neighborhood (includes cell itself).
- * For layers == 1, it is the 8 immediate neighbors
+ * For layers == 1, a neighborhood includes 9 cells (8 immediate neighbors + cell itself)
  *
  * @param cell
  * @param layers - how many layers of neighbors to return
@@ -452,94 +510,6 @@ std::vector<GridCell> OccGrid::getNeighborhood(const GridCell &cell, long layers
 }
 
 
-// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-//                  Conversion Functions
-// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-
-GridCell pointToCell(const Point &pt) {
-  return GridCell(xToCol(pt.getX()), yToRow(pt.getY()));
-}
-
-
-GPS pointToGPS(const Point &pt) {
-  return GPS(xToLongitude(pt.getX()), yToLatitude(pt.getY()));
-}
-
-
-Point cellToPoint(const GridCell &cell) {
-  return Point(colToX(cell.getCol()), rowToY(cell.getRow()));
-}
-
-
-GPS cellToGPS(const GridCell &cell) {
-  return pointToGPS(Point(colToX(cell.getCol()), rowToY(cell.getRow())));
-}
-
-
-GridCell gpsToCell(const GPS &gps) {
-  GridCell c = pointToCell(gpsToPoint(gps));
-  std::cout << gps.toString() << " --> " << c.toString() << std::endl;
-  return c;
-}
-
-
-Point gpsToPoint(const GPS &gps) {
-  double longitude = gps.getLong();
-  double latitude = gps.getLat();
-  double widthLong = MAX_LONG - MIN_LONG;
-  double heightLat = MAX_LAT - MIN_LAT;
-  double x = ((longitude - MIN_LONG) / widthLong) * WIDTH_METERS;
-  double y = ((MAX_LAT - latitude) / heightLat) * HEIGHT_METERS;
-  return Point(x, y);
-}
-
-
-long xToCol(double x) {
-  return static_cast<long>((static_cast<double>(GRID_WIDTH) / WIDTH_METERS) * x);
-}
-
-
-long yToRow(double y) {
-  return static_cast<long>((static_cast<double>(GRID_HEIGHT) / HEIGHT_METERS) * y);
-}
-
-
-double colToX(long n) {
-  double metersPerCol = WIDTH_METERS / static_cast<double>(GRID_WIDTH);
-  return metersPerCol * n;
-}
-
-
-double rowToY(long m) {
-  double metersPerRow = HEIGHT_METERS / static_cast<double>(GRID_HEIGHT);
-  return metersPerRow * m;
-}
-
-
-double xToLongitude(double x) {
-  double widthLong = MAX_LONG - MIN_LONG;
-  double longitude = ((x / WIDTH_METERS) * widthLong) + MIN_LONG;
-  return longitude;
-}
-
-
-double yToLatitude(double y) {
-  double heightLat = MAX_LAT - MIN_LAT;
-  double latitude = ((1 - (y / HEIGHT_METERS)) * heightLat) + MIN_LAT;
-  return latitude;
-}
-
-
-double longitudeToX(double longitude) {
-  return WIDTH_METERS * (longitude - MIN_LONG) / (MAX_LONG - MIN_LONG);
-}
-
-
-double latitudeToY(double latitude) {
-  return HEIGHT_METERS * (MAX_LAT - latitude) / (MAX_LAT - MIN_LAT);
-}
-
-
 /**
  * Checks to see if there is a clear line of sight between c0 and c1.
  *
@@ -559,8 +529,7 @@ bool OccGrid::isInLine(const GridCell &c0, const GridCell &c1) {
 
 
 /**
- * Makes a vector of the GridCells that are traversed while making a straight
- * line between two GridCells. Uses Bresenham's algorithm.
+ * Bresenham's algorithm for approximating a straight line between 2 cells on a grid.
  *
  * @param cell0 source GridCell
  * @param cell1 destination GridCell
@@ -593,6 +562,15 @@ std::vector<GridCell> OccGrid::drawLine(const GridCell &cell0, const GridCell &c
 }
 
 
+/**
+ * Helper function for drawLine for cases where the slope of the line is < 1.
+ *
+ * @param c0
+ * @param r0
+ * @param c1
+ * @param r1
+ * @return
+ */
 std::vector<GridCell> OccGrid::drawLineLow(const long c0, const long r0, const long c1, const long r1) {
   long dCol = c1 - c0;
   long dRow = r1 - r0;
@@ -619,6 +597,15 @@ std::vector<GridCell> OccGrid::drawLineLow(const long c0, const long r0, const l
 }
 
 
+/**
+ * Helper function for drawLine for cases where the slope of the line is > 1 (steep).
+ *
+ * @param c0
+ * @param r0
+ * @param c1
+ * @param r1
+ * @return
+ */
 std::vector<GridCell> OccGrid::drawLineHigh(const long c0, const long r0, const long c1, const long r1) {
   long dCol = c1 - c0;
   long dRow = r1 - r0;
@@ -652,3 +639,78 @@ double OccGrid::euclideanDist(const GridCell &c0, const GridCell &c1) {
   auto dColSq = static_cast<double>(dCol * dCol);
   return sqrt(dRowSq + dColSq);
 }
+
+
+
+
+
+// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+//                  Conversion Functions
+// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+
+GridCell pointToCell(const Point &pt) {
+  return GridCell(xToCol(pt.x()), yToRow(pt.y()));
+}
+
+GPS pointToGPS(const Point &pt) {
+  return GPS(xToLongitude(pt.x()), yToLatitude(pt.y()));
+}
+
+Point cellToPoint(const GridCell &cell) {
+  return Point(colToX(cell.getCol()), rowToY(cell.getRow()));
+}
+
+GPS cellToGPS(const GridCell &cell) {
+  return pointToGPS(cellToPoint(cell));
+}
+
+GridCell gpsToCell(const GPS &gps) {
+  return pointToCell(gpsToPoint(gps));
+}
+
+Point gpsToPoint(const GPS &gps) {
+  double longitude = gps.getLong();
+  double latitude = gps.getLat();
+  double widthLong = MAX_LONG - MIN_LONG;
+  double heightLat = MAX_LAT - MIN_LAT;
+  double x = ((longitude - MIN_LONG) / widthLong) * WIDTH_METERS;
+  double y = ((MAX_LAT - latitude) / heightLat) * HEIGHT_METERS;
+  return Point(x, y);
+}
+
+long xToCol(double x) {
+  return static_cast<long>((static_cast<double>(GRID_WIDTH) / WIDTH_METERS) * x);
+}
+
+long yToRow(double y) {
+  return static_cast<long>((static_cast<double>(GRID_HEIGHT) / HEIGHT_METERS) * y);
+}
+
+double colToX(long n) {
+  double metersPerCol = WIDTH_METERS / static_cast<double>(GRID_WIDTH);
+  return metersPerCol * (n + 0.5);
+}
+
+double rowToY(long m) {
+  double metersPerRow = HEIGHT_METERS / static_cast<double>(GRID_HEIGHT);
+  return metersPerRow * (m + 0.5);
+}
+
+double xToLongitude(double x) {
+  double widthLong = MAX_LONG - MIN_LONG;
+  return ((x / WIDTH_METERS) * widthLong) + MIN_LONG;
+}
+
+double yToLatitude(double y) {
+  double heightLat = MAX_LAT - MIN_LAT;
+  return ((1 - (y / HEIGHT_METERS)) * heightLat) + MIN_LAT;
+}
+
+double longitudeToX(double longitude) {
+  return WIDTH_METERS * (longitude - MIN_LONG) / (MAX_LONG - MIN_LONG);
+}
+
+double latitudeToY(double latitude) {
+  return HEIGHT_METERS * (MAX_LAT - latitude) / (MAX_LAT - MIN_LAT);
+}
+
