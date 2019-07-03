@@ -42,5 +42,4 @@ Wavefront.cbp
 /.idea/
 /build/
 /build-clang/
-/cmake-build-debug/
-/cmake-clang/
+/cmake*/

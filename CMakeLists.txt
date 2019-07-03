@@ -11,12 +11,12 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -
 
 
 add_library(pplibrary
-        src/pathplanning/WaveNav.cpp
-        include/pathplanning/WaveNav.h
-        src/pathplanning/OccGrid.cpp
-        include/pathplanning/OccGrid.h
-        src/pathplanning/Coordinates.cpp
         include/pathplanning/Coordinates.h
+        src/pathplanning/Coordinates.cpp
+        include/pathplanning/OccGrid.h
+        src/pathplanning/OccGrid.cpp
+        include/pathplanning/WaveNav.h
+        src/pathplanning/WaveNav.cpp
         )
 
 find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)

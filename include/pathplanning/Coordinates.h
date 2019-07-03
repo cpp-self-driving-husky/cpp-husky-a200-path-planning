@@ -35,8 +35,8 @@ public:
   Point();
   Point(double x, double y);
   virtual ~Point() = default;
-  double getX() const;
-  double getY() const;
+  double x() const;
+  double y() const;
   std::string toString() const;
 
 protected:
@@ -56,11 +56,10 @@ public:
   GridCell(long col, long row);
   virtual ~GridCell() = default;
   long getRow() const;
-  void setRow(long row);
+  void setRow(long newRow);
   long getCol() const;
-  void setCol(long col);
-
-  bool equals(GridCell cell) const;
+  void setCol(long newCol);
+  bool equals(const GridCell& cell) const;
   std::string toString() const;
 
 protected:
