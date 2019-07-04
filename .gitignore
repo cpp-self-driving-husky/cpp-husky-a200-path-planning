@@ -31,9 +31,9 @@
 *.out
 *.app
 
-cmake_install.cmake
-CMakeCache.txt
-Makefile
+cmake-clang/cmake_install.cmake
+cmake-clang/CMakeCache.txt
+cmake-clang/Makefile
 wavefront
 Wavefront.cbp
 

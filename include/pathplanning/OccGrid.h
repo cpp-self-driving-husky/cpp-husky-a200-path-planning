@@ -50,7 +50,7 @@ public:
   void outputGrid(const std::string &filename);
   void outputDebugGrid(const std::string &filename);
   void outputWaves(const std::string &filename, const std::string &color);
-  void growGrid(double radius);
+  OccGrid growGrid(double radius);
   std::pair<GridCell, long> propWavesBasic(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
   std::pair<GridCell, long> propOFWF(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
   static std::vector<GridCell> getNeighborhood(const GridCell &cell, long layers);

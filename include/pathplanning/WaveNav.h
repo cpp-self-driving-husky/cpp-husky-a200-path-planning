@@ -27,7 +27,7 @@ public:
   };
   WaveNav(std::string filename, std::string outName);
   ~WaveNav();
-  void changeOutPath(std::string newOutPath);
+  void changeOutPath(std::string &newOutPath);
   std::pair<std::vector<GridCell>, double> drawSmoothedPath();
   PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string& waveType);
   PathPlannerOutput planPath(Point &start, Point &goal, const std::string& waveType);
@@ -43,12 +43,11 @@ private:
   std::list<GridCell> wayCells;
   std::list<GridCell> smoothedPath;
   std::unordered_map<std::string, Point> destinations;
-
   void initializeNavigator();
   void calcWayCells(const GridCell &start, const GridCell &goal);
   GridCell findNextCell(const GridCell &curr);
   void smoothPath();
-  long smoothPathHelper();
+  void smoothPathHelper();
   void loadDestinations(std::string& filename);
 };
 

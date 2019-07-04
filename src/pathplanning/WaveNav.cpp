@@ -38,7 +38,7 @@ WaveNav::~WaveNav() = default;
 void WaveNav::initializeNavigator() {
   gridMap = OccGrid(mapfilename, SCALE_MAP);
   gridMap.outputGrid(outPath + "_1-scaled input map.pnm");
-  gridMap.growGrid(0.80);
+  gridMap = gridMap.growGrid(0.80);
 
   debugGrid = OccGrid(outPath + "_1-scaled input map.pnm", 1.0);
   debugGrid.convertToDebugGrid();
@@ -48,8 +48,8 @@ void WaveNav::initializeNavigator() {
 }
 
 
-void WaveNav::changeOutPath(std::string newOutPath) {
-  outPath = std::move(newOutPath);
+void WaveNav::changeOutPath(std::string &newOutPath) {
+  outPath = newOutPath;
   initializeNavigator();
 }
 
@@ -84,7 +84,7 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
       gridMap.propWavesBasic(goal, start, 500, 707) :
       gridMap.propOFWF(goal, start, 500, 707);
   auto stop = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - begin);
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - begin);
   toReturn.cpuTime = duration.count();
 
   GridCell finalCell = waveResult.first;
@@ -105,7 +105,7 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
     debugGrid.convertToDebugGrid();
 
     gridMap = OccGrid(outPath + "_1-scaled input map.pnm", 1.0);
-    gridMap.growGrid(0.4);
+    gridMap = gridMap.growGrid(0.4);
 
     smoothPath();
 
@@ -233,43 +233,38 @@ GridCell WaveNav::findNextCell(const GridCell &curr) {
  */
 void WaveNav::smoothPath() {
   smoothedPath.assign(wayCells.begin(), wayCells.end());
-  int oldNodeCount, newNodeCount, editCount;
+  int pathSizeBeforeSmooth, pathSizeAfterSmooth, smoothModifications;
   do {
-    oldNodeCount = smoothedPath.size();
+    pathSizeBeforeSmooth = smoothedPath.size();
     smoothPathHelper();
-    newNodeCount = smoothedPath.size();
-    editCount = oldNodeCount - newNodeCount;
-  } while (editCount != 0);
+    pathSizeAfterSmooth = smoothedPath.size();
+    smoothModifications = pathSizeBeforeSmooth - pathSizeAfterSmooth;
+  } while (smoothModifications != 0);
 }
 
 
-long WaveNav::smoothPathHelper() {
-  std::cout << "smoothPathHelper\n";
+void WaveNav::smoothPathHelper() {
   if (smoothedPath.size() < 3) {
-    return 0;
+    return;
   }
 
-  long modificationCount {0};
   auto it0 = smoothedPath.begin();
-  auto it2 = smoothedPath.begin();
+  auto it1 = smoothedPath.begin();
   auto it_end = smoothedPath.end();
 
-  while ((it0 != it_end) && (it2 != it_end)) {
+  while ((it0 != it_end) && (it1 != it_end)) {
     if (smoothedPath.size() < 3) {
       break;
     }
-    it2++;
-    it2++;
-    while ((it2 != it_end) && (gridMap.isInLine(*it0, *it2))) {
-      it2++;
-      modificationCount++;
+    it1++;
+    it1++;
+    while ((it1 != it_end) && (gridMap.isInLine(*it0, *it1))) {
+      it1++;
     }
-    modificationCount--;
-    it2--;
+    it1--;
     it0++;
-    it0 = smoothedPath.erase(it0, it2);
+    it0 = smoothedPath.erase(it0, it1);
   }
-  return modificationCount;
 }
 
 
@@ -284,8 +279,8 @@ WaveNav::PathPlannerOutput findAnyPath(WaveNav& myNav,
 
 
 void printOutput(const WaveNav::PathPlannerOutput& out) {
-  std::cout << out.waveType << ": \n    cells visited = " << out.numCellsVisited
-            << "\n    CPU time = " << out.cpuTime
+  std::cout << "  " << out.waveType << ": \n    CPU time = " << out.cpuTime
+            << "\n    cells visited = " << out.numCellsVisited
             << "\n    initial path length = " << out.initialPathLength
             << "\n    smoothed path length = " << out.smoothPathLength << std::endl;
 
@@ -293,12 +288,6 @@ void printOutput(const WaveNav::PathPlannerOutput& out) {
 
 
 int main() {
-
-//  GridCell c1 = GridCell(10, 15);
-//  GridCell c0 = GridCell(10, 70);
-//
-//  WaveNav::printCells(OccGrid::drawLine(c0, c1));
-
 
   boost::filesystem::path p{"output/"};
   boost::filesystem::create_directory(p);
@@ -345,6 +334,7 @@ int main() {
   WaveNav::PathPlannerOutput path23b = findAnyPath(myNav, "Basic", midRight, midLeft);
   printOutput(path23b);
 
+  Point upperMiddle {60, 30};
   std::cout << "\ntest3\n";
   myNav = WaveNav("../bitmaps/2dmap-test3.pnm", "output/test3.1_OFWF");
   WaveNav::PathPlannerOutput path31o = findAnyPath(myNav, "OFWF", topLeft, bottomRight);
@@ -353,10 +343,10 @@ int main() {
   WaveNav::PathPlannerOutput path31b = findAnyPath(myNav, "Basic", topLeft, bottomRight);
   printOutput(path31b);
   myNav = WaveNav("../bitmaps/2dmap-test3.pnm", "output/test3.2_OFWF");
-  WaveNav::PathPlannerOutput path32o = findAnyPath(myNav, "OFWF", bottomLeft, midRight);
+  WaveNav::PathPlannerOutput path32o = findAnyPath(myNav, "OFWF", topLeft, upperMiddle);
   printOutput(path32o);
   myNav = WaveNav("../bitmaps/2dmap-test3.pnm", "output/test3.2_Basic");
-  WaveNav::PathPlannerOutput path32b = findAnyPath(myNav, "Basic", bottomLeft, midRight);
+  WaveNav::PathPlannerOutput path32b = findAnyPath(myNav, "Basic", topLeft, upperMiddle);
   printOutput(path32b);
 
   std::cout << "\ntest4\n";
@@ -378,6 +368,12 @@ int main() {
   myNav = WaveNav("../bitmaps/2dmap-test4.pnm", "output/test4.3_Basic");
   WaveNav::PathPlannerOutput path43b = findAnyPath(myNav, "Basic", midLeft, middle);
   printOutput(path43b);
+  myNav = WaveNav("../bitmaps/2dmap-test4.pnm", "output/test4.4_OFWF");
+  WaveNav::PathPlannerOutput path44o = findAnyPath(myNav, "OFWF", middle, midLeft);
+  printOutput(path44o);
+  myNav = WaveNav("../bitmaps/2dmap-test4.pnm", "output/test4.4_Basic");
+  WaveNav::PathPlannerOutput path44b = findAnyPath(myNav, "Basic", middle, midLeft);
+  printOutput(path44b);
 
   std::cout << "\ntest5\n";
   myNav = WaveNav("../bitmaps/2dmap-test5.pnm", "output/test5.1_OFWF");
@@ -418,6 +414,12 @@ int main() {
   myNav = WaveNav("../bitmaps/2dmap-test6.pnm", "output/test6.3_Basic");
   WaveNav::PathPlannerOutput path63b = findAnyPath(myNav, "Basic", bottomLeft, centerLeft);
   printOutput(path63b);
+  myNav = WaveNav("../bitmaps/2dmap-test6.pnm", "output/test6.4_OFWF");
+  WaveNav::PathPlannerOutput path64o = findAnyPath(myNav, "OFWF", topLeft, centerLeft);
+  printOutput(path64o);
+  myNav = WaveNav("../bitmaps/2dmap-test6.pnm", "output/test6.4_Basic");
+  WaveNav::PathPlannerOutput path64b = findAnyPath(myNav, "Basic", topLeft, centerLeft);
+  printOutput(path64b);
 
 }
 
