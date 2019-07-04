@@ -49,7 +49,7 @@ OccGrid::OccGrid() {
 
 OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
   grid.resize(GRID_HEIGHT);
-  for (auto & row : grid) {
+  for (auto &row : grid) {
     row.resize(GRID_WIDTH, 0);
   }
 
@@ -170,7 +170,7 @@ void OccGrid::outputWaves(const std::string &filename, const std::string &color)
   outFile << GRID_WIDTH << " " << GRID_HEIGHT << std::endl << 255 << std::endl;
 
   long maxDistance = findMaxDistance();
-  double tintMultiplier = 255.0 / maxDistance;
+//  double tintMultiplier = 255.0 / maxDistance;
   long tintColor;
 
   for (long row = 0; row < GRID_HEIGHT; ++row) {
@@ -178,7 +178,7 @@ void OccGrid::outputWaves(const std::string &filename, const std::string &color)
       if (grid[row][col] == 1) {
         outFile << 0 << " " << 0 << " " << 0 << " ";
       } else {
-        tintColor = static_cast<long>((maxDistance - grid[row][col]) * tintMultiplier);
+        tintColor = static_cast<long>(((std::trunc(10.0 * (maxDistance - grid[row][col]) / maxDistance)) / 10.0) * 255);
         if (color == "R") {
           outFile << 255 << " " << tintColor << " " << tintColor << " ";
         }
@@ -196,7 +196,7 @@ void OccGrid::outputWaves(const std::string &filename, const std::string &color)
  * can be represented as a Point rather than a 3 dimensional object.
  * @param radius - distance in meters to expand obstacles.
  */
-void OccGrid::growGrid(double radius) {
+OccGrid OccGrid::growGrid(double radius) {
   // calculate # of grid cells to use for radius
   long growH, growV, growSize;
   double ratioH, ratioV;
@@ -207,11 +207,7 @@ void OccGrid::growGrid(double radius) {
   growSize = std::max(growH, growV);
 
   // create a new 2d array to hold the result of grow.
-  std::vector<std::vector<long> > result;
-  result.resize(GRID_HEIGHT);
-  for (auto &row : result) {
-    row.resize(GRID_WIDTH, 0);
-  }
+  OccGrid result;
 
   // loop through grid, looking for 1, then growing them on result
   long row, col;
@@ -219,13 +215,13 @@ void OccGrid::growGrid(double radius) {
     for (col = 0; col != GRID_WIDTH; ++col) {
       if (grid[row][col] == 1) {
         for (const auto &neighbor : getNeighborhood(GridCell(col, row), growSize)) {
-          result[neighbor.getRow()][neighbor.getCol()] = 1;
+          result.set(neighbor, 1);
         }
       }
     }
   }
   // deep copy values from result long grid
-  grid = result;
+  return result;
 }
 
 
@@ -254,12 +250,13 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
   long numCellsVisited = 0;
   while (!waveQ.empty()) {
     currCell = waveQ.front();
-    numCellsVisited++;
+//    numCellsVisited++;
     // find free neighbors, update weights, calculate costs, push onto queue
     for (auto &neighbor : getNeighborhood(currCell, 1)) {
       if (get(neighbor) == 0) {
         setWeight(neighbor, orthoDist, diagDist);
         waveQ.emplace(neighbor);
+        numCellsVisited++;
 
         // once we've enqueued the start cell, we're done
         if (start.equals(neighbor)) {
@@ -305,7 +302,7 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
   long numCellsVisited {0};
   while (!waveQ.empty()) {
     currCell = waveQ.top().second;
-    numCellsVisited++;
+//    numCellsVisited++;
 
     // find free neighbors, update weights, calculate costs, push onto priority queue
     for (auto &neighbor : getNeighborhood(currCell, 1)) {
@@ -315,11 +312,12 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
         dy = static_cast<double>(std::labs(neighbor.getRow() - start.getRow()));
 //        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
 //        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
-        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) * 0.9999;
+        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) * 0.99;
         cost = static_cast<double>(get(neighbor)) + heuristic;
 
         // Use cost to set priority of neighbor.
         waveQ.emplace(cost, neighbor);
+        numCellsVisited++;
 
         // once we've enqueued the start cell, we're done
         if (start.equals(neighbor)) {
@@ -341,7 +339,7 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
  */
 void OccGrid::setWeight(GridCell &cell, long orthoDist, long diagDist) {
   // find neighbor with minimum weight
-  GridCell minNeighbor {};
+  GridCell minNeighbor;
   long minSoFar = LONG_MAX;
   long currWeight;
   for (const auto &neighbor : getNeighborhood(cell, 1)) {
@@ -495,6 +493,7 @@ long OccGrid::findMaxDistance() {
  */
 std::vector<GridCell> OccGrid::getNeighborhood(const GridCell &cell, long layers) {
   std::vector<GridCell> neighbors;
+  neighbors.reserve(4 * layers * layers + 4 * layers + 1);
   long col = cell.getCol();
   long row = cell.getRow();
 
