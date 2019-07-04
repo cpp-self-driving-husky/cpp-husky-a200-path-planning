@@ -5,24 +5,7 @@
  * file: OccGrid.cpp
  */
 
-#include <vector>
-#include <boost/filesystem.hpp>
-#include <unordered_map>
-#include <list>
-#include <string>
-#include <exception>
-#include <array>
-#include <algorithm>
-#include <iostream>
-#include <fstream>
-#include <climits>
-#include <cmath>
-#include <queue>
-#include <cstring>
-#include <utility>
-
 #include "../../include/pathplanning/OccGrid.h"
-#include "../../include/pathplanning/WaveNav.h"
 
 
 class CompareGreater {

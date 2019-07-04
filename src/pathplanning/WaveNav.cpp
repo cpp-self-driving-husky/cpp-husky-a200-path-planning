@@ -5,20 +5,6 @@
  * file: WaveNav.cpp
  */
 
-#include <array>
-#include <cmath>
-#include <exception>
-#include <string>
-#include <iostream>
-#include <list>
-#include <fstream>
-#include <queue>
-#include <unordered_map>
-#include <climits>
-#include <utility>
-#include <vector>
-#include <boost/filesystem.hpp>
-
 #include "../../include/pathplanning/OccGrid.h"
 #include "../../include/pathplanning/WaveNav.h"
 
