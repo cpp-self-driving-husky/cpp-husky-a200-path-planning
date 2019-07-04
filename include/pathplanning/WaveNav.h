@@ -10,10 +10,21 @@
 #define WAVEFRONT_WAVENAV_H
 
 #include <chrono>
+#include <climits>
+#include <cmath>
+#include <exception>
+#include <iostream>
+#include <fstream>
+#include <list>
+#include <queue>
 #include <string>
 #include <unordered_map>
-#include <list>
-#include "../../include/pathplanning/OccGrid.h"
+#include <utility>
+#include <vector>
+
+#include <boost/filesystem.hpp>
+
+
 
 class WaveNav {
 

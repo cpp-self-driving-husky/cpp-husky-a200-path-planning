@@ -8,16 +8,21 @@
 #ifndef WAVEFRONT_OCCGRID_H
 #define WAVEFRONT_OCCGRID_H
 
-#include <string>
-#include <array>
+#include <algorithm>
+#include <climits>
+#include <cmath>
+#include <cstring>
+#include <fstream>
+#include <iostream>
 #include <list>
 #include <queue>
-#include <chrono>
+#include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "../../include/pathplanning/Coordinates.h"
-#include "../../include/pathplanning/OccGrid.h"
+
 
 const double SCALE_MAP = 5.0;
 const double WIDTH_METERS = 186.23;
