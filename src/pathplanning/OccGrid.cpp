@@ -160,10 +160,15 @@ void OccGrid::outputWaves(const std::string &filename, const std::string &color)
     for (long col = 0; col < GRID_WIDTH; ++col) {
       if (grid[row][col] == 1) {
         outFile << 0 << " " << 0 << " " << 0 << " ";
+      } else if (grid[row][col] == 0) {
+        outFile << 255 << " " << 255 << " " << 255 << " ";
       } else {
         tintColor = static_cast<long>(((std::trunc(10.0 * (maxDistance - grid[row][col]) / maxDistance)) / 10.0) * 255);
         if (color == "R") {
           outFile << 255 << " " << tintColor << " " << tintColor << " ";
+        }
+        if (color == "G") {
+          outFile << tintColor << " " << 255 << " " << tintColor << " ";
         }
         if (color == "B") {
           outFile << tintColor << " " << tintColor << " " << 255 << " ";
@@ -191,15 +196,19 @@ OccGrid OccGrid::growGrid(double radius) {
 
   // create a new 2d array to hold the result of grow.
   OccGrid result;
+  std::vector<GridCell> neighborhood;
+  neighborhood.reserve((4 * growSize) * (growSize + 1) + 1);
 
   // loop through grid, looking for 1, then growing them on result
   long row, col;
   for (row = 0; row != GRID_HEIGHT; ++row) {
     for (col = 0; col != GRID_WIDTH; ++col) {
       if (grid[row][col] == 1) {
-        for (const auto &neighbor : getNeighborhood(GridCell(col, row), growSize)) {
+        getNeighborhood(GridCell(col, row), growSize, neighborhood);
+        for (const auto &neighbor : neighborhood) {
           result.set(neighbor, 1);
         }
+        neighborhood.clear();
       }
     }
   }
@@ -222,6 +231,9 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
 
   std::queue<GridCell> waveQ;
 
+  std::vector<GridCell> neighborhood;
+  neighborhood.reserve(9);
+
   // set goal cell value to 2
   set(goal, 2);
   waveQ.push(goal);
@@ -233,9 +245,10 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
   long numCellsVisited = 0;
   while (!waveQ.empty()) {
     currCell = waveQ.front();
-//    numCellsVisited++;
+
     // find free neighbors, update weights, calculate costs, push onto queue
-    for (auto &neighbor : getNeighborhood(currCell, 1)) {
+    getNeighborhood(currCell, 1, neighborhood);
+    for (auto &neighbor : neighborhood) {
       if (get(neighbor) == 0) {
         setWeight(neighbor, orthoDist, diagDist);
         waveQ.emplace(neighbor);
@@ -247,6 +260,7 @@ std::pair<GridCell, long> OccGrid::propWavesBasic(GridCell &goal, GridCell &star
         }
       }
     }
+    neighborhood.clear();
     waveQ.pop();
   }
   return std::make_pair(currCell, numCellsVisited);
@@ -272,6 +286,9 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
                       CompareGreater>
       waveQ;
 
+  std::vector<GridCell> neighborhood;
+  neighborhood.reserve(9);
+
   // set goal cell value to 2 and push to waveQ
   set(goal, 2);
   waveQ.emplace(2, goal);
@@ -288,7 +305,8 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
 //    numCellsVisited++;
 
     // find free neighbors, update weights, calculate costs, push onto priority queue
-    for (auto &neighbor : getNeighborhood(currCell, 1)) {
+    getNeighborhood(currCell, 1, neighborhood);
+    for (auto &neighbor : neighborhood) {
       if (get(neighbor) == 0) {
         setWeight(neighbor, orthoDist, diagDist);
         dx = static_cast<double>(std::labs(neighbor.getCol() - start.getCol()));
@@ -308,6 +326,7 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
         }
       }
     }
+    neighborhood.clear();
     waveQ.pop();
   }
   return std::make_pair(currCell, numCellsVisited);
@@ -325,7 +344,12 @@ void OccGrid::setWeight(GridCell &cell, long orthoDist, long diagDist) {
   GridCell minNeighbor;
   long minSoFar = LONG_MAX;
   long currWeight;
-  for (const auto &neighbor : getNeighborhood(cell, 1)) {
+
+  std::vector<GridCell> neighborhood;
+  neighborhood.reserve(9);
+  getNeighborhood(cell, 1, neighborhood);
+
+  for (const auto &neighbor : neighborhood) {
     currWeight = get(neighbor);
     if ((currWeight < minSoFar) && (currWeight > 1)) {
       minSoFar = currWeight;
@@ -458,6 +482,7 @@ void OccGrid::fitInGrid(GridCell &cell) {
 
 long OccGrid::findMaxDistance() {
   std::vector<long> rowMaxValues;
+  rowMaxValues.reserve(GRID_HEIGHT);
   for (auto &row : grid) {
     rowMaxValues.emplace_back(*std::max_element(row.begin(), row.end()));
   }
@@ -474,9 +499,9 @@ long OccGrid::findMaxDistance() {
  * @param layers - how many layers of neighbors to return
  * @return
  */
-std::vector<GridCell> OccGrid::getNeighborhood(const GridCell &cell, long layers) {
-  std::vector<GridCell> neighbors;
-  neighbors.reserve(4 * layers * layers + 4 * layers + 1);
+void OccGrid::getNeighborhood(const GridCell &cell,
+                              long layers,
+                              std::vector<GridCell> &neighborhood) {
   long col = cell.getCol();
   long row = cell.getRow();
 
@@ -486,10 +511,9 @@ std::vector<GridCell> OccGrid::getNeighborhood(const GridCell &cell, long layers
   long maxCol = std::min(col + layers, GRID_WIDTH - 1l);
   for (long tempRow = minRow; tempRow <= maxRow; ++tempRow) {
     for (long tempCol = minCol; tempCol <= maxCol; ++tempCol) {
-      neighbors.emplace_back(GridCell(tempCol, tempRow));
+      neighborhood.emplace_back(GridCell(tempCol, tempRow));
     }
   }
-  return neighbors;
 }
 
 
@@ -566,8 +590,9 @@ std::vector<GridCell> OccGrid::drawLineLow(const long c0, const long r0, const l
   long currRow = r0;
 
   std::vector<GridCell> lineOfCells;
+  lineOfCells.reserve(c1 - c0 + 1);
 
-  for (long currCol = c0; currCol <= c1; currCol++) {
+  for (long currCol = c0; currCol <= c1; ++currCol) {
     lineOfCells.emplace_back(GridCell(currCol, currRow));
     if (error > 0) {
       currRow = currRow + rowIncrement;
@@ -601,8 +626,9 @@ std::vector<GridCell> OccGrid::drawLineHigh(const long c0, const long r0, const 
   long currCol = c0;
 
   std::vector<GridCell> lineOfCells;
+  lineOfCells.reserve(r1 - r0 + 1);
 
-  for (long currRow = r0; currRow <= r1; currRow++) {
+  for (long currRow = r0; currRow <= r1; ++currRow) {
     lineOfCells.emplace_back(GridCell(currCol, currRow));
     if (error > 0) {
       currCol = currCol + colIncrement;

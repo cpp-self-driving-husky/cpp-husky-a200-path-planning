@@ -80,7 +80,7 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
   if (waveType == "Basic") {
     gridMap.outputWaves(outPath + "_waves.pnm", "R");
   } else {
-    gridMap.outputWaves(outPath + "_waves.pnm", "B");
+    gridMap.outputWaves(outPath + "_waves.pnm", "G");
   }
 
   if (finalCell.equals(start)) {
@@ -98,8 +98,13 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
     auto pathResults = drawSmoothedPath();
     toReturn.smoothPathLength = pathResults.second;
     debugGrid.markCells(pathResults.first, 190);
+    std::vector<GridCell> neighborhood;
+    neighborhood.reserve(9);
+
     for (const auto &cell : smoothedPath) {
-      debugGrid.markCells(OccGrid::getNeighborhood(cell, 1l), 2);
+      OccGrid::getNeighborhood(cell, 1, neighborhood);
+      debugGrid.markCells(neighborhood, 2);
+      neighborhood.clear();
     }
 
     debugGrid.outputDebugGrid(outPath + "_3-smoothpath.pnm");
@@ -196,7 +201,12 @@ GridCell WaveNav::findNextCell(const GridCell &curr) {
   // find neighbor with minimum weight
   GridCell minCell;
   long minSoFar = LONG_MAX;
-  for (const auto &neighbor : OccGrid::getNeighborhood(curr, 1)) {
+
+  std::vector<GridCell> neighborhood;
+  neighborhood.reserve(9);
+  OccGrid::getNeighborhood(curr, 1, neighborhood);
+
+  for (const auto &neighbor : neighborhood) {
     currWeight = gridMap.get(neighbor);
     if ((currWeight < minSoFar) && (currWeight > 1)) {
       minSoFar = currWeight;

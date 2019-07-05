@@ -58,7 +58,9 @@ public:
   OccGrid growGrid(double radius);
   std::pair<GridCell, long> propWavesBasic(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
   std::pair<GridCell, long> propOFWF(GridCell &goal, GridCell &start, long orthoDist, long diagDist);
-  static std::vector<GridCell> getNeighborhood(const GridCell &cell, long layers);
+  static void getNeighborhood(const GridCell &cell,
+                              long layers,
+                              std::vector<GridCell> &neighborhood);
   void normCell(GridCell &cell);
   bool isInLine(const GridCell &c1, const GridCell &c2);
   static bool isNear(const GridCell &c1, const GridCell &c2);
