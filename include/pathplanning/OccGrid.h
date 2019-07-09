@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 
-#include "../../include/pathplanning/Coordinates.h"
+#include "Coordinates.h"
 
 
 const double SCALE_MAP = 5.0;
@@ -48,8 +48,8 @@ public:
   OccGrid();
   OccGrid(const std::string &filename, double mapScale);
   virtual ~OccGrid();
-  long get(long col, long row);
-  long get(const GridCell &cell);
+  long get(long col, long row) const;
+  long get(const GridCell &cell) const;
   void set(const GridCell &cell, long value);
   void convertToDebugGrid();
   void outputGrid(const std::string &filename);
@@ -67,8 +67,9 @@ public:
   static std::vector<GridCell> drawLine(const GridCell &cell0, const GridCell &cell1);
   static double euclideanDist(const GridCell &c0, const GridCell &c1);
   void markCell(const GridCell& cell, long value);
-  void markCells(const std::list<GridCell>& cells, long value);
+  void markCells(const std::list<GridCell> &cells, long value);
   void markCells(const std::vector<GridCell> &cells, long value);
+  long findMaxDistance() const;
 
 private:
   std::vector<std::vector<long> > grid;
@@ -76,7 +77,6 @@ private:
   GridCell findClosestFreeCell(GridCell &cell);
   std::pair<long, GridCell> findFree(GridCell &cell, const std::string &direction);
   void fitInGrid(GridCell &cell);
-  long findMaxDistance();
   static std::vector<GridCell> drawLineLow(const long c0, const long r0, const long c1, const long r1);
   static std::vector<GridCell> drawLineHigh(const long c0, const long r0, const long c1, const long r1);
 };

@@ -39,7 +39,7 @@ public:
   WaveNav(std::string filename, std::string outName);
   ~WaveNav();
   void changeOutPath(std::string &newOutPath);
-  std::pair<std::vector<GridCell>, double> drawSmoothedPath();
+  double markSmoothedPath();
   PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string& waveType);
   PathPlannerOutput planPath(Point &start, Point &goal, const std::string& waveType);
   PathPlannerOutput planPath(GPS &start, GPS &goal, const std::string& waveType);
@@ -50,7 +50,7 @@ private:
   std::string mapfilename;
   std::string outPath;
   OccGrid gridMap;
-  OccGrid debugGrid;
+  DebugGrid debugGrid;
   std::list<GridCell> wayCells;
   std::list<GridCell> smoothedPath;
   std::unordered_map<std::string, Point> destinations;

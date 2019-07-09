@@ -17,7 +17,10 @@ add_library(pplibrary
         src/pathplanning/OccGrid.cpp
         include/pathplanning/WaveNav.h
         src/pathplanning/WaveNav.cpp
-        )
+        include/pathplanning/DebugGrid.h
+        include/pathplanning/Pixel.h
+        src/pathplanning/Pixel.cpp
+        src/pathplanning/DebugGrid.cpp)
 
 find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)
 
