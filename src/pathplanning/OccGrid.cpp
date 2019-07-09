@@ -38,6 +38,7 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
 
   long inRow, inCol;
   long inputWidth, inputHeight, maxVal;
+  int currValue;
   std::string fileFormat;
   std::ifstream ifs;
   ifs.open(filename.c_str(), std::ifstream::in);
@@ -52,8 +53,12 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
     for (inRow = 0; inRow < inputHeight; ++inRow) {
       for (inCol = 0; inCol < inputWidth; ++inCol) {
         ifs >> nextChar;
+        currValue = grid[static_cast<long>(inRow / mapScale)][static_cast<long>(inCol / mapScale)];
+        if (currValue == 1) {
+          continue;
+        }
         // char(-1) == 255, which denotes an unoccupied pixel in input image
-        if (nextChar != char(-1)) {
+        if (nextChar != char(-1)) {  // cell is occupied
           grid[static_cast<long>(inRow / mapScale)][static_cast<long>(inCol / mapScale)] = 1;
         }
       }
@@ -78,12 +83,12 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
 OccGrid::~OccGrid() = default;
 
 
-long OccGrid::get(long col, long row) {
+long OccGrid::get(long col, long row) const {
   return grid[row][col];
 }
 
 
-long OccGrid::get(const GridCell &cell) {
+long OccGrid::get(const GridCell &cell) const {
   return OccGrid::get(cell.getCol(), cell.getRow());
 }
 
@@ -313,7 +318,8 @@ std::pair<GridCell, long> OccGrid::propOFWF(GridCell &goal, GridCell &start, lon
         dy = static_cast<double>(std::labs(neighbor.getRow() - start.getRow()));
 //        heuristic = static_cast<double>(orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
 //        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) / 1.00001;
-        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) * 0.99;
+//        heuristic = (orthoDist * (dx + dy) + (diagDist - 2.0 * orthoDist) * std::min(dx, dy)) * 0.99;
+        heuristic = 0.99 * orthoDist * ((dx + dy) + (sqrt(2.0) - 2) * std::min(dx, dy));
         cost = static_cast<double>(get(neighbor)) + heuristic;
 
         // Use cost to set priority of neighbor.
@@ -480,7 +486,7 @@ void OccGrid::fitInGrid(GridCell &cell) {
 }
 
 
-long OccGrid::findMaxDistance() {
+long OccGrid::findMaxDistance() const {
   std::vector<long> rowMaxValues;
   rowMaxValues.reserve(GRID_HEIGHT);
   for (auto &row : grid) {

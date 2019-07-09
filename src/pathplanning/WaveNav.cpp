@@ -5,14 +5,22 @@
  * file: WaveNav.cpp
  */
 
-#include "../../include/pathplanning/OccGrid.h"
-#include "../../include/pathplanning/WaveNav.h"
+#include <pathplanning/DebugGrid.h>
+#include "pathplanning/OccGrid.h"
+#include "pathplanning/WaveNav.h"
 
 
 WaveNav::WaveNav(std::string filename, std::string outName) {
   mapfilename = std::move(filename);
   outPath = std::move(outName);
-  initializeNavigator();
+  gridMap = OccGrid(mapfilename, SCALE_MAP);
+  gridMap.outputGrid(outPath + "_1-scaled input map.pnm");
+  gridMap = gridMap.growGrid(0.80);
+
+  debugGrid = DebugGrid(outPath + "_1-scaled input map.pnm", 1.0);
+
+  wayCells.clear();
+  smoothedPath.clear();
 //  loadDestinations("../dest_coordinates.txt");
 //  loadTestXY("../test_xy.txt");
 }
@@ -26,8 +34,7 @@ void WaveNav::initializeNavigator() {
   gridMap.outputGrid(outPath + "_1-scaled input map.pnm");
   gridMap = gridMap.growGrid(0.80);
 
-  debugGrid = OccGrid(outPath + "_1-scaled input map.pnm", 1.0);
-  debugGrid.convertToDebugGrid();
+  debugGrid = DebugGrid(outPath + "_1-scaled input map.pnm", 1.0);
 
   wayCells.clear();
   smoothedPath.clear();
@@ -36,32 +43,31 @@ void WaveNav::initializeNavigator() {
 
 void WaveNav::changeOutPath(std::string &newOutPath) {
   outPath = newOutPath;
-  initializeNavigator();
+//  initializeNavigator();
 }
 
 
-std::pair<std::vector<GridCell>, double> WaveNav::drawSmoothedPath() {
+double WaveNav::markSmoothedPath() {
   auto it0 = smoothedPath.begin();
   auto it1 = smoothedPath.begin();
   it1++;
 
-  std::vector<GridCell> resultPath;
   double pathLength = 0.0;
 
   while (it1 != smoothedPath.end()) {
-    debugGrid.markCells(OccGrid::drawLine(*it0, *it1), 190);
+    debugGrid.markCells(OccGrid::drawLine(*it0, *it1), Pixel(0, 0, 255));
     pathLength += OccGrid::euclideanDist(*it0, *it1);
     it0++;
     it1++;
   }
-  return std::make_pair(resultPath, pathLength);
+  return pathLength;
 }
 
 
 WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::string& waveType) {
   WaveNav::PathPlannerOutput toReturn{};
   toReturn.waveType = waveType;
-  initializeNavigator();
+//  initializeNavigator();
   gridMap.normCell(start);
   gridMap.normCell(goal);
 
@@ -78,36 +84,34 @@ WaveNav::PathPlannerOutput WaveNav::planPath(GridCell &start, GridCell &goal, co
   toReturn.initialPathLength = static_cast<double>(gridMap.get(finalCell)) / 500;
 
   if (waveType == "Basic") {
-    gridMap.outputWaves(outPath + "_waves.pnm", "R");
+    debugGrid.markWaves(gridMap, "R");
   } else {
-    gridMap.outputWaves(outPath + "_waves.pnm", "G");
+    debugGrid.markWaves(gridMap, "G");
   }
 
   if (finalCell.equals(start)) {
     calcWayCells(finalCell, goal);
-    debugGrid.markCells(wayCells, 120);
-    debugGrid.outputDebugGrid(outPath + "_2-initialpath.pnm");
-    debugGrid = OccGrid(outPath + "_1-scaled input map.pnm", 1.0);
-    debugGrid.convertToDebugGrid();
+    debugGrid.markCells(wayCells, Pixel(120));
 
     gridMap = OccGrid(outPath + "_1-scaled input map.pnm", 1.0);
     gridMap = gridMap.growGrid(0.4);
 
     smoothPath();
 
-    auto pathResults = drawSmoothedPath();
-    toReturn.smoothPathLength = pathResults.second;
-    debugGrid.markCells(pathResults.first, 190);
+    toReturn.smoothPathLength = markSmoothedPath();
+
     std::vector<GridCell> neighborhood;
     neighborhood.reserve(9);
-
     for (const auto &cell : smoothedPath) {
       OccGrid::getNeighborhood(cell, 1, neighborhood);
-      debugGrid.markCells(neighborhood, 2);
+      debugGrid.markCells(neighborhood, Pixel(0, 0, 255));
       neighborhood.clear();
     }
 
-    debugGrid.outputDebugGrid(outPath + "_3-smoothpath.pnm");
+    debugGrid.markStart(start);
+    debugGrid.markGoal(goal);
+
+    debugGrid.outputGrid(outPath + "_2-debug.pnm");
     return toReturn;
   } else {
     std::cout << "      $ ERROR: cannot find a path to that location.\n" << std::endl;
