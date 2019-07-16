@@ -5,9 +5,6 @@
  * file: Coordinates.cpp
  */
 
-#include <iostream>
-#include <sstream>
-#include <string>
 
 #include "../../include/pathplanning/Coordinates.h"
 

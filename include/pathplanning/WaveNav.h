@@ -25,7 +25,6 @@
 #include <boost/filesystem.hpp>
 
 
-
 class WaveNav {
 
 public:
