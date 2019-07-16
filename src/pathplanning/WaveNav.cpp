@@ -5,7 +5,7 @@
  * file: WaveNav.cpp
  */
 
-#include <pathplanning/DebugGrid.h>
+#include "pathplanning/DebugGrid.h"
 #include "pathplanning/OccGrid.h"
 #include "pathplanning/WaveNav.h"
 

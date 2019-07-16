@@ -26,6 +26,10 @@
 #ifndef WAVEFRONT_COORDINATES_H
 #define WAVEFRONT_COORDINATES_H
 
+#include <iostream>
+#include <sstream>
+#include <string>
+
 
 /**
  * A Point stores the (x, y) coordinates of a location.

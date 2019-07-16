@@ -9,7 +9,7 @@ DebugGrid::DebugGrid() {
   colorGrid.resize(GRID_HEIGHT);
   Pixel fill = Pixel(255);
   for (auto &row : colorGrid) {
-    row.resize(GRID_WIDTH, Pixel(255));
+    row.resize(GRID_WIDTH, fill);
   }
 }
 
@@ -18,7 +18,7 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
   colorGrid.resize(GRID_HEIGHT);
   Pixel fill = Pixel(255);
   for (auto &row : colorGrid) {
-    row.resize(GRID_WIDTH, Pixel(255));
+    row.resize(GRID_WIDTH, fill);
   }
 
   long inRow, inCol;
@@ -44,9 +44,7 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
         gridRow = static_cast<long>(inRow / mapScale);
         gridCol = static_cast<long>(inCol / mapScale);
         currGridPixel = colorGrid[gridRow][gridCol];
-        if (currGridPixel.isBlack()) {
-          continue;
-        } else {
+        if (!currGridPixel.isBlack()) {
           colorGrid[gridRow][gridCol] = Pixel(nextChar);
         }
       }
@@ -61,9 +59,7 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
         gridRow = static_cast<long>(inRow / mapScale);
         gridCol = static_cast<long>(inCol / mapScale);
         currGridPixel = colorGrid[gridRow][gridCol];
-        if (currGridPixel.isBlack()) {
-          continue;
-        } else {
+        if (!currGridPixel.isBlack()) {
           colorGrid[gridRow][gridCol] = Pixel(nextLong);
         }
       }
@@ -91,32 +87,21 @@ void DebugGrid::markWaves(const OccGrid &waveGrid, const std::string &waveColor)
   long maxDistance = waveGrid.findMaxDistance();
   long tintColor;
 
+  Pixel white = Pixel(255);
+  Pixel black = Pixel(0);
+
   for (long row = 0; row < GRID_HEIGHT; ++row) {
     for (long col = 0; col < GRID_WIDTH; ++col) {
-      if (waveGrid.get(col, row) == 1) {
-        colorGrid[row][col] = Pixel(0);
-      } else if (waveGrid.get(col, row) == 0) {
-        colorGrid[row][col] = Pixel(255);
-      } else {
+      if (waveGrid.get(col, row) > 1) {
         tintColor = static_cast<long>(((std::trunc(10.0 * (maxDistance - waveGrid.get(col, row)) / maxDistance)) / 10.0) * 255);
         if (waveColor == "R") {
           colorGrid[row][col] = Pixel(255, tintColor, tintColor);
-        }
-        if (waveColor == "G") {
+        } else if (waveColor == "G") {
           colorGrid[row][col] = Pixel(tintColor, 255, tintColor);
-        }
-        if (waveColor == "B") {
+        } else if (waveColor == "B") {
           colorGrid[row][col] = Pixel(tintColor, tintColor, 255);
         }
       }
-    }
-  }
-
-
-
-  for (long row = 0; row < GRID_HEIGHT; ++row) {
-    for (long col = 0; col < GRID_WIDTH; ++col) {
-
     }
   }
 }
