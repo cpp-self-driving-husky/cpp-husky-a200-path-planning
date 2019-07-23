@@ -13,7 +13,7 @@
  *    Point: (x, y) coordinates as doubles. Origin is at top left of the map, with positive x direction Pointing to the right,
  *        and positive y direction Pointing down. x and y are in units of 1 meter.
  *
- *    GridCell: (col, row) as long indices of 2D array that represents a lower-resolution grid. Same orientation as the (x, y)
+ *    GridCell: (col, row) as int indices of 2D array that represents a lower-resolution grid. Same orientation as the (x, y)
  *        grid used for Points. In this implementation, a grid cell is 0.2m x 0.2m.
  *
  * Note the order in which the coordinate pairs are listed. They all reference the horizontal component first,
@@ -30,6 +30,7 @@
 #include <sstream>
 #include <string>
 
+namespace pathplanner {
 
 /**
  * A Point stores the (x, y) coordinates of a location.
@@ -43,13 +44,10 @@ public:
   double y() const;
   std::string toString() const;
 
-protected:
-
 private:
-  double xCoord;
-  double yCoord;
+  double xCoord_;
+  double yCoord_;
 };
-
 
 /**
  * A GridCell stores the occupancy grid coordinates of a cell as a (col, row) pair.
@@ -57,20 +55,18 @@ private:
 class GridCell {
 public:
   GridCell();
-  GridCell(long col, long row);
+  GridCell(int col, int row);
   virtual ~GridCell() = default;
-  long getRow() const;
-  void setRow(long newRow);
-  long getCol() const;
-  void setCol(long newCol);
-  bool equals(const GridCell& cell) const;
+  int getRow() const;
+  void setRow(int newRow);
+  int getCol() const;
+  void setCol(int newCol);
+  bool equals(const GridCell &cell) const;
   std::string toString() const;
 
-protected:
-
 private:
-  long col;
-  long row;
+  int col_;
+  int row_;
 };
 
 bool operator==(const GridCell &cell1, const GridCell &cell2);
@@ -85,17 +81,16 @@ public:
   GPS();
   GPS(double longitude, double latitude);
   virtual ~GPS() = default;
-  double getLong() const;
-  void setLong(double longi);
-  double getLat() const;
-  void setLat(double lat);
+  double getLongitude() const;
+  void setLongitude(double newLongitude);
+  double getLatitude() const;
+  void setLatitude(double newLatitude);
   std::string toString() const;
 
-protected:
-
 private:
-  double longitude;
-  double latitude;
+  double longitude_;
+  double latitude_;
 };
 
+}
 #endif //WAVEFRONT_COORDINATES_H

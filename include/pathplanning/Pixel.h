@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+namespace pathplanner {
 
 class Pixel {
 public:
@@ -20,8 +21,8 @@ public:
   bool isWhite();
 
 private:
-  std::vector<int> rgb;
+  std::vector<int> rgb_;
 };
 
-
+}
 #endif //WAVEFRONT_PIXEL_H

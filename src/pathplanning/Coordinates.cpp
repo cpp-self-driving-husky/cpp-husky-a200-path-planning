@@ -6,70 +6,72 @@
  */
 
 
-#include "../../include/pathplanning/Coordinates.h"
+#include "pathplanning/Coordinates.h"
+
+namespace pathplanner {
 
 
-Point::Point() : xCoord(0), yCoord(0) {
+Point::Point() : xCoord_(0), yCoord_(0) {
 }
 
 
-Point::Point(double x, double y) : xCoord(x), yCoord(y) {
+Point::Point(double x, double y) : xCoord_(x), yCoord_(y) {
 }
 
 
 double Point::x() const {
-  return xCoord;
+  return xCoord_;
 }
 
 
 double Point::y() const {
-  return yCoord;
+  return yCoord_;
 }
 
 
 std::string Point::toString() const {
   std::ostringstream resultStream;
-  resultStream << "(x: " << xCoord << ", y: " << yCoord << ")";
+  resultStream << "(x: " << xCoord_ << ", y: " << yCoord_ << ")";
   return resultStream.str();
 }
 
 
-GridCell::GridCell() : col(0), row(0) {
+GridCell::GridCell() : col_(0), row_(0) {
 }
 
 
-GridCell::GridCell(long col, long row) : col(col), row(row) {
+GridCell::GridCell(int col, int row) : col_(col), row_(row) {
 }
 
 
-long GridCell::getRow() const {
-  return row;
+int GridCell::getRow() const {
+  return row_;
 }
 
 
-void GridCell::setRow(long newRow) {
-  GridCell::row = newRow;
+void GridCell::setRow(int newRow) {
+  GridCell::row_ = newRow;
 }
 
 
-long GridCell::getCol() const {
-  return col;
+int GridCell::getCol() const {
+  return col_;
 }
 
 
-void GridCell::setCol(long newCol) {
-  GridCell::col = newCol;
+void GridCell::setCol(int newCol) {
+  GridCell::col_ = newCol;
 }
 
 
-bool GridCell::equals(const GridCell& cell) const {
-  return (col == cell.getCol() && row == cell.getRow());
+bool GridCell::equals(const GridCell &cell) const {
+  return (col_ == cell.getCol() && row_ == cell.getRow());
 }
 
 
 std::string GridCell::toString() const {
   std::ostringstream resultStream;
-  resultStream << "(c: " << col << ", r: " << row << ")";
+  resultStream << "(c: " << col_ << ", r: " << row_ << ")";
   return resultStream.str();
 }
 
@@ -84,36 +86,38 @@ bool operator!=(const GridCell &cell1, const GridCell &cell2) {
 }
 
 
-GPS::GPS() : longitude(0), latitude(0) {
+GPS::GPS() : longitude_(0), latitude_(0) {
 }
 
 
-GPS::GPS(double longi, double lat) : longitude(longi), latitude(lat) {
+GPS::GPS(double longi, double lat) : longitude_(longi), latitude_(lat) {
 }
 
 
-double GPS::getLong() const {
-  return longitude;
+double GPS::getLongitude() const {
+  return longitude_;
 }
 
 
-void GPS::setLong(const double longi) {
-  longitude = longi;
+void GPS::setLongitude(double newLongitude) {
+  longitude_ = newLongitude;
 }
 
 
-double GPS::getLat() const {
-  return latitude;
+double GPS::getLatitude() const {
+  return latitude_;
 }
 
 
-void GPS::setLat(const double lat) {
-  latitude = lat;
+void GPS::setLatitude(double newLatitude) {
+  latitude_ = newLatitude;
 }
 
 
 std::string GPS::toString() const {
   std::ostringstream resultStream;
-  resultStream << "(lon: " << longitude << ", lat: " << latitude << ")";
+  resultStream << "(lon: " << longitude_ << ", lat: " << latitude_ << ")";
   return resultStream.str();
+}
+
 }

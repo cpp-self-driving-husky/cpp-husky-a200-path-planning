@@ -7,7 +7,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 #include_directories(${PROJECT_SOURCE_DIR}/lib)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O0")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
 
 
 add_library(pplibrary
@@ -30,7 +30,7 @@ message(STATUS "Boost_VERSION: ${Boost_VERSION}")
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
 
-add_executable(wavefront src/pathplanning/WaveNav.cpp)
+add_executable(wavefront src/pathplanning/MainDriver.cpp include/pathplanning/MainDriver.h)
 target_link_libraries(wavefront ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 
