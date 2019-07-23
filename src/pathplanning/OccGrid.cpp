@@ -103,7 +103,7 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
 OccGrid::~OccGrid() = default;
 
 
-int OccGrid::get(int col, int row) const {
+int OccGrid::get(const int col, const int row) const {
   return grid_[row][col];
 }
 
@@ -134,10 +134,9 @@ void OccGrid::outputGrid(const std::string &filename) {
       currVal = grid_[row][col];
       if (currVal == 1) {
         outFile << 0 << " ";
-      } else if (currVal == 0) {
+      }
+      if (currVal == 0) {
         outFile << 255 << " ";
-      } else {
-//        outFile << currVal << " ";
       }
     }
   }
@@ -183,12 +182,15 @@ OccGrid OccGrid::growGrid(double radius) {
 
 
 /**
- * Basic wave propagation. 8-cell, square neighborhoods with wave values differing by 1.
+ * Basic wave propagation. 8-cell, square neighborhoods with wave values differing by 1
  *
  * @param goal
  * @param start
- * @return If path is found, return the GridCell that the search stopped on. If path is not found, return goal.
+ * @param orthoDist
+ * @param diagDist
+ * @return
  */
+
 std::pair<GridCell, int> OccGrid::propWavesBasic(GridCell &goal, GridCell &start, int orthoDist, int diagDist) {
   std::queue<GridCell> waveQ;
   std::vector<GridCell> neighborhood;
@@ -212,7 +214,7 @@ std::pair<GridCell, int> OccGrid::propWavesBasic(GridCell &goal, GridCell &start
       if (get(neighbor) == 0) {
         setWeight(neighbor, orthoDist, diagDist);
         waveQ.emplace(neighbor);
-        numCellsVisited++;
+        ++numCellsVisited;
 
         // once we've enqueued the start cell, we're done
         if (start.equals(neighbor)) {
@@ -234,7 +236,11 @@ std::pair<GridCell, int> OccGrid::propWavesBasic(GridCell &goal, GridCell &start
  *
  * @param goal
  * @param start
- * @return true if a path between goal and start is found, false otherwise.
+ * @param orthoDist - cost to travel one cell orthogonally
+ * @param diagDist - cost to travel one cell diagonally
+ * @return pair<GridCell, int> -
+ *         <cell where waves stopped, number cells placed in processing queue>
+ *         if successful
  */
 std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int orthoDist, int diagDist) {
   std::priority_queue<std::pair<double, GridCell>,
@@ -258,7 +264,6 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
   int numCellsVisited {0};
   while (!waveQ.empty()) {
     currCell = waveQ.top().second;
-//    numCellsVisited++;
 
     // find free neighbors, update weights, calculate costs, push onto priority queue
     getNeighborhood(currCell, 1, neighborhood);
@@ -272,7 +277,7 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
 
         // Use cost to set priority of neighbor.
         waveQ.emplace(cost, neighbor);
-        numCellsVisited++;
+        ++numCellsVisited;
 
         // once we've enqueued the start cell, we're done
         if (start.equals(neighbor)) {
@@ -378,17 +383,17 @@ std::pair<int, GridCell> OccGrid::findFree(GridCell &cell, const std::string &di
 
   while (get(currCol, currRow) != 0) {
     if (direction == "north") {
-      currRow--;
+      --currRow;
     } else if (direction == "south") {
-      currRow++;
+      ++currRow;
     } else if (direction == "west") {
-      currCol--;
+      --currCol;
     } else if (direction == "east") {
-      currCol++;
+      ++currCol;
     }
-    stepCounter++;
+    ++stepCounter;
 
-    if ((currRow < 0) || (currRow == GRID_HEIGHT) || (currCol < 0) || (currCol == GRID_WIDTH)) {
+    if ((currRow < 0) || (currRow == gridHeight_) || (currCol < 0) || (currCol == gridWidth_)) {
       stepCounter = INT_MAX;
       break;
     }
@@ -434,6 +439,11 @@ void OccGrid::fitInGrid(GridCell &cell) {
 }
 
 
+/**
+ * Finds the maximum value in a grid.
+ *
+ * @return maximum value
+ */
 int OccGrid::findMaxDistance() const {
   std::vector<int> rowMaxValues;
   rowMaxValues.reserve(gridHeight_);
