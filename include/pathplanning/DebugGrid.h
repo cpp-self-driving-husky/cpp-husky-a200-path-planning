@@ -16,7 +16,7 @@ public:
   DebugGrid();
   DebugGrid(const std::string &filename, double mapScale);
   virtual ~DebugGrid() = default;
-  void outputGrid(const std::string &filename);
+  void outputGrid(const std::string &outputPath);
   void markWaves(const OccGrid &waveGrid, const std::string &waveColor);
   void markCell(const GridCell &cell, const Pixel &color);
   void markCells(const std::vector<GridCell> &cells, const Pixel &color);

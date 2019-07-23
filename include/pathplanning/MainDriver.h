@@ -5,9 +5,11 @@
 #ifndef WAVEFRONT_MAINDRIVER_H
 #define WAVEFRONT_MAINDRIVER_H
 
-#include <pathplanning/WaveNav.h>
-#include <pathplanning/Coordinates.h>
-#include <pathplanning/OccGrid.h>
+#include <numeric>
+
+#include "pathplanning/WaveNav.h"
+#include "pathplanning/Coordinates.h"
+#include "pathplanning/OccGrid.h"
 
 namespace pathplanner {
 }

@@ -30,9 +30,9 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
   gridWidth_ = std::ceil(inputWidth / mapScale);
   gridHeight_ = std::ceil(inputHeight / mapScale);
   colorGrid_.resize(gridHeight_);
-  Pixel fill = Pixel(255);
+  Pixel whitePixel = Pixel(255);
   for (auto &row : colorGrid_) {
-    row.resize(gridWidth_, fill);
+    row.resize(gridWidth_, whitePixel);
   }
 
   if (fileFormat == "P1") {
@@ -53,9 +53,7 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
       }
     }
   } else if (fileFormat == "P2") {
-    // Read in inputWidth, inputHeight, maxVal
     ifs >> maxVal;
-
     int nextInt;
     for (int inRow = 0; inRow < inputHeight; ++inRow) {
       for (int inCol = 0; inCol < inputWidth; ++inCol) {
@@ -69,9 +67,7 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
       }
     }
   } else if (fileFormat == "P5") {
-    // Read in inputWidth, inputHeight, maxVal
     ifs >> maxVal;
-
     char nextChar;
     for (int inRow = 0; inRow < inputHeight; ++inRow) {
       for (int inCol = 0; inCol < inputWidth; ++inCol) {
@@ -91,8 +87,8 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
 }
 
 
-void DebugGrid::outputGrid(const std::string &filename) {
-  std::ofstream outFile(filename.c_str(), std::ofstream::out);
+void DebugGrid::outputGrid(const std::string &outputPath) {
+  std::ofstream outFile(outputPath.c_str(), std::ofstream::out);
   outFile << "P3" << std::endl;
   outFile << gridWidth_ << " " << gridHeight_ << std::endl << 255 << std::endl;
 
@@ -123,6 +119,8 @@ void DebugGrid::markWaves(const OccGrid &waveGrid, const std::string &waveColor)
           colorGrid_[row][col] = Pixel(tintColor, 255, tintColor);
         } else if (waveColor == "B") {
           colorGrid_[row][col] = Pixel(tintColor, tintColor, 255);
+        } else if (waveColor == "Gray") {
+          colorGrid_[row][col] = Pixel(tintColor);
         }
       }
     }
@@ -185,7 +183,7 @@ void DebugGrid::markStart(const GridCell &start) {
   startCells.emplace_back(GridCell(startCol + 2, startRow - 2));
   startCells.emplace_back(GridCell(startCol + 2, startRow + 2));
 
-  markCells(startCells, Pixel(0, 0, 255));
+  markCells(startCells, Pixel(70));
 
   std::vector<GridCell> whiteCells;
   whiteCells.emplace_back(GridCell(startCol - 1, startRow - 2));
@@ -239,7 +237,7 @@ void DebugGrid::markGoal(const GridCell &goal) {
   markCells(whiteCells, Pixel(255));
 
   goalCells.emplace_back(goal);
-  markCells(goalCells, Pixel(0, 0, 255));
+  markCells(goalCells, Pixel(70));
 }
 
 }

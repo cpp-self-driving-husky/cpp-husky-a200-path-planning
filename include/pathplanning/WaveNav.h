@@ -33,19 +33,18 @@ namespace pathplanner {
 class WaveNav {
 
 public:
-  struct PathPlannerOutput {
+  struct ppOutput {
     std::string waveType;
     int numCellsVisited;
     double initialPathLength;
     double smoothPathLength;
     double cpuTime;
   };
-  WaveNav(std::string inputPath, std::string outputPathPrefix);
+  WaveNav(const std::string &inputPath, const std::string &outputPathPrefix);
   ~WaveNav();
-  double markSmoothedPath();
-  PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType);
-  PathPlannerOutput planPath(Point &start, Point &goal, const std::string &waveType);
-  PathPlannerOutput planPath(GPS &start, GPS &goal, const std::string &waveType);
+  ppOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType);
+  ppOutput planPath(Point &start, Point &goal, const std::string &waveType);
+  ppOutput planPath(GPS &start, GPS &goal, const std::string &waveType);
   static void printCells(const std::list<GridCell> &cells);
   static void printCells(const std::vector<GridCell> &cells);
 
@@ -56,12 +55,13 @@ private:
   DebugGrid debugGrid_;
   std::list<GridCell> initialPath_;
   std::list<GridCell> smoothedPath_;
-  std::unordered_map<std::string, Point> destinations_;
+
   void findInitialPath(const GridCell &start, const GridCell &goal);
   GridCell findMinNeighbor(const GridCell &curr);
   void smoothePath();
   void smoothePathHelper();
-  void loadDestinations(std::string &filename);
+  void markSmoothedPath();
+  double getSmoothedPathLength();
 };
 
 }
