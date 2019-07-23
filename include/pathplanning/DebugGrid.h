@@ -9,6 +9,7 @@
 #include "OccGrid.h"
 #include "Pixel.h"
 
+namespace pathplanner {
 
 class DebugGrid {
 public:
@@ -23,10 +24,10 @@ public:
   void markStart(const GridCell &start);
   void markGoal(const GridCell &goal);
 
-
 private:
-  std::vector<std::vector<Pixel> > colorGrid;
-
+  int gridWidth_, gridHeight_;
+  std::vector<std::vector<Pixel> > colorGrid_;
 };
 
+}
 #endif //WAVEFRONT_DEBUGGRID_H

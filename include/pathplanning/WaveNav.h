@@ -24,42 +24,45 @@
 
 #include <boost/filesystem.hpp>
 
+#include "pathplanning/Coordinates.h"
+#include "pathplanning/OccGrid.h"
+#include "pathplanning/DebugGrid.h"
+
+namespace pathplanner {
 
 class WaveNav {
 
 public:
   struct PathPlannerOutput {
     std::string waveType;
-    long numCellsVisited;
+    int numCellsVisited;
     double initialPathLength;
     double smoothPathLength;
     double cpuTime;
   };
-  WaveNav(std::string filename, std::string outName);
+  WaveNav(std::string inputPath, std::string outputPathPrefix);
   ~WaveNav();
-  void changeOutPath(std::string &newOutPath);
   double markSmoothedPath();
-  PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string& waveType);
-  PathPlannerOutput planPath(Point &start, Point &goal, const std::string& waveType);
-  PathPlannerOutput planPath(GPS &start, GPS &goal, const std::string& waveType);
-  static void printCells(const std::list<GridCell>& cells);
-  static void printCells(const std::vector<GridCell>& cells);
+  PathPlannerOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType);
+  PathPlannerOutput planPath(Point &start, Point &goal, const std::string &waveType);
+  PathPlannerOutput planPath(GPS &start, GPS &goal, const std::string &waveType);
+  static void printCells(const std::list<GridCell> &cells);
+  static void printCells(const std::vector<GridCell> &cells);
 
 private:
-  std::string mapfilename;
-  std::string outPath;
-  OccGrid gridMap;
-  DebugGrid debugGrid;
-  std::list<GridCell> wayCells;
-  std::list<GridCell> smoothedPath;
-  std::unordered_map<std::string, Point> destinations;
-  void initializeNavigator();
-  void calcWayCells(const GridCell &start, const GridCell &goal);
-  GridCell findNextCell(const GridCell &curr);
-  void smoothPath();
-  void smoothPathHelper();
-  void loadDestinations(std::string& filename);
+  std::string inputPath_;
+  std::string outputPathPrefix_;
+  OccGrid gridMap_;
+  DebugGrid debugGrid_;
+  std::list<GridCell> initialPath_;
+  std::list<GridCell> smoothedPath_;
+  std::unordered_map<std::string, Point> destinations_;
+  void findInitialPath(const GridCell &start, const GridCell &goal);
+  GridCell findMinNeighbor(const GridCell &curr);
+  void smoothePath();
+  void smoothePathHelper();
+  void loadDestinations(std::string &filename);
 };
 
-
+}
 #endif //WAVEFRONT_WAVENAV_H
