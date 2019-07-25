@@ -34,17 +34,17 @@ class WaveNav {
 
 public:
   struct ppOutput {
-    std::string waveType;
-    int numCellsVisited;
-    double initialPathLength;
-    double smoothPathLength;
-    double cpuTime;
+    std::string waveType_;
+    int numCellsVisited_;
+    double initialPathLength_;
+    double smoothPathLength_;
+    double cpuTime_;
   };
   WaveNav(const std::string &inputPath, const std::string &outputPathPrefix);
   ~WaveNav();
-  ppOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType);
-  ppOutput planPath(Point &start, Point &goal, const std::string &waveType);
-  ppOutput planPath(GPS &start, GPS &goal, const std::string &waveType);
+  WaveNav::ppOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType, int debugLevel);
+  ppOutput planPath(Point &start, Point &goal, const std::string &waveType, int debugLevel);
+  ppOutput planPath(GPS &start, GPS &goal, const std::string &waveType, int debugLevel);
   static void printCells(const std::list<GridCell> &cells);
   static void printCells(const std::vector<GridCell> &cells);
 

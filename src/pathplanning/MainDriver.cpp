@@ -25,54 +25,56 @@ void loadDestinations(const std::string &filename, std::unordered_map<std::strin
 
 
 WaveNav::ppOutput findAnyPath(WaveNav &myNav,
-                                       const std::string &waveOption,
-                                       Point &startPoint,
-                                       Point &goalPoint) {
-  GridCell startCell = pointToCell(startPoint);
-  GridCell goalCell = pointToCell(goalPoint);
-  return myNav.planPath(startCell, goalCell, waveOption);
+                              const std::string &waveOption,
+                              Point &startPoint,
+                              Point &goalPoint,
+                              int debugLevel) {
+  return myNav.planPath(startPoint, goalPoint, waveOption, debugLevel);
 }
 
 
 void printOutput(const WaveNav::ppOutput &out) {
-  std::cout << "  " << out.waveType
-            << ": cells visited = " << out.numCellsVisited
-            << ", initial path length = " << out.initialPathLength
-            << ", smoothed path length = " << out.smoothPathLength << std::endl;
+  std::cout << "  " << out.waveType_ << ": \t"
+            << std::setw(12) << out.initialPathLength_
+            << std::setw(12) << out.smoothPathLength_
+            << std::setw(9) << out.numCellsVisited_;
 }
 
 
-void runTest(const std::string &start, const std::string &goal,
-             std::unordered_map<std::string, Point> &points) {
+void runTest(const std::string &start,
+             const std::string &goal,
+             std::unordered_map<std::string, Point> &points,
+             int trials,
+             int debugLevel) {
   std::string startStr = "dest" + start;
   std::string goalStr = "dest" + goal;
   std::string outputPath = "output/" + start + "-" + goal + "_";
 
-  std::cout << "MAP TEST - " << startStr << " to " << goalStr << std::endl;
+  std::cout << startStr << " to " << goalStr << std::endl;
   WaveNav myNav("../bitmaps/2dmap-01.pbm", outputPath + "OFWF");
-  WaveNav::ppOutput path = findAnyPath(myNav, "OFWF", points[startStr], points[goalStr]);
+  WaveNav::ppOutput path = findAnyPath(myNav, "OFWF", points[startStr], points[goalStr], debugLevel);
   std::vector<int> cpuTimes;
-  cpuTimes.reserve(10);
-  cpuTimes.emplace_back(path.cpuTime);
+  cpuTimes.reserve(trials);
+  cpuTimes.emplace_back(path.cpuTime_);
 
-  for (int i = 1; i < 10; ++i) {
+  for (int i = 1; i < trials; ++i) {
     myNav = WaveNav("../bitmaps/2dmap-01.pbm", outputPath + "OFWF");
-    path = findAnyPath(myNav, "OFWF", points[startStr], points[goalStr]);
-    cpuTimes.emplace_back(path.cpuTime);
+    path = findAnyPath(myNav, "OFWF", points[startStr], points[goalStr], debugLevel);
+    cpuTimes.emplace_back(path.cpuTime_);
   }
   printOutput(path);
   double averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
-  std::cout << "        avg CPU time: " << averageCpuTime << " microseconds\n";
+  std::cout << std::setw(9) << averageCpuTime << "\n";
   cpuTimes.clear();
 
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < trials; ++i) {
     myNav = WaveNav("../bitmaps/2dmap-01.pbm", outputPath + "Basic");
-    path = findAnyPath(myNav, "Basic", points[startStr], points[goalStr]);
-    cpuTimes.emplace_back(path.cpuTime);
+    path = findAnyPath(myNav, "Basic", points[startStr], points[goalStr], debugLevel);
+    cpuTimes.emplace_back(path.cpuTime_);
   }
   printOutput(path);
   averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
-  std::cout << "         avg CPU time: " << averageCpuTime << " microseconds\n";
+  std::cout << std::setw(9) << averageCpuTime << "\n";
   std::cout << "-----------\n";
   cpuTimes.clear();
 }
@@ -89,13 +91,13 @@ int main() {
   pp::loadDestinations("../dest_coordinates.txt", &POIs);
 
   std::string startDest, goalDest;
-  for (int i = 1; i <= 9; ++i) {
+  for (int i = 1; i <= 1; ++i) {
     for (int j = 1; j <= 9; ++j) {
       startDest = "0" + std::to_string(i);
       goalDest = "0" + std::to_string(j);
 
       if (startDest != goalDest) {
-        pp::runTest(startDest, goalDest, POIs);
+        pp::runTest(startDest, goalDest, POIs, 10, 0);
       }
     }
   }
@@ -118,13 +120,13 @@ int main() {
 //  pp::WaveNav::ppOutput path = findAnyPath(myNav, "OFWF", POIs["dest01"], POIs["dest02"]);
 //  std::vector<int> cpuTimes;
 //  cpuTimes.reserve(10);
-//  cpuTimes.emplace_back(path.cpuTime);
+//  cpuTimes.emplace_back(path.cpuTime_);
 //  pp::printOutput(path);
 //
 //  for (int i = 1; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/01-02_OFWF");
 //    path = findAnyPath(myNav, "OFWF", POIs["dest01"], POIs["dest02"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  double averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
 //  std::cout << "  OFWF avg CPU time: " << averageCpuTime << " microseconds\n";
@@ -133,7 +135,7 @@ int main() {
 //  for (int i = 0; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/01-02_Basic");
 //    path = findAnyPath(myNav, "Basic", POIs["dest01"], POIs["dest02"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  pp::printOutput(path);
 //  averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
@@ -145,7 +147,7 @@ int main() {
 //  for (int i = 0; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/01-05_OFWF");
 //    path = findAnyPath(myNav, "OFWF", POIs["dest01"], POIs["dest05"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  pp::printOutput(path);
 //  averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
@@ -155,7 +157,7 @@ int main() {
 //  for (int i = 0; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/01-05_Basic");
 //    path = findAnyPath(myNav, "Basic", POIs["dest01"], POIs["dest05"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  pp::printOutput(path);
 //  averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
@@ -167,7 +169,7 @@ int main() {
 //  for (int i = 0; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/06-03_OFWF");
 //    path = findAnyPath(myNav, "OFWF", POIs["dest06"], POIs["dest03"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  pp::printOutput(path);
 //  averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
@@ -177,7 +179,7 @@ int main() {
 //  for (int i = 0; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/06-03_Basic");
 //    path = findAnyPath(myNav, "Basic", POIs["dest06"], POIs["dest03"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  pp::printOutput(path);
 //  averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
@@ -189,7 +191,7 @@ int main() {
 //  for (int i = 0; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/04-09_OFWF");
 //    path = findAnyPath(myNav, "OFWF", POIs["dest04"], POIs["dest09"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  pp::printOutput(path);
 //  averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
@@ -199,7 +201,7 @@ int main() {
 //  for (int i = 0; i < 10; ++i) {
 //    myNav = pp::WaveNav("../bitmaps/2dmap-01.pbm", "output/04-09_Basic");
 //    path = findAnyPath(myNav, "Basic", POIs["dest04"], POIs["dest09"]);
-//    cpuTimes.emplace_back(path.cpuTime);
+//    cpuTimes.emplace_back(path.cpuTime_);
 //  }
 //  pp::printOutput(path);
 //  averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();

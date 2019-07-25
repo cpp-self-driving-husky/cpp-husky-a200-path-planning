@@ -26,9 +26,9 @@ WaveNav::WaveNav(const std::string &inputPath, const std::string &outputPathPref
 WaveNav::~WaveNav() = default;
 
 
-WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::string &waveType) {
+WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::string &waveType, int debugLevel) {
   WaveNav::ppOutput toReturn {};
-  toReturn.waveType = waveType;
+  toReturn.waveType_ = waveType;
   gridMap_.normCell(start);
   gridMap_.normCell(goal);
 
@@ -38,33 +38,36 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
                     gridMap_.propOFWF(goal, start, 500, 707);
   auto stop = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - begin);
-  toReturn.cpuTime = duration.count();
+  toReturn.cpuTime_ = duration.count();
 
   GridCell finalCell = waveResult.first;
-  toReturn.numCellsVisited = waveResult.second;
-  toReturn.initialPathLength = static_cast<double>(gridMap_.get(finalCell)) / 500;
+  toReturn.numCellsVisited_ = waveResult.second;
+  toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell)) / 500;
 
-  if (waveType == "Basic") {
-    debugGrid_.markWaves(gridMap_, "R");
-  } else {
-    debugGrid_.markWaves(gridMap_, "B");
+  if (debugLevel == 1) {
+    std::string waveColor = (waveType == "Basic") ? "R" : "B";
+    debugGrid_.markWaves(gridMap_, waveColor);
   }
 
   if (finalCell.equals(start)) {
     findInitialPath(finalCell, goal);
-    debugGrid_.markCells(initialPath_, Pixel(120));
+    if (debugLevel == 1) {
+      debugGrid_.markCells(initialPath_, Pixel(120));
+    }
 
     gridMap_ = OccGrid(outputPathPrefix_ + "_1-scaled input map.pnm", 1.0);
     gridMap_ = gridMap_.growGrid(0.15);
 
     smoothePath();
-    markSmoothedPath();
+    if (debugLevel == 1) {
+      markSmoothedPath();
+    }
 
-    toReturn.smoothPathLength = getSmoothedPathLength();
+    toReturn.smoothPathLength_ = getSmoothedPathLength();
 
-
-
-    debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.pnm");
+    if (debugLevel == 1) {
+      debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.pnm");
+    }
     return toReturn;
   } else {
     std::cout << "      $ ERROR: cannot find a path to that location.\n" << std::endl;
@@ -73,17 +76,17 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
 }
 
 
-WaveNav::ppOutput WaveNav::planPath(Point &start, Point &goal, const std::string &waveType) {
+WaveNav::ppOutput WaveNav::planPath(Point &start, Point &goal, const std::string &waveType, int debugLevel) {
   GridCell startCell = pointToCell(start);
   GridCell goalCell = pointToCell(goal);
-  return WaveNav::planPath(startCell, goalCell, waveType);
+  return WaveNav::planPath(startCell, goalCell, waveType, debugLevel);
 }
 
 
-WaveNav::ppOutput WaveNav::planPath(GPS &start, GPS &goal, const std::string &waveType) {
+WaveNav::ppOutput WaveNav::planPath(GPS &start, GPS &goal, const std::string &waveType, int debugLevel) {
   GridCell startCell = gpsToCell(start);
   GridCell goalCell = gpsToCell(goal);
-  return WaveNav::planPath(startCell, goalCell, waveType);
+  return WaveNav::planPath(startCell, goalCell, waveType, debugLevel);
 }
 
 

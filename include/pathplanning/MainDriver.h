@@ -5,6 +5,7 @@
 #ifndef WAVEFRONT_MAINDRIVER_H
 #define WAVEFRONT_MAINDRIVER_H
 
+#include <iomanip>
 #include <numeric>
 
 #include "pathplanning/WaveNav.h"
