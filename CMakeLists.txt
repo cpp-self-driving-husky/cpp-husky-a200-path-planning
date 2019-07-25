@@ -9,18 +9,9 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
 
+file(GLOB SOURCES "src/pathplanning/*.cpp")
 
-add_library(pplibrary
-        include/pathplanning/Coordinates.h
-        src/pathplanning/Coordinates.cpp
-        include/pathplanning/OccGrid.h
-        src/pathplanning/OccGrid.cpp
-        include/pathplanning/WaveNav.h
-        src/pathplanning/WaveNav.cpp
-        include/pathplanning/DebugGrid.h
-        include/pathplanning/Pixel.h
-        src/pathplanning/Pixel.cpp
-        src/pathplanning/DebugGrid.cpp)
+
 
 find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)
 
@@ -29,6 +20,15 @@ message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
 message(STATUS "Boost_VERSION: ${Boost_VERSION}")
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
+
+#add_library(pplibrary
+#        include/pathplanning/Coordinates.h
+#        include/pathplanning/Pixel.h
+#        include/pathplanning/OccGrid.h
+#        include/pathplanning/DebugGrid.h
+#        include/pathplanning/WaveNav.h
+#        )
+add_library(pplibrary SHARED ${SOURCES})
 
 add_executable(wavefront src/pathplanning/MainDriver.cpp include/pathplanning/MainDriver.h)
 target_link_libraries(wavefront ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
