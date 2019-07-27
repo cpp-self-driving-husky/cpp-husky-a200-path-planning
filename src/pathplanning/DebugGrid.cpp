@@ -6,98 +6,113 @@
 
 namespace pathplanner {
 
-DebugGrid::DebugGrid() {
-  gridWidth_ = GRID_WIDTH;
-  gridHeight_ = GRID_HEIGHT;
-  colorGrid_.resize(GRID_HEIGHT);
-  Pixel fill = Pixel(255);
-  for (auto &row : colorGrid_) {
-    row.resize(GRID_WIDTH, fill);
-  }
+DebugGrid::DebugGrid() = default;
+//  gridWidth_ = GRID_WIDTH;
+//  gridHeight_ = GRID_HEIGHT;
+//  colorGrid_.resize(GRID_HEIGHT);
+//  Pixel fill = Pixel(255);
+//  for (auto &row : colorGrid_) {
+//    row.resize(GRID_WIDTH, fill);
+//  }
+
+
+
+DebugGrid::DebugGrid(const std::string &filename) {
+  mat_ = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+  gridHeight_ = mat_.rows;
+  gridWidth_ = mat_.cols;
 }
 
+//DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
+//  mat_ = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+//  gridHeight_ = mat_.rows;
+//  gridWidth_ = mat_.cols;
 
-DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
-  std::string fileFormat;
-  int inputWidth, inputHeight, maxVal;
-  Pixel currGridPixel;
-  int gridRow, gridCol;
 
-  std::ifstream ifs;
-  ifs.open(filename.c_str(), std::ifstream::in);
-  ifs >> fileFormat;
-  ifs >> inputWidth >> inputHeight;
-  gridWidth_ = static_cast<int>(std::ceil(inputWidth / mapScale));
-  gridHeight_ = static_cast<int>(std::ceil(inputHeight / mapScale));
-  colorGrid_.resize(gridHeight_);
-  Pixel whitePixel = Pixel(255);
-  for (auto &row : colorGrid_) {
-    row.resize(gridWidth_, whitePixel);
-  }
-
-  if (fileFormat == "P1") {
-    char nextChar;
-    int nextInt;
-    for (int inRow = 0; inRow < inputHeight; ++inRow) {
-      for (int inCol = 0; inCol < inputWidth; ++inCol) {
-        ifs >> nextChar;
-        nextInt = nextChar - '0';
-        gridRow = static_cast<int>(inRow / mapScale);
-        gridCol = static_cast<int>(inCol / mapScale);
-        currGridPixel = colorGrid_[gridRow][gridCol];
-        if (currGridPixel.isWhite()) {
-          if (nextInt == 1) {
-            colorGrid_[gridRow][gridCol] = Pixel(0);
-          }
-        }
-      }
-    }
-  } else if (fileFormat == "P2") {
-    ifs >> maxVal;
-    int nextInt;
-    for (int inRow = 0; inRow < inputHeight; ++inRow) {
-      for (int inCol = 0; inCol < inputWidth; ++inCol) {
-        ifs >> nextInt;
-        gridRow = static_cast<int>(inRow / mapScale);
-        gridCol = static_cast<int>(inCol / mapScale);
-        currGridPixel = colorGrid_[gridRow][gridCol];
-        if (!currGridPixel.isBlack()) {
-          colorGrid_[gridRow][gridCol] = Pixel(nextInt);
-        }
-      }
-    }
-  } else if (fileFormat == "P5") {
-    ifs >> maxVal;
-    char nextChar;
-    for (int inRow = 0; inRow < inputHeight; ++inRow) {
-      for (int inCol = 0; inCol < inputWidth; ++inCol) {
-        ifs >> nextChar;
-        gridRow = static_cast<int>(inRow / mapScale);
-        gridCol = static_cast<int>(inCol / mapScale);
-        currGridPixel = colorGrid_[gridRow][gridCol];
-        if (!currGridPixel.isBlack()) {
-          colorGrid_[gridRow][gridCol] = Pixel(nextChar);
-        }
-      }
-    }
-  } else {
-    std::cout << "Can't read image file format." << std::endl;
-  }
-  ifs.close();
-}
+//  std::string fileFormat;
+//  int inputWidth, inputHeight, maxVal;
+//  Pixel currGridPixel;
+//  int gridRow, gridCol;
+//
+//  std::ifstream ifs;
+//  ifs.open(filename.c_str(), std::ifstream::in);
+//  ifs >> fileFormat;
+//  ifs >> inputWidth >> inputHeight;
+//  gridWidth_ = static_cast<int>(std::ceil(inputWidth / mapScale));
+//  gridHeight_ = static_cast<int>(std::ceil(inputHeight / mapScale));
+//  colorGrid_.resize(gridHeight_);
+//  Pixel whitePixel = Pixel(255);
+//  for (auto &row : colorGrid_) {
+//    row.resize(gridWidth_, whitePixel);
+//  }
+//
+//  if (fileFormat == "P1") {
+//    char nextChar;
+//    int nextInt;
+//    for (int inRow = 0; inRow < inputHeight; ++inRow) {
+//      for (int inCol = 0; inCol < inputWidth; ++inCol) {
+//        ifs >> nextChar;
+//        nextInt = nextChar - '0';
+//        gridRow = static_cast<int>(inRow / mapScale);
+//        gridCol = static_cast<int>(inCol / mapScale);
+//        currGridPixel = colorGrid_[gridRow][gridCol];
+//        if (currGridPixel.isWhite()) {
+//          if (nextInt == 1) {
+//            colorGrid_[gridRow][gridCol] = Pixel(0);
+//          }
+//        }
+//      }
+//    }
+//  } else if (fileFormat == "P2") {
+//    ifs >> maxVal;
+//    int nextInt;
+//    for (int inRow = 0; inRow < inputHeight; ++inRow) {
+//      for (int inCol = 0; inCol < inputWidth; ++inCol) {
+//        ifs >> nextInt;
+//        gridRow = static_cast<int>(inRow / mapScale);
+//        gridCol = static_cast<int>(inCol / mapScale);
+//        currGridPixel = colorGrid_[gridRow][gridCol];
+//        if (!currGridPixel.isBlack()) {
+//          colorGrid_[gridRow][gridCol] = Pixel(nextInt);
+//        }
+//      }
+//    }
+//  } else if (fileFormat == "P5") {
+//    ifs >> maxVal;
+//    char nextChar;
+//    for (int inRow = 0; inRow < inputHeight; ++inRow) {
+//      for (int inCol = 0; inCol < inputWidth; ++inCol) {
+//        ifs >> nextChar;
+//        gridRow = static_cast<int>(inRow / mapScale);
+//        gridCol = static_cast<int>(inCol / mapScale);
+//        currGridPixel = colorGrid_[gridRow][gridCol];
+//        if (!currGridPixel.isBlack()) {
+//          colorGrid_[gridRow][gridCol] = Pixel(nextChar);
+//        }
+//      }
+//    }
+//  } else {
+//    std::cout << "Can't read image file format." << std::endl;
+//  }
+//  ifs.close();
+//}
 
 
 void DebugGrid::outputGrid(const std::string &outputPath) {
-  std::ofstream outFile(outputPath.c_str(), std::ofstream::out);
-  outFile << "P3" << std::endl;
-  outFile << gridWidth_ << " " << gridHeight_ << std::endl << 255 << std::endl;
-
-  for (int row = 0; row < gridHeight_; ++row) {
-    for (int col = 0; col < gridWidth_; ++col) {
-      outFile << colorGrid_[row][col].toString() << " ";
-    }
-  }
-  outFile.close();
+  std::vector<int> compression_params;
+  compression_params.push_back(CV_IMWRITE_PXM_BINARY);
+  compression_params.push_back(0);
+  cv::imwrite(outputPath, mat_, compression_params);
+//  std::ofstream outFile(outputPath.c_str(), std::ofstream::out);
+//  outFile << "P3" << std::endl;
+//  outFile << gridWidth_ << " " << gridHeight_ << std::endl << 255 << std::endl;
+//
+//  for (int row = 0; row < gridHeight_; ++row) {
+//    for (int col = 0; col < gridWidth_; ++col) {
+//      outFile << colorGrid_[row][col].toString() << " ";
+//    }
+//  }
+//  outFile.close();
 }
 
 
@@ -111,16 +126,24 @@ void DebugGrid::markWaves(const OccGrid &waveGrid, const std::string &waveColor)
   for (int row = 0; row < gridHeight_; ++row) {
     for (int col = 0; col < gridWidth_; ++col) {
       if (waveGrid.get(col, row) > 1) {
-        tintColor =
-            static_cast<int>(((std::trunc(10.0 * (maxDistance - waveGrid.get(col, row)) / maxDistance)) / 10.0) * 255);
+        tintColor = static_cast<int>(((std::trunc(10.0 * (maxDistance - waveGrid.get(col, row)) / maxDistance)) / 10.0) * 255);
         if (waveColor == "R") {
-          colorGrid_[row][col] = Pixel(255, tintColor, tintColor);
+//          colorGrid_[row][col] = Pixel(255, tintColor, tintColor);
+          mat_.at<cv::Vec3b>(row, col)[0] = tintColor;
+          mat_.at<cv::Vec3b>(row, col)[1] = tintColor;
+          mat_.at<cv::Vec3b>(row, col)[2] = 255;
         } else if (waveColor == "G") {
-          colorGrid_[row][col] = Pixel(tintColor, 255, tintColor);
+//          colorGrid_[row][col] = Pixel(tintColor, 255, tintColor);
+          mat_.at<cv::Vec3b>(row, col)[0] = tintColor;
+          mat_.at<cv::Vec3b>(row, col)[1] = 255;
+          mat_.at<cv::Vec3b>(row, col)[2] = tintColor;
         } else if (waveColor == "B") {
-          colorGrid_[row][col] = Pixel(tintColor, tintColor, 255);
+//          colorGrid_[row][col] = Pixel(tintColor, tintColor, 255);
+          mat_.at<cv::Vec3b>(row, col)[0] = 255;
+          mat_.at<cv::Vec3b>(row, col)[1] = tintColor;
+          mat_.at<cv::Vec3b>(row, col)[2] = tintColor;
         } else if (waveColor == "Gray") {
-          colorGrid_[row][col] = Pixel(tintColor);
+//          colorGrid_[row][col] = Pixel(tintColor);
         }
       }
     }
@@ -128,23 +151,23 @@ void DebugGrid::markWaves(const OccGrid &waveGrid, const std::string &waveColor)
 }
 
 
-void DebugGrid::markCell(const GridCell &cell, const Pixel &color) {
+void DebugGrid::markCell(const GridCell &cell, cv::Vec3b color) {
   int row {cell.getRow()};
   int col {cell.getCol()};
   if ((row >= 0) && (row < gridHeight_) && (col >= 0) && (col < gridWidth_)) {
-    colorGrid_[row][col] = color;
+    mat_.at<cv::Vec3b>(row, col) = color;
   }
 }
 
 
-void DebugGrid::markCells(const std::vector<GridCell> &cells, const Pixel &color) {
+void DebugGrid::markCells(const std::vector<GridCell> &cells, cv::Vec3b color) {
   for (const auto &cell : cells) {
     markCell(cell, color);
   }
 }
 
 
-void DebugGrid::markCells(const std::list<GridCell> &cells, const Pixel &color) {
+void DebugGrid::markCells(const std::list<GridCell> &cells, cv::Vec3b color) {
   for (const auto &cell : cells) {
     markCell(cell, color);
   }
@@ -183,7 +206,11 @@ void DebugGrid::markStart(const GridCell &start) {
   startCells.emplace_back(GridCell(startCol + 2, startRow - 2));
   startCells.emplace_back(GridCell(startCol + 2, startRow + 2));
 
-  markCells(startCells, Pixel(70));
+  cv::Vec3b color;
+  color[0] = 70;
+  color[1] = 70;
+  color[2] = 70;
+  markCells(startCells, color);
 
   std::vector<GridCell> whiteCells;
   whiteCells.emplace_back(GridCell(startCol - 1, startRow - 2));
@@ -207,7 +234,10 @@ void DebugGrid::markStart(const GridCell &start) {
   whiteCells.emplace_back(GridCell(startCol + 1, startRow - 1));
   whiteCells.emplace_back(GridCell(startCol + 1, startRow + 1));
 
-  markCells(whiteCells, Pixel(255));
+  color[0] = 255;
+  color[1] = 255;
+  color[2] = 255;
+  markCells(whiteCells, color);
 }
 
 
@@ -234,10 +264,38 @@ void DebugGrid::markGoal(const GridCell &goal) {
     }
   }
 
-  markCells(whiteCells, Pixel(255));
+  cv::Vec3b color;
+  color[0] = 255;
+  color[1] = 255;
+  color[2] = 255;
+  markCells(whiteCells, color);
 
   goalCells.emplace_back(goal);
-  markCells(goalCells, Pixel(70));
+  color[0] = 70;
+  color[1] = 70;
+  color[2] = 70;
+  markCells(goalCells, color);
 }
+
+
+//void DebugGrid::readImageAndDraw(const std::string &filename) {
+//  cv::Mat mat = cv::imread(filename, cv::IMREAD_COLOR);
+//  myLine(mat, )
+//}
+
+
+void DebugGrid::myLine(GridCell &start, GridCell &end) {
+  int thickness = 2;
+  int lineType = cv::LINE_8;
+  cv::Point startPoint = cv::Point(start.getCol(), start.getRow());
+  cv::Point endPoint = cv::Point(end.getCol(), end.getRow());
+  cv::line(mat_,
+           startPoint,
+           endPoint,
+           cv::Scalar(0, 255, 255),
+           thickness,
+           lineType);
+}
+
 
 }

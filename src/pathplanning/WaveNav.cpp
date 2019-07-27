@@ -15,7 +15,7 @@ WaveNav::WaveNav(const std::string &inputPath, const std::string &outputPathPref
   gridMap_ = OccGrid(inputPath_, SCALE_MAP);
   gridMap_.outputGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
   gridMap_ = gridMap_.growGrid(0.4);
-  debugGrid_ = DebugGrid(outputPathPrefix_ + "_1-scaled input map.pnm", 1.0);
+  debugGrid_ = DebugGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
   initialPath_.clear();
   smoothedPath_.clear();
 //  loadDestinations("../dest_coordinates.txt");
@@ -51,23 +51,21 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
 
   if (finalCell.equals(start)) {
     findInitialPath(finalCell, goal);
-    if (debugLevel == 1) {
-      debugGrid_.markCells(initialPath_, Pixel(120));
-    }
 
     gridMap_ = OccGrid(outputPathPrefix_ + "_1-scaled input map.pnm", 1.0);
     gridMap_ = gridMap_.growGrid(0.15);
 
     smoothePath();
-    if (debugLevel == 1) {
-      markSmoothedPath();
-    }
-
     toReturn.smoothPathLength_ = getSmoothedPathLength();
 
     if (debugLevel == 1) {
+      markSmoothedPath();
+      markInitialPath();
+      debugGrid_.markStart(start);
+      debugGrid_.markGoal(goal);
       debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.pnm");
     }
+
     return toReturn;
   } else {
     std::cout << "      $ ERROR: cannot find a path to that location.\n" << std::endl;
@@ -104,6 +102,14 @@ void WaveNav::findInitialPath(const GridCell &start, const GridCell &goal) {
   initialPath_.emplace_back(goal);
 }
 
+
+void WaveNav::markInitialPath() {
+  cv::Vec3b bgr;
+  bgr[0] = 100;
+  bgr[1] = 100;
+  bgr[2] = 100;
+  debugGrid_.markCells(initialPath_, bgr);
+}
 
 /**
  * Finds the neighboring cell with the lowest weight.
@@ -193,7 +199,8 @@ void WaveNav::markSmoothedPath() {
   auto it1 = it0;
   ++it1;
   while (it1 != smoothedPath_.end()) {
-    debugGrid_.markCells(OccGrid::drawLine(*it0, *it1), Pixel(225, 225, 0));
+//    debugGrid_.markCells(OccGrid::drawLine(*it0, *it1), Pixel(225, 225, 0));
+    debugGrid_.myLine(*it0, *it1);
     ++it0;
     ++it1;
   }
@@ -202,7 +209,11 @@ void WaveNav::markSmoothedPath() {
   neighborhood.reserve(9);
   for (const auto &cell : smoothedPath_) {
     gridMap_.getNeighborhood(cell, 1, neighborhood);
-    debugGrid_.markCells(neighborhood, Pixel(70));
+    cv::Vec3b color;
+    color[0] = 70;
+    color[1] = 70;
+    color[2] = 70;
+    debugGrid_.markCells(neighborhood, color);
     neighborhood.clear();
   }
 
