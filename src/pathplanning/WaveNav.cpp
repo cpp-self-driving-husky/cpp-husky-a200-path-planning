@@ -14,7 +14,7 @@ WaveNav::WaveNav(const std::string &inputPath, const std::string &outputPathPref
   outputPathPrefix_ = outputPathPrefix;
   gridMap_ = OccGrid(inputPath_, SCALE_MAP);
   gridMap_.outputGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
-  gridMap_ = gridMap_.growGrid(0.3);
+  gridMap_ = gridMap_.growGrid(0.4);
   debugGrid_ = DebugGrid(outputPathPrefix_ + "_1-scaled input map.pnm", 1.0);
   initialPath_.clear();
   smoothedPath_.clear();
@@ -27,7 +27,7 @@ WaveNav::~WaveNav() = default;
 
 
 WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::string &waveType, int debugLevel) {
-  WaveNav::ppOutput toReturn {};
+  WaveNav::ppOutput toReturn;
   toReturn.waveType_ = waveType;
   gridMap_.normCell(start);
   gridMap_.normCell(goal);
@@ -87,20 +87,6 @@ WaveNav::ppOutput WaveNav::planPath(GPS &start, GPS &goal, const std::string &wa
   GridCell startCell = gpsToCell(start);
   GridCell goalCell = gpsToCell(goal);
   return WaveNav::planPath(startCell, goalCell, waveType, debugLevel);
-}
-
-
-void WaveNav::printCells(const std::list<GridCell> &cells) {
-  for (const auto &cell : cells) {
-    std::cout << "        " << cell.toString() << std::endl;
-  }
-}
-
-
-void WaveNav::printCells(const std::vector<GridCell> &cells) {
-  for (const auto &cell : cells) {
-    std::cout << "        " << cell.toString() << std::endl;
-  }
 }
 
 
@@ -189,7 +175,6 @@ void WaveNav::smoothePathHelper() {
   ++it2;
   ++it2;
 
-//  while ((it0 != it_end) && (it1 != it_end) && (it2 != it_end) && (smoothedPath_.size() > 2)) {
   while ((it2 != it_end) && (smoothedPath_.size() > 2)) {
     if (gridMap_.isInLine(*it0, *it2)) {
       it1 = smoothedPath_.erase(it1);
@@ -223,6 +208,16 @@ void WaveNav::markSmoothedPath() {
 
   debugGrid_.markStart(smoothedPath_.front());
   debugGrid_.markGoal(smoothedPath_.back());
+}
+
+
+std::vector<GridCell> WaveNav::getInitialPath() {
+  return std::vector<GridCell> {initialPath_.begin(), initialPath_.end()};
+}
+
+
+std::vector<GridCell> WaveNav::getSmoothedPath() {
+  return std::vector<GridCell> {smoothedPath_.begin(), smoothedPath_.end()};
 }
 
 

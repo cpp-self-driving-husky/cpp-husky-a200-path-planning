@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 
-#include <boost/filesystem.hpp>
+//#include <boost/filesystem.hpp>
 
 #include "pathplanning/Coordinates.h"
 #include "pathplanning/OccGrid.h"
@@ -40,13 +40,14 @@ public:
     double smoothPathLength_;
     double cpuTime_;
   };
+  WaveNav() = default;
   WaveNav(const std::string &inputPath, const std::string &outputPathPrefix);
   ~WaveNav();
   WaveNav::ppOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType, int debugLevel);
   ppOutput planPath(Point &start, Point &goal, const std::string &waveType, int debugLevel);
   ppOutput planPath(GPS &start, GPS &goal, const std::string &waveType, int debugLevel);
-  static void printCells(const std::list<GridCell> &cells);
-  static void printCells(const std::vector<GridCell> &cells);
+  std::vector<GridCell> getInitialPath();
+  std::vector<GridCell> getSmoothedPath();
 
 private:
   std::string inputPath_;

@@ -27,8 +27,8 @@ DebugGrid::DebugGrid(const std::string &filename, double mapScale) {
   ifs.open(filename.c_str(), std::ifstream::in);
   ifs >> fileFormat;
   ifs >> inputWidth >> inputHeight;
-  gridWidth_ = std::ceil(inputWidth / mapScale);
-  gridHeight_ = std::ceil(inputHeight / mapScale);
+  gridWidth_ = static_cast<int>(std::ceil(inputWidth / mapScale));
+  gridHeight_ = static_cast<int>(std::ceil(inputHeight / mapScale));
   colorGrid_.resize(gridHeight_);
   Pixel whitePixel = Pixel(255);
   for (auto &row : colorGrid_) {

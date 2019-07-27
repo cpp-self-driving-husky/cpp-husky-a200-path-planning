@@ -13,13 +13,13 @@ file(GLOB SOURCES "src/pathplanning/*.cpp")
 
 
 
-find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)
-
-message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
-message(STATUS "Boost_VERSION: ${Boost_VERSION}")
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIR})
+#find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)
+#
+#message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+#message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
+#message(STATUS "Boost_VERSION: ${Boost_VERSION}")
+#include_directories(${Boost_INCLUDE_DIRS})
+#link_directories(${Boost_LIBRARY_DIR})
 
 #add_library(pplibrary
 #        include/pathplanning/Coordinates.h
@@ -30,8 +30,8 @@ link_directories(${Boost_LIBRARY_DIR})
 #        )
 add_library(pplibrary SHARED ${SOURCES})
 
-add_executable(wavefront src/pathplanning/MainDriver.cpp include/pathplanning/MainDriver.h)
-target_link_libraries(wavefront ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+add_executable(wavefront src/pathplanning/MainDriver.cpp)
+#target_link_libraries(wavefront ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 
 #find_package(PkgConfig)
