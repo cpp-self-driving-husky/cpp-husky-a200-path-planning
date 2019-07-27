@@ -43,3 +43,4 @@ Wavefront.cbp
 /build/
 /build-clang/
 /cmake*/
+/src/temp/

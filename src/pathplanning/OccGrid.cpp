@@ -11,14 +11,15 @@ namespace pathplanner {
 
 class CompareGreater {
 public:
-  bool operator()(std::pair<double, GridCell> &p1, std::pair<double, GridCell> &p2) {
-    if (p1.first > p2.first) {
-      return true;
-    } else if (p1.first - p2.first == 0) {
-      return p1.second.getCol() > p2.second.getCol();
-    } else {
-      return false;
-    }
+  bool operator()(std::pair<int, GridCell> &p1, std::pair<int, GridCell> &p2) {
+//    if (p1.first > p2.first) {
+//      return true;
+//    } else if (p1.first < p2.first) {
+//      return false;
+//    } else {
+//      return false;
+//    }
+  return p1.first > p2.first;
   }
 };
 
@@ -42,8 +43,8 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
   ifs.open(filename.c_str(), std::ifstream::in);
   ifs >> fileFormat;
   ifs >> inputWidth >> inputHeight;
-  gridWidth_ = std::ceil(inputWidth / mapScale);
-  gridHeight_ = std::ceil(inputHeight / mapScale);
+  gridWidth_ = static_cast<int>(std::ceil(inputWidth / mapScale));
+  gridHeight_ = static_cast<int>(std::ceil(inputHeight / mapScale));
   grid_.resize(gridHeight_);
   for (auto &row : grid_) {
     row.resize(gridWidth_, 0);
@@ -243,8 +244,8 @@ std::pair<GridCell, int> OccGrid::propWavesBasic(GridCell &goal, GridCell &start
  *         if successful
  */
 std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int orthoDist, int diagDist) {
-  std::priority_queue<std::pair<double, GridCell>,
-                      std::vector<std::pair<double, GridCell>>,
+  std::priority_queue<std::pair<int, GridCell>,
+                      std::vector<std::pair<int, GridCell>>,
                       CompareGreater>
       waveQ;
 
@@ -253,11 +254,11 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
 
   // set goal cell value to 2 and push to waveQ
   set(goal, 2);
-  waveQ.emplace(2.0, goal);
+  waveQ.emplace(2, goal);
 
   GridCell currCell;
-  double dx, dy;
-  double cost, heuristic;
+  int dx, dy;
+  int cost, heuristic;
 
   // if waveQ.empty(), wave has stopped propagating before the start cell was reached.
   // goal is unreachable from start
@@ -265,15 +266,27 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
   while (!waveQ.empty()) {
     currCell = waveQ.top().second;
 
+//    std::cout << currCell.toString() << ": " << waveQ.top().first << std::endl;
+
     // find free neighbors, update weights, calculate costs, push onto priority queue
     getNeighborhood(currCell, 1, neighborhood);
     for (auto &neighbor : neighborhood) {
       if (get(neighbor) == 0) {
         setWeight(neighbor, orthoDist, diagDist);
-        dx = static_cast<double>(std::labs(neighbor.getCol() - start.getCol()));
-        dy = static_cast<double>(std::labs(neighbor.getRow() - start.getRow()));
-        heuristic = 0.99 * orthoDist * ((dx + dy) + (sqrt(2.0) - 2) * std::min(dx, dy));
-        cost = static_cast<double>(get(neighbor)) + heuristic;
+        dx = std::abs(neighbor.getCol() - start.getCol());
+        dy = std::abs(neighbor.getRow() - start.getRow());
+
+//        heuristic = 0.99 * orthoDist * ((dx + dy) + (sqrt(2.0) - 2) * std::min(dx, dy));
+
+
+        heuristic = orthoDist * (dx + dy) + (diagDist - (2 * orthoDist)) * std::min(dx, dy);
+//        heuristic = orthoDist * static_cast<int>(euclideanDist(neighbor, start));
+
+        cost = get(neighbor) + heuristic;
+//        std::cout << "  (" << neighbor.getCol()
+//                  << "," << neighbor.getRow()
+//                  << "): " << cost << "   "
+//                  << get(neighbor) << std::endl;
 
         // Use cost to set priority of neighbor.
         waveQ.emplace(cost, neighbor);
