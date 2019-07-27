@@ -7,11 +7,15 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 #include_directories(${PROJECT_SOURCE_DIR}/lib)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
+
+#set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -O1 -fno-omit-frame-pointer")
 
 file(GLOB SOURCES "src/pathplanning/*.cpp")
 
 
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 #find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)
 #
@@ -43,7 +47,7 @@ add_executable(wavefront src/pathplanning/MainDriver.cpp)
 #    endif ()
 #endif ()
 
-target_link_libraries(wavefront pplibrary)
+target_link_libraries(wavefront pplibrary ${OpenCV_LIBS})
 #target_include_directories(wavefront PUBLIC ${PLAYER_INCLUDE_DIRS})
 #target_compile_options(wavefront PUBLIC ${PLAYER_CFLAGS_OTHER})
 

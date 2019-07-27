@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -20,6 +21,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#include <opencv2/opencv.hpp>
 
 #include "Coordinates.h"
 
@@ -54,6 +57,7 @@ public:
   int get(const GridCell &cell) const;
   void set(const GridCell &cell, int value);
   void outputGrid(const std::string &filename);
+  void outputGrid2(const std::string &filename);
   OccGrid growGrid(double radius);
   std::pair<GridCell, int> propWavesBasic(GridCell &goal, GridCell &start, int orthoDist, int diagDist);
   std::pair<GridCell, int> propOFWF(GridCell &goal, GridCell &start, int orthoDist, int diagDist);

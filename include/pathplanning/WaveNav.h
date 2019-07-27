@@ -58,6 +58,7 @@ private:
   std::list<GridCell> smoothedPath_;
 
   void findInitialPath(const GridCell &start, const GridCell &goal);
+  void markInitialPath();
   GridCell findMinNeighbor(const GridCell &curr);
   void smoothePath();
   void smoothePathHelper();
