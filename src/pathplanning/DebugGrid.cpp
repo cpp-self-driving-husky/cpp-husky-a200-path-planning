@@ -100,8 +100,8 @@ DebugGrid::DebugGrid(const std::string &filename) {
 
 void DebugGrid::outputGrid(const std::string &outputPath) {
   std::vector<int> compression_params;
-  compression_params.push_back(CV_IMWRITE_PXM_BINARY);
-  compression_params.push_back(0);
+  compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+  compression_params.push_back(3);
   cv::imwrite(outputPath, mat_, compression_params);
 //  std::ofstream outFile(outputPath.c_str(), std::ofstream::out);
 //  outFile << "P3" << std::endl;
@@ -128,22 +128,18 @@ void DebugGrid::markWaves(const OccGrid &waveGrid, const std::string &waveColor)
       if (waveGrid.get(col, row) > 1) {
         tintColor = static_cast<int>(((std::trunc(10.0 * (maxDistance - waveGrid.get(col, row)) / maxDistance)) / 10.0) * 255);
         if (waveColor == "R") {
-//          colorGrid_[row][col] = Pixel(255, tintColor, tintColor);
           mat_.at<cv::Vec3b>(row, col)[0] = tintColor;
           mat_.at<cv::Vec3b>(row, col)[1] = tintColor;
           mat_.at<cv::Vec3b>(row, col)[2] = 255;
         } else if (waveColor == "G") {
-//          colorGrid_[row][col] = Pixel(tintColor, 255, tintColor);
           mat_.at<cv::Vec3b>(row, col)[0] = tintColor;
           mat_.at<cv::Vec3b>(row, col)[1] = 255;
           mat_.at<cv::Vec3b>(row, col)[2] = tintColor;
         } else if (waveColor == "B") {
-//          colorGrid_[row][col] = Pixel(tintColor, tintColor, 255);
           mat_.at<cv::Vec3b>(row, col)[0] = 255;
           mat_.at<cv::Vec3b>(row, col)[1] = tintColor;
           mat_.at<cv::Vec3b>(row, col)[2] = tintColor;
         } else if (waveColor == "Gray") {
-//          colorGrid_[row][col] = Pixel(tintColor);
         }
       }
     }
@@ -278,13 +274,7 @@ void DebugGrid::markGoal(const GridCell &goal) {
 }
 
 
-//void DebugGrid::readImageAndDraw(const std::string &filename) {
-//  cv::Mat mat = cv::imread(filename, cv::IMREAD_COLOR);
-//  myLine(mat, )
-//}
-
-
-void DebugGrid::myLine(GridCell &start, GridCell &end) {
+void DebugGrid::myLine(GridCell &start, GridCell &end, cv::Vec3b &color) {
   int thickness = 2;
   int lineType = cv::LINE_8;
   cv::Point startPoint = cv::Point(start.getCol(), start.getRow());
@@ -292,7 +282,7 @@ void DebugGrid::myLine(GridCell &start, GridCell &end) {
   cv::line(mat_,
            startPoint,
            endPoint,
-           cv::Scalar(0, 255, 255),
+           color,
            thickness,
            lineType);
 }

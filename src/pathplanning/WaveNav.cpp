@@ -18,8 +18,6 @@ WaveNav::WaveNav(const std::string &inputPath, const std::string &outputPathPref
   debugGrid_ = DebugGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
   initialPath_.clear();
   smoothedPath_.clear();
-//  loadDestinations("../dest_coordinates.txt");
-//  loadTestXY("../test_xy.txt");
 }
 
 
@@ -34,19 +32,22 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
 
   auto begin = std::chrono::high_resolution_clock::now();
   auto waveResult = (waveType == "Basic") ?
-                    gridMap_.propWavesBasic(goal, start, 500, 707) :
-                    gridMap_.propOFWF(goal, start, 500, 707);
+                    gridMap_.propWavesBasic(goal, start, 5, 7) :
+                    gridMap_.propOFWF(goal, start, 5, 7);
   auto stop = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - begin);
   toReturn.cpuTime_ = duration.count();
 
   GridCell finalCell = waveResult.first;
   toReturn.numCellsVisited_ = waveResult.second;
-  toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell)) / 500;
+  toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell)) / 5;
 
   if (debugLevel == 1) {
     std::string waveColor = (waveType == "Basic") ? "R" : "B";
     debugGrid_.markWaves(gridMap_, waveColor);
+    debugGrid_.markStart(start);
+    debugGrid_.markGoal(goal);
+    debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
   }
 
   if (finalCell.equals(start)) {
@@ -59,16 +60,16 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
     toReturn.smoothPathLength_ = getSmoothedPathLength();
 
     if (debugLevel == 1) {
-      markSmoothedPath();
+      markSmoothedPath(waveType);
       markInitialPath();
-      debugGrid_.markStart(start);
-      debugGrid_.markGoal(goal);
-      debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.pnm");
+      debugGrid_.markStart(smoothedPath_.front());
+      debugGrid_.markGoal(smoothedPath_.back());;
+      debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
     }
 
     return toReturn;
   } else {
-    std::cout << "      $ ERROR: cannot find a path to that location.\n" << std::endl;
+//    std::cout << "      $ ERROR: cannot find a path to that location." << std::endl;
     return toReturn;
   }
 }
@@ -194,13 +195,31 @@ void WaveNav::smoothePathHelper() {
 }
 
 
-void WaveNav::markSmoothedPath() {
+void WaveNav::markSmoothedPath(const std::string &waveType) {
+  cv::Vec3b color;
+  cv::Vec3b waypointColor;
+  if (waveType == "OFWF") {
+    color[0] = 0;
+    color[1] = 165;
+    color[2] = 255;
+    waypointColor[0] = 140;
+    waypointColor[1] = 20;
+    waypointColor[2] = 60;
+  } else {
+    color[0] = 255;
+    color[1] = 40;
+    color[2] = 40;
+    waypointColor[0] = 0;
+    waypointColor[1] = 255;
+    waypointColor[2] = 255;
+  }
+
   auto it0 = smoothedPath_.begin();
   auto it1 = it0;
   ++it1;
+
   while (it1 != smoothedPath_.end()) {
-//    debugGrid_.markCells(OccGrid::drawLine(*it0, *it1), Pixel(225, 225, 0));
-    debugGrid_.myLine(*it0, *it1);
+    debugGrid_.myLine(*it0, *it1, color);
     ++it0;
     ++it1;
   }
@@ -209,16 +228,12 @@ void WaveNav::markSmoothedPath() {
   neighborhood.reserve(9);
   for (const auto &cell : smoothedPath_) {
     gridMap_.getNeighborhood(cell, 1, neighborhood);
-    cv::Vec3b color;
-    color[0] = 70;
-    color[1] = 70;
-    color[2] = 70;
-    debugGrid_.markCells(neighborhood, color);
+    debugGrid_.markCells(neighborhood, waypointColor);
     neighborhood.clear();
   }
 
-  debugGrid_.markStart(smoothedPath_.front());
-  debugGrid_.markGoal(smoothedPath_.back());
+//  debugGrid_.markStart(smoothedPath_.front());
+//  debugGrid_.markGoal(smoothedPath_.back());
 }
 
 

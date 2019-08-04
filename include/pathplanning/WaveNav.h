@@ -62,7 +62,7 @@ private:
   GridCell findMinNeighbor(const GridCell &curr);
   void smoothePath();
   void smoothePathHelper();
-  void markSmoothedPath();
+  void markSmoothedPath(const std::string &waveType);
   double getSmoothedPathLength();
 };
 

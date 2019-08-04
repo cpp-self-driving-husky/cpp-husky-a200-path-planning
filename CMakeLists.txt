@@ -9,7 +9,8 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 
 #set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -O1 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -O1 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -Wall -Wextra -Werror -O3 -DNDEBUG")
 
 file(GLOB SOURCES "src/pathplanning/*.cpp")
 
