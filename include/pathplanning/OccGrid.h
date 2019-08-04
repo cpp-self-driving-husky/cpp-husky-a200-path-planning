@@ -28,11 +28,11 @@
 
 namespace pathplanner {
 
-const double SCALE_MAP = 4.0;
+const double SCALE_MAP = 2.0;
 const double WIDTH_METERS = 186.23;
 const double HEIGHT_METERS = 186.23;
-const int GRID_HEIGHT = 466;
-const int GRID_WIDTH = 466;
+const int GRID_HEIGHT = 950;
+const int GRID_WIDTH = 950;
 const double MIN_LAT = 34.057649;
 const double MAX_LAT = 34.059320;
 const double MIN_LONG = -117.824690;

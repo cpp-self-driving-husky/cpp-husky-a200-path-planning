@@ -17,7 +17,6 @@ class DebugGrid {
 public:
   DebugGrid();
   explicit DebugGrid(const std::string &filename);
-//  DebugGrid(const std::string &filename, double mapScale);
   virtual ~DebugGrid() = default;
   void outputGrid(const std::string &outputPath);
   void markWaves(const OccGrid &waveGrid, const std::string &waveColor);
@@ -26,12 +25,10 @@ public:
   void markCells(const std::list<GridCell> &cells, cv::Vec3b color);
   void markStart(const GridCell &start);
   void markGoal(const GridCell &goal);
-//  void readImageAndDraw(const std::string &filename);
-  void myLine(GridCell &start, GridCell &end);
+  void myLine(GridCell &start, GridCell &end, cv::Vec3b &color);
 
 private:
   int gridWidth_, gridHeight_;
-//  std::vector<std::vector<Pixel> > colorGrid_;
   cv::Mat mat_;
 };
 

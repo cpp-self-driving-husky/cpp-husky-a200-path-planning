@@ -12,14 +12,11 @@ namespace pathplanner {
 class CompareGreater {
 public:
   bool operator()(std::pair<int, GridCell> &p1, std::pair<int, GridCell> &p2) {
-//    if (p1.first > p2.first) {
-//      return true;
-//    } else if (p1.first < p2.first) {
-//      return false;
-//    } else {
-//      return false;
-//    }
-  return p1.first > p2.first;
+    if (p1.first == p2.first) {
+      std::hash<int> firstHash;
+      return firstHash(p1.first) > firstHash(p2.first);
+    }
+    return p1.first > p2.first;
   }
 };
 
@@ -224,6 +221,9 @@ std::pair<GridCell, int> OccGrid::propWavesBasic(GridCell &goal, GridCell &start
       }
     }
     neighborhood.clear();
+
+//    std::cout << "q size: " << waveQ.size() << std::endl;
+
     waveQ.pop();
   }
   return std::make_pair(currCell, numCellsVisited);
@@ -299,6 +299,7 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
       }
     }
     neighborhood.clear();
+//    std::cout << "q size: " << waveQ.size() << std::endl;
     waveQ.pop();
   }
   return std::make_pair(currCell, numCellsVisited);
@@ -490,6 +491,9 @@ void OccGrid::getNeighborhood(const GridCell &cell,
     for (int tempCol = minCol; tempCol <= maxCol; ++tempCol) {
       neighborhood.emplace_back(GridCell(tempCol, tempRow));
     }
+  }
+  if ((cell.getRow() + cell.getCol()) % 2 == 1) {
+    std::reverse(neighborhood.begin(), neighborhood.end());
   }
 }
 
