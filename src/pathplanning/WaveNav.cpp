@@ -12,10 +12,11 @@ namespace pathplanner {
 WaveNav::WaveNav(const std::string &inputPath, const std::string &outputPathPrefix) {
   inputPath_ = inputPath;
   outputPathPrefix_ = outputPathPrefix;
-  gridMap_ = OccGrid(inputPath_, SCALE_MAP);
-  gridMap_.outputGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
-  gridMap_ = gridMap_.growGrid(0.4);
-  debugGrid_ = DebugGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
+  gridMap_ = OccGrid(inputPath_, 1);
+//  gridMap_.outputGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
+//  gridMap_ = gridMap_.growGrid(0.2);
+//  debugGrid_ = DebugGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
+  debugGrid_ = DebugGrid(inputPath);
   initialPath_.clear();
   smoothedPath_.clear();
 }
@@ -30,6 +31,8 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
   gridMap_.normCell(start);
   gridMap_.normCell(goal);
 
+//  OccGrid grownGrid = gridMap_;
+
   auto begin = std::chrono::high_resolution_clock::now();
   auto waveResult = (waveType == "Basic") ?
                     gridMap_.propWavesBasic(goal, start, 5, 7) :
@@ -40,38 +43,35 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
 
   GridCell finalCell = waveResult.first;
   toReturn.numCellsVisited_ = waveResult.second;
-  toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell)) / 5;
+  toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell)) * SCALE_MAP / 50;
 
-  if (debugLevel == 1) {
-    std::string waveColor = (waveType == "Basic") ? "R" : "B";
-    debugGrid_.markWaves(gridMap_, waveColor);
-    debugGrid_.markStart(start);
-    debugGrid_.markGoal(goal);
-    debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
-  }
+//  if (debugLevel == 1) {
+//    std::string waveColor = (waveType == "Basic") ? "R" : "B";
+//    debugGrid_.markWaves(gridMap_, waveColor);
+//    debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
+//  }
 
   if (finalCell.equals(start)) {
     findInitialPath(finalCell, goal);
 
-    gridMap_ = OccGrid(outputPathPrefix_ + "_1-scaled input map.pnm", 1.0);
-    gridMap_ = gridMap_.growGrid(0.15);
+//    gridMap_ = OccGrid(outputPathPrefix_ + "_1-scaled input map.pnm", 1.0);
+//    gridMap_ = gridMap_.growGrid(0.15);
 
     smoothePath();
     toReturn.smoothPathLength_ = getSmoothedPathLength();
 
-    if (debugLevel == 1) {
-      markSmoothedPath(waveType);
-      markInitialPath();
-      debugGrid_.markStart(smoothedPath_.front());
-      debugGrid_.markGoal(smoothedPath_.back());;
-      debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
-    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto searchDuration = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+    toReturn.searchTime_ = searchDuration.count();
 
-    return toReturn;
-  } else {
-//    std::cout << "      $ ERROR: cannot find a path to that location." << std::endl;
-    return toReturn;
   }
+  if (debugLevel == 1) {
+    std::string waveColor = (waveType == "Basic") ? "R" : "B";
+    debugGrid_.markWaves(gridMap_, waveColor);
+    debugGrid_.markPaths(initialPath_, smoothedPath_, waveType);
+    debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
+  }
+  return toReturn;
 }
 
 
@@ -103,14 +103,6 @@ void WaveNav::findInitialPath(const GridCell &start, const GridCell &goal) {
   initialPath_.emplace_back(goal);
 }
 
-
-void WaveNav::markInitialPath() {
-  cv::Vec3b bgr;
-  bgr[0] = 100;
-  bgr[1] = 100;
-  bgr[2] = 100;
-  debugGrid_.markCells(initialPath_, bgr);
-}
 
 /**
  * Finds the neighboring cell with the lowest weight.
@@ -195,48 +187,6 @@ void WaveNav::smoothePathHelper() {
 }
 
 
-void WaveNav::markSmoothedPath(const std::string &waveType) {
-  cv::Vec3b color;
-  cv::Vec3b waypointColor;
-  if (waveType == "OFWF") {
-    color[0] = 0;
-    color[1] = 165;
-    color[2] = 255;
-    waypointColor[0] = 140;
-    waypointColor[1] = 20;
-    waypointColor[2] = 60;
-  } else {
-    color[0] = 255;
-    color[1] = 40;
-    color[2] = 40;
-    waypointColor[0] = 0;
-    waypointColor[1] = 255;
-    waypointColor[2] = 255;
-  }
-
-  auto it0 = smoothedPath_.begin();
-  auto it1 = it0;
-  ++it1;
-
-  while (it1 != smoothedPath_.end()) {
-    debugGrid_.myLine(*it0, *it1, color);
-    ++it0;
-    ++it1;
-  }
-
-  std::vector<GridCell> neighborhood;
-  neighborhood.reserve(9);
-  for (const auto &cell : smoothedPath_) {
-    gridMap_.getNeighborhood(cell, 1, neighborhood);
-    debugGrid_.markCells(neighborhood, waypointColor);
-    neighborhood.clear();
-  }
-
-//  debugGrid_.markStart(smoothedPath_.front());
-//  debugGrid_.markGoal(smoothedPath_.back());
-}
-
-
 std::vector<GridCell> WaveNav::getInitialPath() {
   return std::vector<GridCell> {initialPath_.begin(), initialPath_.end()};
 }
@@ -253,7 +203,7 @@ double WaveNav::getSmoothedPathLength() {
   auto it1 = it0;
   ++it1;
   while (it1 != smoothedPath_.end()) {
-    pathLength += OccGrid::euclideanDist(*it0, *it1);
+    pathLength += OccGrid::euclideanDistMeters(*it0, *it1);
     ++it0;
     ++it1;
   }

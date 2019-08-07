@@ -39,6 +39,7 @@ public:
     double initialPathLength_;
     double smoothPathLength_;
     double cpuTime_;
+    double searchTime_;
   };
   WaveNav() = default;
   WaveNav(const std::string &inputPath, const std::string &outputPathPrefix);
@@ -58,11 +59,9 @@ private:
   std::list<GridCell> smoothedPath_;
 
   void findInitialPath(const GridCell &start, const GridCell &goal);
-  void markInitialPath();
   GridCell findMinNeighbor(const GridCell &curr);
   void smoothePath();
   void smoothePathHelper();
-  void markSmoothedPath(const std::string &waveType);
   double getSmoothedPathLength();
 };
 

@@ -1,0 +1,221 @@
+dest01 to dest02  OFWF	       372.4        347.617        5301      1522.75
+dest01 to dest02  Basic	       372.4        347.617       40662      9810.75
+dest01 to dest03  OFWF	       657.8         613.07       11424      3303.25
+dest01 to dest03  Basic	       657.8         613.07       65430        15544
+dest01 to dest04  OFWF	         831        781.466       33457       9769.5
+dest01 to dest04  Basic	         831        781.466       69933      16800.8
+dest01 to dest05  OFWF	       900.6        847.749       36353        10851
+dest01 to dest05  Basic	         900        847.902       70146      16734.8
+dest01 to dest06  OFWF	       969.6        911.967       37937      11158.8
+dest01 to dest06  Basic	       969.6        912.819       70146        16739
+dest01 to dest07  OFWF	       789.2        741.963       18287      5405.75
+dest01 to dest07  Basic	       788.4        740.735       70146      17005.5
+dest01 to dest08  OFWF	       896.4        844.305       22221      6545.25
+dest01 to dest08  Basic	       896.4        844.305       70146      16729.8
+dest01 to dest09  OFWF	       167.4        155.551        1216       302.75
+dest01 to dest09  Basic	       167.4         155.51        6571      1575.25
+dest02 to dest01  OFWF	       372.4        348.277        4547       1201.5
+dest02 to dest01  Basic	       372.4        348.277       10247      2420.25
+dest02 to dest03  OFWF	       285.8        265.663        2630       651.25
+dest02 to dest03  Basic	       285.8        265.663       16860       4018.5
+dest02 to dest04  OFWF	         459        433.856       11714         3320
+dest02 to dest04  Basic	         459        433.856       46471        11213
+dest02 to dest05  OFWF	       609.6        573.736       19732      5915.25
+dest02 to dest05  Basic	       608.8        573.736       59812      14396.8
+dest02 to dest06  OFWF	       679.2        638.665       13390      3865.25
+dest02 to dest06  Basic	       678.4        638.665       61260        14631
+dest02 to dest07  OFWF	       554.8        531.924        6460         1661
+dest02 to dest07  Basic	       554.8        533.654       52799      12602.8
+dest02 to dest08  OFWF	       662.8        638.737        7413      1951.25
+dest02 to dest08  Basic	       662.8        636.809       52122      12621.5
+dest02 to dest09  OFWF	       345.8         322.16        4524      1199.25
+dest02 to dest09  Basic	       345.8         322.16       22339       5286.5
+dest03 to dest01  OFWF	       657.8        613.634        7346      1868.25
+dest03 to dest01  Basic	       657.8        613.634       40256         9595
+dest03 to dest02  OFWF	       285.8        265.663        2549       722.75
+dest03 to dest02  Basic	       285.8        265.663       25007      5898.75
+dest03 to dest04  OFWF	         229        219.279        4152      1203.75
+dest03 to dest04  Basic	         229        219.666       15457      3707.75
+dest03 to dest05  OFWF	         410        391.103        6648       1934.5
+dest03 to dest05  Basic	       409.2        391.672       37235      8895.25
+dest03 to dest06  OFWF	       611.2        584.101       14018         4150
+dest03 to dest06  Basic	       610.4        583.624       54746        13254
+dest03 to dest07  OFWF	       629.8        617.881        9241      2732.75
+dest03 to dest07  Basic	       629.8        621.305       59568      14249.5
+dest03 to dest08  OFWF	       740.8        722.087        9603         2839
+dest03 to dest08  Basic	       740.8        724.357       59543        14216
+dest03 to dest09  OFWF	       631.2        587.822       11173      3027.75
+dest03 to dest09  Basic	       631.2        587.822       51223      12412.8
+dest04 to dest01  OFWF	       831.8         782.49       16434       4793.5
+dest04 to dest01  Basic	         831         782.49       58642      13999.8
+dest04 to dest02  OFWF	       459.8        434.239        7123      2061.75
+dest04 to dest02  Basic	         459        434.239       51750      12329.2
+dest04 to dest03  OFWF	         229        217.095        2529       690.75
+dest04 to dest03  Basic	         229        217.356       14306      3448.75
+dest04 to dest05  OFWF	       207.8        193.706        1634       403.75
+dest04 to dest05  Basic	       207.8        193.706       10765       2568.5
+dest04 to dest06  OFWF	       409.6        386.135        6284      1788.75
+dest04 to dest06  Basic	         409        386.407       19888      4813.75
+dest04 to dest07  OFWF	       606.4        585.224       13409      3898.25
+dest04 to dest07  Basic	       606.4        590.876       59027      14175.2
+dest04 to dest08  OFWF	       717.4        690.302       11607         3308
+dest04 to dest08  Basic	       717.4        693.929       58846      14058.2
+dest04 to dest09  OFWF	       696.2        652.684       11890      3229.25
+dest04 to dest09  Basic	       696.2        655.747       59946      14332.2
+dest05 to dest01  OFWF	         900        847.885       25411         7482
+dest05 to dest01  Basic	         900        849.481       62699      15011.2
+dest05 to dest02  OFWF	       608.8        575.053       18667      5526.75
+dest05 to dest02  Basic	       608.8        580.679       63222      16286.8
+dest05 to dest03  OFWF	       411.6        388.128        7157      2061.25
+dest05 to dest03  Basic	       409.2        388.071       35847       8521.5
+dest05 to dest04  OFWF	       207.8        193.706        1707        406.5
+dest05 to dest04  Basic	       207.8        193.706       13152       3184.5
+dest05 to dest06  OFWF	         222        207.771        2820       775.75
+dest05 to dest06  Basic	       221.4        207.771       10928       2610.5
+dest05 to dest07  OFWF	       439.6        409.938        4728       1307.5
+dest05 to dest07  Basic	       439.6         409.99       43029      10350.8
+dest05 to dest08  OFWF	       587.6        548.998        6180         1736
+dest05 to dest08  Basic	       587.6        547.709       45711      10915.8
+dest05 to dest09  OFWF	         733        692.704       16898         4999
+dest05 to dest09  Basic	         733        693.364       61425      14721.2
+dest06 to dest01  OFWF	       969.6        913.656       38694      11569.2
+dest06 to dest01  Basic	       969.6        916.025       67412      16033.5
+dest06 to dest02  OFWF	       678.4        639.758       24408      7267.75
+dest06 to dest02  Basic	       678.4        645.081       67205        16887
+dest06 to dest03  OFWF	       613.6        582.553       16288       4897.5
+dest06 to dest03  Basic	       610.4        583.985       61848      15092.2
+dest06 to dest04  OFWF	         409        386.717        6132      1777.75
+dest06 to dest04  Basic	         409        387.668       32958       7882.5
+dest06 to dest05  OFWF	       222.2        210.769        3196        938.5
+dest06 to dest05  Basic	       221.4        212.794       12981      3109.25
+dest06 to dest07  OFWF	       247.2        232.598        1659       420.75
+dest06 to dest07  Basic	       247.2        233.402        8710         2086
+dest06 to dest08  OFWF	       395.2        369.562        2789        739.5
+dest06 to dest08  Basic	       395.2        370.128       14315         3403
+dest06 to dest09  OFWF	       802.6        759.493       27852      8322.25
+dest06 to dest09  Basic	       802.6        759.908       67373        16029
+dest07 to dest01  OFWF	         790        740.537       17449       5110.5
+dest07 to dest01  Basic	       788.4        740.487       53951      12915.2
+dest07 to dest02  OFWF	       554.8        533.842       10856         2819
+dest07 to dest02  Basic	       554.8        536.734       56875      13573.8
+dest07 to dest03  OFWF	       631.6        614.768       10818      3137.25
+dest07 to dest03  Basic	       629.8        618.741       59028        14113
+dest07 to dest04  OFWF	         607        582.842       15836       4593.5
+dest07 to dest04  Basic	       606.4        586.479       59428      14310.8
+dest07 to dest05  OFWF	       440.4        413.341        6777      1940.75
+dest07 to dest05  Basic	       439.6        413.341       40636       9756.5
+dest07 to dest06  OFWF	       247.2        231.632        1593          415
+dest07 to dest06  Basic	       247.2        231.632       12094      2936.75
+dest07 to dest08  OFWF	       148.4        139.754         925        230.5
+dest07 to dest08  Basic	       148.4        139.925        2594        627.5
+dest07 to dest09  OFWF	       621.4        585.033       12110         3513
+dest07 to dest09  Basic	       621.4        584.984       49877        11924
+dest08 to dest01  OFWF	       897.2        845.495       31562      9398.25
+dest08 to dest01  Basic	       896.4        845.087       64013      15371.8
+dest08 to dest02  OFWF	       665.2        642.115       29066       8443.5
+dest08 to dest02  Basic	       662.8        641.881       64249      15298.8
+dest08 to dest03  OFWF	         742        719.184       23653      7101.75
+dest08 to dest03  Basic	       740.8        722.154       68155      16293.2
+dest08 to dest04  OFWF	       717.4         690.15       24326      7251.75
+dest08 to dest04  Basic	       717.4         690.15       63502      15399.5
+dest08 to dest05  OFWF	       588.4        549.617        8946         2572
+dest08 to dest05  Basic	       587.6        549.617       56975      14063.8
+dest08 to dest06  OFWF	       395.2        369.394        3044       769.25
+dest08 to dest06  Basic	       395.2         369.34       19684      4700.25
+dest08 to dest07  OFWF	       148.4        138.987        1007       259.25
+dest08 to dest07  Basic	       148.4        138.975        3939          970
+dest08 to dest09  OFWF	       729.4        689.584       24315      7093.75
+dest08 to dest09  Basic	       729.4        689.584       63243      15180.2
+dest09 to dest01  OFWF	       167.4        155.594        2682        762.5
+dest09 to dest01  Basic	       167.4        155.594        5132      1211.75
+dest09 to dest02  OFWF	       345.8        322.378        6276      1816.75
+dest09 to dest02  Basic	       345.8        322.378       37274         8863
+dest09 to dest03  OFWF	       631.2        588.022       12885       3756.5
+dest09 to dest03  Basic	       631.2        588.022       63765      15486.8
+dest09 to dest04  OFWF	       696.2        653.604       20691      5994.25
+dest09 to dest04  Basic	       696.2         652.94       63222        15086
+dest09 to dest05  OFWF	         733        692.333        9645       2525.5
+dest09 to dest05  Basic	         733        692.453       63273        15070
+dest09 to dest06  OFWF	       802.6        756.569       14052       3807.5
+dest09 to dest06  Basic	       802.6         757.37       64730        15516
+dest09 to dest07  OFWF	       622.2        585.312       11624      3324.25
+dest09 to dest07  Basic	       621.4        585.291       61643      14989.8
+dest09 to dest08  OFWF	         731        691.208       15776         5215
+dest09 to dest08  Basic	       729.4        688.861       61383      14982.5
+map8 m to um      OFWF	      1107.6        1099.52      513600       153766
+map8 m to um      Basic	      1106.8        1099.52      829600       187075
+map8 m to mr      OFWF	      1622.2        1598.69      806395       241216
+map8 m to mr      Basic	      1622.2        1598.69      829600       187944
+map1 bl to tr     OFWF	      1184.8        1180.12       18711       4615.5
+map1 bl to tr     Basic	      1184.8        1180.12      842936       189388
+map1 tl to br     OFWF	      1264.6        1277.03        4514          896
+map1 tl to br     Basic	      1264.6        1277.03      835371       205117
+map1 bl to mr     OFWF	      1030.6        960.176       33896         7974
+map1 bl to mr     Basic	      1030.6        960.176      843909       189465
+map2 bl to tr     OFWF	      1610.2           1574      510591       151546
+map2 bl to tr     Basic	      1649          1611.47      772030       174545
+map2 tl to br     OFWF	      1687          1660.94      605624       179045
+map2 tl to br     Basic	      1685.2        1660.94      773642       175470
+map2 ml to mr     OFWF	      1525.4        1495.85      658410       195848
+map2 ml to mr     Basic	      1525.4        1495.85      774584       175988
+map2 mr to ml     OFWF	        1526        1496.36      223920      66712.5
+map2 mr to ml     Basic	      1525.4        1496.36      468799       106770
+map3 bl to tr     OFWF	       1222         1213.52       35313      9525.75
+map3 bl to tr     Basic	       1222         1213.93      800865       180354
+map3 tl to br     OFWF	      1470.4        1390.26      435988       127399
+map3 tl to br     Basic	      1470.4        1390.26      813419       194220
+map3 tl to um     OFWF	       787.2        751.467       94497      27630.5
+map3 tl to um     Basic	       787.2        751.467      696242       156838
+map4 bl to tr     OFWF	      1330.6        1240.47      230749        68419
+map4 bl to tr     Basic	      1330.6        1240.47      862231       194299
+map4 tl to br     OFWF	      1429.6        1334.98      248905      72244.8
+map4 tl to br     Basic	      1429.6        1334.98      865333       198246
+map4 ml to mr     OFWF	       979.4        929.335      131734      38079.5
+map4 ml to mr     Basic	       979.4        929.335      818114       184774
+map4 ml to m      OFWF	       857.6        817.823       63035      17911.2
+map4 ml to m      Basic	       857.6        817.823      816695       183844
+map4 m to ml      OFWF	       857.6        817.251      312871      94559.5
+map4 m to ml      Basic	       857.6        817.251      733700       165860
+map5 bl to tr     OFWF	        1300        1224.48      104878      30706.5
+map5 bl to tr     Basic	        1300        1227.61      626283       141883
+map5 tl to br     OFWF	      1349.2        1295.45       83158      24488.5
+map5 tl to br     Basic	      1349.2        1295.54      625658       142041
+map5 bl to mr     OFWF	      1030.6          961.6       40096      10009.8
+map5 bl to mr     Basic	      1030.6        961.103      577703       131734
+map5 bl to m      OFWF	       661.2        624.353       20027       5363.5
+map5 bl to m      Basic	       661.2        626.871      601430       137147
+map6 bl to tr     OFWF	        1342        1264.17      270685      79451.8
+map6 bl to tr     Basic	      1341.4        1264.17      697984       158913
+map6 tl to br     OFWF	      1689.4        1623.23      455156       135275
+map6 tl to br     Basic	      1689.4        1623.23      729898       165066
+map6 bl to mr     OFWF	      1022.2        953.265       20610      5023.25
+map6 bl to mr     Basic	      1022.2        952.486      622204       141061
+map6 bl to m      OFWF	       863.2        806.523      138024      40196.2
+map6 bl to m      Basic	       863.2        806.523      578286       132052
+map6 tl to cl     OFWF	      1478.6        1400.36      352253       104624
+map6 tl to cl     Basic	      1478.6        1400.36      726168       164062
+map6 m to um      OFWF	      1104.6         1071.7      168329      47941.5
+map6 m to um      Basic	      1104.6         1071.7      464329       104348
+big bl to tr      OFWF	      2737.2        2622.09      457763       135376
+big bl to tr      Basic	      2733.6        2622.69      536832       122964
+big tl to br      OFWF	       949.8    1.4822e-322       37599      10677.5
+big tl to br      Basic	       949.8    1.4822e-322       37599      8889.25
+big bl to mr      OFWF	        2695        2590.82      459359       136032
+big bl to mr      Basic	      2694.4        2591.53      536832       124473
+big bl to cl      OFWF	      1213.4        1175.08      149689        44044
+big bl to cl      Basic	      1212.2        1175.08      269093      61811.2
+big tl to cl      OFWF	       894.4        847.825      109031      32222.2
+big tl to cl      Basic	         892        847.595      202201      46787.5
+big m to um       OFWF	      3268.2        3140.47      702489       210096
+big m to um       Basic	      3266.6        3141.89      732332       168856
+tite bl to tr     OFWF	      2874.6        2748.77      174281        53143
+tite bl to tr     Basic	      2865.4        2748.62      277042      68309.5
+tite tl to br     OFWF	       949.8    1.4822e-322       37599        10723
+tite tl to br     Basic	       949.8    1.4822e-322       37599      8858.75
+tite bl to mr     OFWF	      4645.4         4451.8      200194        59179
+tite bl to mr     Basic	      4631.8        4455.49      265576      65013.2
+tite bl to cl     OFWF	      1748.2        1683.91      100634      30106.5
+tite bl to cl     Basic	      1741.4        1682.69      147840      36117.8
+tite tl to cl     OFWF	      5029.6        4820.36      409714       122430
+tite tl to cl     Basic	      5024.4         4822.5      439661       107215
+   
