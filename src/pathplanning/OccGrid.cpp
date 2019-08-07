@@ -31,7 +31,7 @@ OccGrid::OccGrid() {
 }
 
 
-OccGrid::OccGrid(const std::string &filename, double mapScale = SCALE_MAP) {
+OccGrid::OccGrid(const std::string &filename, double mapScale = 1) {
   std::string fileFormat;
   int inputWidth, inputHeight, maxVal;
   int gridRow, gridCol;
@@ -280,7 +280,7 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
 
 
         heuristic = orthoDist * (dx + dy) + (diagDist - (2 * orthoDist)) * std::min(dx, dy);
-//        heuristic = orthoDist * static_cast<int>(euclideanDist(neighbor, start));
+//        heuristic = orthoDist * static_cast<int>(euclideanDistMeters(neighbor, start));
 
         cost = get(neighbor) + heuristic;
 //        std::cout << "  (" << neighbor.getCol()
@@ -622,12 +622,12 @@ std::vector<GridCell> OccGrid::drawLineHigh(const int c0, const int r0, const in
 }
 
 
-double OccGrid::euclideanDist(const GridCell &c0, const GridCell &c1) {
+double OccGrid::euclideanDistMeters(const GridCell &c0, const GridCell &c1) {
   int dRow = c0.getRow() - c1.getRow();
   int dCol = c0.getCol() - c1.getCol();
   auto dRowSq = static_cast<double>(dRow * dRow);
   auto dColSq = static_cast<double>(dCol * dCol);
-  return sqrt(dRowSq + dColSq);
+  return sqrt(dRowSq + dColSq) * SCALE_MAP / 10;
 }
 
 

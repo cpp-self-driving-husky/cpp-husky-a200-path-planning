@@ -28,11 +28,11 @@
 
 namespace pathplanner {
 
-const double SCALE_MAP = 2.0;
+const int SCALE_MAP = 1;
 const double WIDTH_METERS = 186.23;
 const double HEIGHT_METERS = 186.23;
-const int GRID_HEIGHT = 950;
-const int GRID_WIDTH = 950;
+const int GRID_HEIGHT = 1860/SCALE_MAP;
+const int GRID_WIDTH = 1860/SCALE_MAP;
 const double MIN_LAT = 34.057649;
 const double MAX_LAT = 34.059320;
 const double MIN_LONG = -117.824690;
@@ -68,7 +68,7 @@ public:
   bool isInLine(const GridCell &c1, const GridCell &c2);
   static bool isNear(const GridCell &c1, const GridCell &c2);
   static std::vector<GridCell> drawLine(const GridCell &cell0, const GridCell &cell1);
-  static double euclideanDist(const GridCell &c0, const GridCell &c1);
+  static double euclideanDistMeters(const GridCell &c0, const GridCell &c1);
   int findMaxDistance() const;
 
 private:

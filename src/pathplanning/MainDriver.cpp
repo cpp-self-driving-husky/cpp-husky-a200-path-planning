@@ -38,9 +38,9 @@ WaveNav::ppOutput findAnyPath(WaveNav &myNav,
 
 void printOutput(const WaveNav::ppOutput &out) {
   std::cout << out.waveType_ << "\t"
-            << std::setw(12) << out.initialPathLength_
-            << std::setw(12) << out.smoothPathLength_
-            << std::setw(9) << out.numCellsVisited_;
+            << std::setw(6) << out.initialPathLength_ << "\t"
+            << std::setw(6) << out.smoothPathLength_ << "\t"
+            << std::setw(8) << out.numCellsVisited_ << "\t";
 }
 
 
@@ -56,6 +56,7 @@ void runTest(const std::string &mapFile,
   WaveNav myNav;
   WaveNav::ppOutput path;
   std::vector<int> cpuTimes;
+  std::vector<int> searchTimes;
 
   std::cout << startKey << " to " << goalKey << "  ";
 
@@ -63,12 +64,15 @@ void runTest(const std::string &mapFile,
     myNav = WaveNav(mapFile, outputPathStub);
     path = findAnyPath(myNav, waveType, POIs[startKey], POIs[goalKey], debugLevel);
     cpuTimes.emplace_back(path.cpuTime_);
+    searchTimes.emplace_back(path.searchTime_);
     if (i == trials - 1) {
       printOutput(path);
     }
   }
   double averageCpuTime = std::accumulate(cpuTimes.begin(), cpuTimes.end(), 0.0) / cpuTimes.size();
-  std::cout << std::setw(9) << averageCpuTime << "\n";
+  double averageSearchTime = std::accumulate(searchTimes.begin(), searchTimes.end(), 0.0) / searchTimes.size();
+  std::cout << std::setw(6) << averageCpuTime << "\t";
+  std::cout << std::setw(7) << averageSearchTime << "\t";
   cpuTimes.clear();
 }
 
@@ -82,36 +86,45 @@ int main() {
 //  boost::filesystem::path p {"output/"};
 //  boost::filesystem::create_directory(p);
 
-  const int TRIALS = 4;
+  const int TRIALS = 1;
   const int DEBUG = 1;
   
 
   std::unordered_map<std::string, pp::GridCell> POIs;
   pp::loadDestinations("../dest_coordinates.txt", &POIs);
 
-  std::string startDest, goalDest, outPath;
-  pp::GridCell startCell, goalCell;
-  for (int i = 1; i <= 9; ++i) {
-    for (int j = 1; j <= 9; ++j) {
-      startDest = "dest0" + std::to_string(i);
-      goalDest = "dest0" + std::to_string(j);
-      if (startDest != goalDest) {
-        outPath = "output2/";
-        outPath += startDest.substr(4, 2);
-        outPath += "-";
-        outPath += goalDest.substr(4, 2);
-        outPath += "_OFWF";
-        pp::runTest("../bitmaps/2dmap-01.pbm", "OFWF", outPath, startDest, goalDest, POIs, TRIALS, DEBUG);
-
-        outPath = "output2/";
-        outPath += startDest.substr(4, 2);
-        outPath += "-";
-        outPath += goalDest.substr(4, 2);
-        outPath += "_Basic";
-        pp::runTest("../bitmaps/2dmap-01.pbm", "Basic", outPath, startDest, goalDest, POIs, TRIALS, DEBUG);
-      }
-    }
-  }
+//  std::string inPath = "../bitmaps/map_scale_";
+//  inPath += std::to_string(pp::SCALE_MAP);
+//  inPath += ".pbm";
+//
+//  std::string startDest, goalDest, outPath;
+//  pp::GridCell startCell, goalCell;
+//  for (int i = 1; i <= 9; ++i) {
+//    for (int j = 1; j <= 9; ++j) {
+//      startDest = "dest0" + std::to_string(i);
+//      goalDest = "dest0" + std::to_string(j);
+//      if (startDest != goalDest) {
+//        outPath = "output";
+//        outPath += std::to_string(pp::SCALE_MAP);
+//        outPath += "/";
+//        outPath += startDest.substr(4, 2);
+//        outPath += "-";
+//        outPath += goalDest.substr(4, 2);
+//        outPath += "_OFWF";
+//        pp::runTest(inPath, "OFWF", outPath, startDest, goalDest, POIs, TRIALS, DEBUG);
+//
+//        outPath = "output";
+//        outPath += std::to_string(pp::SCALE_MAP);
+//        outPath += "/";
+//        outPath += startDest.substr(4, 2);
+//        outPath += "-";
+//        outPath += goalDest.substr(4, 2);
+//        outPath += "_Basic";
+//        pp::runTest(inPath, "Basic", outPath, startDest, goalDest, POIs, TRIALS, DEBUG);
+//        std::cout << std::endl;
+//      }
+//    }
+//  }
 
   pp::Point bottomRight {185, 183};
   pp::Point topLeft {8, 6};
@@ -149,11 +162,6 @@ int main() {
 
 
 
-
-//  for (int i = 1; i <= 7; ++i) {
-//    std::string fname = "../bitmaps/testmap" + std::to_string(i) + ".pbm";
-//
-//  }
 
   std::cout << "\ntestmap8\n";
   pp::runTest("../bitmaps/testmap8.pbm", "OFWF",  "output/map8.1_OFWF",  "m", "um", POIs, TRIALS, DEBUG);
@@ -252,16 +260,7 @@ int main() {
   pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.4_Basic", "tl", "cl", POIs, TRIALS, DEBUG);
 
 
-//  std::cout << "\ntest7\n";
-//  myNav = pp::WaveNav("../bitmaps/test7.pbm", "output/test7.1_OFWF");
-//  pp::WaveNav::ppOutput path71o = findAnyPath(myNav, "OFWF", topLeft, test72);
-//  printOutput(path71o);
-//  myNav = pp::WaveNav("../bitmaps/test7.pbm", "output/test7.1_Basic");
-//  pp::WaveNav::ppOutput path71b = findAnyPath(myNav, "Basic", topLeft, test72);
-//  printOutput(path71b);
-//  std::cout << "-----------\n";
-//  std::cout << "-----------\n";
-//  return 0;
+  return 0;
 }
 
 

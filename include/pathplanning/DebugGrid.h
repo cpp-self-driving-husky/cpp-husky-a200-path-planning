@@ -23,13 +23,18 @@ public:
   void markCell(const GridCell &cell, cv::Vec3b color);
   void markCells(const std::vector<GridCell> &cells, cv::Vec3b color);
   void markCells(const std::list<GridCell> &cells, cv::Vec3b color);
-  void markStart(const GridCell &start);
-  void markGoal(const GridCell &goal);
-  void myLine(GridCell &start, GridCell &end, cv::Vec3b &color);
+//  void markStart(const GridCell &start);
+//  void markGoal(const GridCell &goal);
+  void myLine(cv::Mat &mat, GridCell &start, GridCell &end, cv::Vec3b &color);
+  void myLineThin(cv::Mat &mat, GridCell &start, GridCell &end, cv::Vec3b &color);
+  void markInitialPath(std::list<GridCell> path);
+  void markSmoothedPath(std::list<GridCell> path, const std::string &waveType);
+  void markPaths(std::list<GridCell> &initialP, std::list<GridCell> &smoothP, const std::string &waveType);
 
 private:
   int gridWidth_, gridHeight_;
   cv::Mat mat_;
+  cv::Mat originalMat_;
 };
 
 }
