@@ -2,7 +2,7 @@
 // Created by ak on 7/22/19.
 //
 
-#include "pathplanning/MainDriver.h"
+#include "pathplanning/TestDriver.h"
 
 namespace pathplanner {
 
@@ -82,6 +82,7 @@ namespace pp = pathplanner;
 
 
 
+/*
 int main() {
 //  boost::filesystem::path p {"output/"};
 //  boost::filesystem::create_directory(p);
@@ -159,9 +160,6 @@ int main() {
   POIs.insert({"m", m});
   POIs.insert({"t72",t72});
   POIs.insert({"tr",tr});
-
-
-
 
   std::cout << "\ntestmap8\n";
   pp::runTest("../bitmaps/testmap8.pbm", "OFWF",  "output/map8.1_OFWF",  "m", "um", POIs, TRIALS, DEBUG);
@@ -264,3 +262,4 @@ int main() {
 }
 
 
+*/

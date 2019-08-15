@@ -2,8 +2,8 @@
 // Created by ak on 7/22/19.
 //
 
-#ifndef WAVEFRONT_MAINDRIVER_H
-#define WAVEFRONT_MAINDRIVER_H
+#ifndef WAVEFRONT_TESTDRIVER_H
+#define WAVEFRONT_TESTDRIVER_H
 
 #include <iomanip>
 #include <numeric>
@@ -18,4 +18,4 @@ namespace pathplanner {
 int main();
 
 
-#endif //WAVEFRONT_MAINDRIVER_H
+#endif //WAVEFRONT_TESTDRIVER_H

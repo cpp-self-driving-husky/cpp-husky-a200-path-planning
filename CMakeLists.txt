@@ -35,7 +35,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 #        )
 add_library(pplibrary SHARED ${SOURCES})
 
-add_executable(wavefront src/pathplanning/MainDriver.cpp)
+add_executable(wavefront src/pathplanning/main.cpp)
 #target_link_libraries(wavefront ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 

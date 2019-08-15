@@ -28,7 +28,7 @@
 
 namespace pathplanner {
 
-const int SCALE_MAP = 1;
+const int SCALE_MAP = 2;
 const double WIDTH_METERS = 186.23;
 const double HEIGHT_METERS = 186.23;
 const int GRID_HEIGHT = 1860/SCALE_MAP;
