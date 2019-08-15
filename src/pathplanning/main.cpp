@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   pp::WaveNav::ppOutput path;
 
   myNav = pp::WaveNav(mapFile, outputPathStub);
-  path = myNav.planPath(source, target, "OFWF", 0);
+  path = myNav.planPath(source, target, "OFWF", 1);
 
 //  int precision = std::numeric_limits<double>::max_digits10;
 
