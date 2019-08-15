@@ -1,12 +1,10 @@
 # cpp-husky-a200-path-planning
 Wavefront propagation path-planning for university quad
 
-The main program is in the lib folder. To compile, use the CMakeLists.txt
-Run by going into the root folder Wavefront from a terminal.
-     cmake .
+Run cmake with top-level CMakeList.txt
 
-Then, go find where the Makefile was created, and type in:
-     make
-     
-Go to Wavefront/cmake and type in:
-     ./wavefront
+Once built, run program with the following command
+
+     ./wavefront <source-latitude> <source-longitude> <target-latitude> <target-longitude>
+
+It will output to cout a list of GPS coordinates along the optimal path. Also, a map will be displayed showing initial and smooth paths, waypoints, and which nodes were expanded.
