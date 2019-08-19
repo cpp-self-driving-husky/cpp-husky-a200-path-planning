@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
   for (const auto &wayCell : myNav.getSmoothedPath()) {
     pp::GPS cellGPS = pp::cellToGPS(wayCell);
-    std::cout << std::fixed << std::setprecision(6) << "(" << cellGPS.getLatitude() << ", " << cellGPS .getLongitude() << ")" << std::endl;
+    std::cout << std::fixed << std::setprecision(6) << "(" << cellGPS.getLatitude() << ", " << cellGPS.getLongitude() << ")" << std::endl;
   }
   return 0;
 }

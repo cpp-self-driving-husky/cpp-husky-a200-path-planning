@@ -110,9 +110,9 @@ void DebugGrid::myLineThin(cv::Mat &mat, GridCell &start, GridCell &end, cv::Vec
 
 void DebugGrid::markInitialPath(std::list<GridCell> path) {
   cv::Vec3b color;
-  color[0] = 255;
-  color[1] = 255;
-  color[2] = 255;
+  color[0] = 220;
+  color[1] = 220;
+  color[2] = 220;
 
   cv::Mat tempMat = mat_.clone();
 

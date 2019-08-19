@@ -13,9 +13,6 @@ WaveNav::WaveNav(const std::string &inputPath, const std::string &outputPathPref
   inputPath_ = inputPath;
   outputPathPrefix_ = outputPathPrefix;
   gridMap_ = OccGrid(inputPath_, 1);
-//  gridMap_.outputGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
-//  gridMap_ = gridMap_.growGrid(0.2);
-//  debugGrid_ = DebugGrid(outputPathPrefix_ + "_1-scaled input map.pnm");
   debugGrid_ = DebugGrid(inputPath);
   initialPath_.clear();
   smoothedPath_.clear();
@@ -31,12 +28,10 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
   gridMap_.normCell(start);
   gridMap_.normCell(goal);
 
-//  OccGrid grownGrid = gridMap_;
-
   auto begin = std::chrono::high_resolution_clock::now();
   auto waveResult = (waveType == "Basic") ?
                     gridMap_.propWavesBasic(goal, start, 5, 7) :
-                    gridMap_.propOFWF(goal, start, 5, 7);
+                    gridMap_.propWavesOFWF(goal, start, 5, 7);
   auto stop = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - begin);
   toReturn.cpuTime_ = duration.count();
@@ -45,20 +40,13 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
   toReturn.numCellsVisited_ = waveResult.second;
   toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell)) * SCALE_MAP / 50;
 
-//  if (debugLevel == 1) {
-//    std::string waveColor = (waveType == "Basic") ? "R" : "B";
-//    debugGrid_.markWaves(gridMap_, waveColor);
-//    debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
-//  }
-
   if (finalCell.equals(start)) {
     findInitialPath(finalCell, goal);
 
-//    gridMap_ = OccGrid(outputPathPrefix_ + "_1-scaled input map.pnm", 1.0);
-//    gridMap_ = gridMap_.growGrid(0.15);
-
-    smoothePath();
+    smoothPath();
     toReturn.smoothPathLength_ = getSmoothedPathLength();
+
+    addDistanceWaypoints(5.0);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto searchDuration = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
@@ -149,19 +137,19 @@ GridCell WaveNav::findMinNeighbor(const GridCell &curr) {
  *    (2) there is a clear line of sight between consecutive solution cells
  *    (3) total path length and number of nodes are minimized
  */
-void WaveNav::smoothePath() {
+void WaveNav::smoothPath() {
   smoothedPath_.assign(initialPath_.begin(), initialPath_.end());
   int pathSizeBeforeSmooth, pathSizeAfterSmooth, smoothModifications;
   do {
     pathSizeBeforeSmooth = smoothedPath_.size();
-    smoothePathHelper();
+    smoothPathHelper();
     pathSizeAfterSmooth = smoothedPath_.size();
     smoothModifications = pathSizeBeforeSmooth - pathSizeAfterSmooth;
   } while (smoothModifications > 0);
 }
 
 
-void WaveNav::smoothePathHelper() {
+void WaveNav::smoothPathHelper() {
   if (smoothedPath_.size() < 3) {
     return;
   }
@@ -186,6 +174,33 @@ void WaveNav::smoothePathHelper() {
   }
 }
 
+
+/**
+ * Adds intermediate waypoints into the smoothedPath_ so that the distance
+ * between consecutive waypoints is always less than or equal to distanceInMeters.
+ *
+ * @param distanceInMeters
+ */
+void WaveNav::addDistanceWaypoints(double distanceInMeters) {
+  auto it0 = smoothedPath_.begin();
+  auto it1 = smoothedPath_.begin();
+  ++it1;
+  auto it_end = smoothedPath_.end();
+
+  while (it1 != it_end) {
+    double lineLength = OccGrid::euclideanDistMeters(*it0, *it1);
+    if (lineLength > distanceInMeters) {
+      std::vector<GridCell> line = OccGrid::drawLine(*it0, *it1);
+      int pointsToAdd = std::ceil(lineLength / distanceInMeters);
+      auto pointSelector = line.size() / pointsToAdd;
+      for (int i = 1; i * pointSelector < line.size(); ++i) {
+        smoothedPath_.insert(it1, line.at(pointSelector * i));
+      }
+    }
+    it0 = it1;
+    ++it1;
+  }
+}
 
 std::vector<GridCell> WaveNav::getInitialPath() {
   return std::vector<GridCell> {initialPath_.begin(), initialPath_.end()};

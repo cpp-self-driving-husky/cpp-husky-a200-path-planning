@@ -22,11 +22,29 @@
 #include <utility>
 #include <vector>
 
-//#include <boost/filesystem.hpp>
-
 #include "pathplanning/Coordinates.h"
 #include "pathplanning/OccGrid.h"
 #include "pathplanning/DebugGrid.h"
+
+/**
+ * WaveNav class handles the path planning. A WaveNav object is created with an occupancy map file
+ * and an output path stub.
+ *
+ * A WaveNav object has two OccGrids. One is used to plan paths, the other is used to display
+ * visualizations.
+ *
+ * After planPath() and smoothPath() are called, the WaveNav object stores the paths in instance
+ * variables (initialPath_ and smoothedPath_)
+ *
+ * Usage:
+ *   1) Construct a WaveNave object with a occupancy map file.
+ *   2) Pick a source and target (will take any of the 3 types of coordinates -- GridCell, GPS, or x,y)
+ *   3) planPath(source, target, <wavefront type>, visualization_flag)
+ *      wavefront type is either "Basic" or "OFWF"
+ *   4) use getInitialPath() and getSmoothedPath() to return lists of GridCells that lie on the paths.
+ *      You must convert the GridCell coordinates to whichever coordinate system you are using.
+ */
+
 
 namespace pathplanner {
 
@@ -60,8 +78,9 @@ private:
 
   void findInitialPath(const GridCell &start, const GridCell &goal);
   GridCell findMinNeighbor(const GridCell &curr);
-  void smoothePath();
-  void smoothePathHelper();
+  void smoothPath();
+  void smoothPathHelper();
+  void addDistanceWaypoints(double distanceInMeters);
   double getSmoothedPathLength();
 };
 

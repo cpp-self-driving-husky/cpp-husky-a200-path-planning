@@ -29,14 +29,15 @@
 namespace pathplanner {
 
 const int SCALE_MAP = 2;
+const int GRID_HEIGHT = 1860 / SCALE_MAP;
+const int GRID_WIDTH = 1860 / SCALE_MAP;
 const double WIDTH_METERS = 186.23;
 const double HEIGHT_METERS = 186.23;
-const int GRID_HEIGHT = 1860/SCALE_MAP;
-const int GRID_WIDTH = 1860/SCALE_MAP;
-const double MIN_LAT = 34.057649;
-const double MAX_LAT = 34.059320;
-const double MIN_LONG = -117.824690;
-const double MAX_LONG = -117.822673;
+const double MIN_LATITUDE = 34.057649;
+const double MAX_LATITUDE = 34.059320;
+const double MIN_LONGITUDE = -117.824690;
+const double MAX_LONGITUDE = -117.822673;
+
 
 /**
  * Occupancy Grid class. Includes methods for manipulating occupancy grids
@@ -57,10 +58,9 @@ public:
   int get(const GridCell &cell) const;
   void set(const GridCell &cell, int value);
   void outputGrid(const std::string &filename);
-  void outputGrid2(const std::string &filename);
   OccGrid growGrid(double radius);
   std::pair<GridCell, int> propWavesBasic(GridCell &goal, GridCell &start, int orthoDist, int diagDist);
-  std::pair<GridCell, int> propOFWF(GridCell &goal, GridCell &start, int orthoDist, int diagDist);
+  std::pair<GridCell, int> propWavesOFWF(GridCell &goal, GridCell &start, int orthoDist, int diagDist);
   void getNeighborhood(const GridCell &cell,
                        int layers,
                        std::vector<GridCell> &neighborhood);

@@ -221,9 +221,6 @@ std::pair<GridCell, int> OccGrid::propWavesBasic(GridCell &goal, GridCell &start
       }
     }
     neighborhood.clear();
-
-//    std::cout << "q size: " << waveQ.size() << std::endl;
-
     waveQ.pop();
   }
   return std::make_pair(currCell, numCellsVisited);
@@ -243,7 +240,7 @@ std::pair<GridCell, int> OccGrid::propWavesBasic(GridCell &goal, GridCell &start
  *         <cell where waves stopped, number cells placed in processing queue>
  *         if successful
  */
-std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int orthoDist, int diagDist) {
+std::pair<GridCell, int> OccGrid::propWavesOFWF(GridCell &goal, GridCell &start, int orthoDist, int diagDist) {
   std::priority_queue<std::pair<int, GridCell>,
                       std::vector<std::pair<int, GridCell>>,
                       CompareGreater>
@@ -266,8 +263,6 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
   while (!waveQ.empty()) {
     currCell = waveQ.top().second;
 
-//    std::cout << currCell.toString() << ": " << waveQ.top().first << std::endl;
-
     // find free neighbors, update weights, calculate costs, push onto priority queue
     getNeighborhood(currCell, 1, neighborhood);
     for (auto &neighbor : neighborhood) {
@@ -275,18 +270,8 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
         setWeight(neighbor, orthoDist, diagDist);
         dx = std::abs(neighbor.getCol() - start.getCol());
         dy = std::abs(neighbor.getRow() - start.getRow());
-
-//        heuristic = 0.99 * orthoDist * ((dx + dy) + (sqrt(2.0) - 2) * std::min(dx, dy));
-
-
         heuristic = orthoDist * (dx + dy) + (diagDist - (2 * orthoDist)) * std::min(dx, dy);
-//        heuristic = orthoDist * static_cast<int>(euclideanDistMeters(neighbor, start));
-
         cost = get(neighbor) + heuristic;
-//        std::cout << "  (" << neighbor.getCol()
-//                  << "," << neighbor.getRow()
-//                  << "): " << cost << "   "
-//                  << get(neighbor) << std::endl;
 
         // Use cost to set priority of neighbor.
         waveQ.emplace(cost, neighbor);
@@ -299,7 +284,6 @@ std::pair<GridCell, int> OccGrid::propOFWF(GridCell &goal, GridCell &start, int 
       }
     }
     neighborhood.clear();
-//    std::cout << "q size: " << waveQ.size() << std::endl;
     waveQ.pop();
   }
   return std::make_pair(currCell, numCellsVisited);
@@ -663,10 +647,10 @@ GridCell gpsToCell(const GPS &gps) {
 Point gpsToPoint(const GPS &gps) {
   double longitude = gps.getLongitude();
   double latitude = gps.getLatitude();
-  double widthLong = MAX_LONG - MIN_LONG;
-  double heightLat = MAX_LAT - MIN_LAT;
-  double x = ((longitude - MIN_LONG) / widthLong) * WIDTH_METERS;
-  double y = ((MAX_LAT - latitude) / heightLat) * HEIGHT_METERS;
+  double widthLong = MAX_LONGITUDE - MIN_LONGITUDE;
+  double heightLat = MAX_LATITUDE - MIN_LATITUDE;
+  double x = ((longitude - MIN_LONGITUDE) / widthLong) * WIDTH_METERS;
+  double y = ((MAX_LATITUDE - latitude) / heightLat) * HEIGHT_METERS;
   return Point(x, y);
 }
 
@@ -694,24 +678,24 @@ double rowToY(int m) {
 
 
 double xToLongitude(double x) {
-  double widthLong = MAX_LONG - MIN_LONG;
-  return ((x / WIDTH_METERS) * widthLong) + MIN_LONG;
+  double widthLong = MAX_LONGITUDE - MIN_LONGITUDE;
+  return ((x / WIDTH_METERS) * widthLong) + MIN_LONGITUDE;
 }
 
 
 double yToLatitude(double y) {
-  double heightLat = MAX_LAT - MIN_LAT;
-  return ((1 - (y / HEIGHT_METERS)) * heightLat) + MIN_LAT;
+  double heightLat = MAX_LATITUDE - MIN_LATITUDE;
+  return ((1 - (y / HEIGHT_METERS)) * heightLat) + MIN_LATITUDE;
 }
 
 
 double longitudeToX(double longitude) {
-  return WIDTH_METERS * (longitude - MIN_LONG) / (MAX_LONG - MIN_LONG);
+  return WIDTH_METERS * (longitude - MIN_LONGITUDE) / (MAX_LONGITUDE - MIN_LONGITUDE);
 }
 
 
 double latitudeToY(double latitude) {
-  return HEIGHT_METERS * (MAX_LAT - latitude) / (MAX_LAT - MIN_LAT);
+  return HEIGHT_METERS * (MAX_LATITUDE - latitude) / (MAX_LATITUDE - MIN_LATITUDE);
 }
 
 }
