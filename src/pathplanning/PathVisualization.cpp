@@ -9,10 +9,7 @@
 
 namespace pathplanner {
 
-PathVisualization::PathVisualization() {
-  gridWidth_ = GRID_WIDTH;
-  gridHeight_ = GRID_HEIGHT;
-}
+PathVisualization::PathVisualization() = default;
 
 
 /**

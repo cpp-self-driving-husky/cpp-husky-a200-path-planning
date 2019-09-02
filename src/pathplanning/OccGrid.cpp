@@ -62,9 +62,7 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = 1) {
       }
     }
   } else if (fileFormat == "P2") {
-    // Read in inputWidth, inputHeight, maxVal
     ifs >> maxVal;
-
     int nextInt;
     for (int inRow = 0; inRow < inputHeight; ++inRow) {
       for (int inCol = 0; inCol < inputWidth; ++inCol) {
@@ -77,9 +75,7 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = 1) {
       }
     }
   } else if (fileFormat == "P5") {
-    // Read in inputWidth, inputHeight, maxVal
     ifs >> maxVal;
-
     char nextChar;
     for (int inRow = 0; inRow < inputHeight; ++inRow) {
       for (int inCol = 0; inCol < inputWidth; ++inCol) {

@@ -15,7 +15,6 @@
 #include <iostream>
 #include "pathplanning/WaveNav.h"
 
-
 namespace pp = pathplanner;
 
 int main(int argc, char *argv[]) {

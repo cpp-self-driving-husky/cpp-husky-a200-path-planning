@@ -11,10 +11,9 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 #include_directories(${PROJECT_SOURCE_DIR}/lib)
 
-set(*SAN_SYMBOLIZER_PATH /usr/lib/llvm-7/bin/llvm-symbolizer)
 
 #set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror -fsanitize=address -g -v -O1 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror -O1 -g -v -fsanitize=address -fno-omit-frame-pointer ")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -Werror -O3 -DNDEBUG")
 
 file(GLOB SOURCES "src/pathplanning/*.cpp")
