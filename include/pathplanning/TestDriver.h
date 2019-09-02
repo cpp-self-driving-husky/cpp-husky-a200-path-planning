@@ -1,6 +1,9 @@
-//
-// Created by ak on 7/22/19.
-//
+/**
+ * project: CATE
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: TestDriver.h
+ */
 
 #ifndef WAVEFRONT_TESTDRIVER_H
 #define WAVEFRONT_TESTDRIVER_H

@@ -1,8 +1,8 @@
 /**
  * project: CATE
- * team: Behavioral (Path Planning)
- * author: Allen Kim
- * file: OccGrid.h
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: OccGrid.h
  */
 
 #ifndef WAVEFRONT_OCCGRID_H
@@ -53,7 +53,7 @@ class OccGrid {
 public:
   OccGrid();
   OccGrid(const std::string &filename, double mapScale);
-  virtual ~OccGrid();
+  virtual ~OccGrid() = default;
   int get(int col, int row) const;
   int get(const GridCell &cell) const;
   void set(const GridCell &cell, int value);

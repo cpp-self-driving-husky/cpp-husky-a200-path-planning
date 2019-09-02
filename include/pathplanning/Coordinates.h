@@ -1,8 +1,8 @@
 /**
  * project: CATE
- * team: Behavioral (Path Planning)
- * author: Allen Kim
- * file: Coordinates.h
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: Coordinates.h
  */
 
 /**
@@ -50,7 +50,7 @@ private:
 };
 
 /**
- * A GridCell stores the occupancy grid coordinates of a cell as a (col, row) pair.
+ * A GridCell stores the occupancy grid coordinates of a location as a (col, row) pair.
  */
 class GridCell {
 public:
@@ -74,7 +74,7 @@ bool operator!=(const GridCell &cell1, const GridCell &cell2);
 
 
 /**
- * A Coord stores the latitude and longitude of a location.
+ * A GPS stores a location as a (longitude, latitude) pair.
  */
 class GPS {
 public:

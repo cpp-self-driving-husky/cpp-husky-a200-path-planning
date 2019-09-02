@@ -1,8 +1,8 @@
 /**
  * project: CATE
- * team: Behavioral (Path Planning)
- * author: Allen Kim
- * file: WaveNav.cpp
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: WaveNav.cpp
  */
 
 #include "pathplanning/WaveNav.h"
@@ -13,16 +13,34 @@ WaveNav::WaveNav(const std::string &inputPath, const std::string &outputPathPref
   inputPath_ = inputPath;
   outputPathPrefix_ = outputPathPrefix;
   gridMap_ = OccGrid(inputPath_, 1);
-  debugGrid_ = DebugGrid(inputPath);
+  if (inputPath_.substr(11, 5) == "grown") {
+    visualizationGrid_ = PathVisualization("../bitmaps/" + inputPath_.substr(17));
+  } else {
+    gridMap_ = gridMap_.growGrid(0.5);
+    visualizationGrid_ = PathVisualization(inputPath_);
+  }
   initialPath_.clear();
   smoothedPath_.clear();
+  maxDistanceBetweenWaypoints_ = 5.0;
 }
 
 
-WaveNav::~WaveNav() = default;
-
-
-WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::string &waveType, int debugLevel) {
+/**
+ * Finds the optimal initial path from start cell to goal cell. Applies smoothing to initial path.
+ * Stores these two paths in instance variables initialPath_ and smoothedPath_. Also adds waypoints
+ * to the smoothedPath_ so that no 2 waypoints are farther apart than maxDistanceBetweenWaypoints_.
+ * Use getInitialPath() or getSmoothedPath() to get a vector of waypoints.
+ *
+ * If showVisualization is true, displays a map with waves and paths and writes this map to an image file.
+ *
+ * @param start
+ * @param goal
+ * @param waveType
+ * @param showVisualization
+ * @return WaveNav::ppOutput is a struct that bundles various measurements together. This is used to
+ *         gather stats for reporting and testing.
+ */
+WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::string &waveType, bool showVisualization) {
   WaveNav::ppOutput toReturn;
   toReturn.waveType_ = waveType;
   gridMap_.normCell(start);
@@ -38,42 +56,41 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
 
   GridCell finalCell = waveResult.first;
   toReturn.numCellsVisited_ = waveResult.second;
-  toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell)) * SCALE_MAP / 50;
+  toReturn.initialPathLength_ = static_cast<double>(gridMap_.get(finalCell) - 2) * SCALE_MAP / 50;
 
   if (finalCell.equals(start)) {
     findInitialPath(finalCell, goal);
-
     smoothPath();
     toReturn.smoothPathLength_ = getSmoothedPathLength();
 
-    addDistanceWaypoints(5.0);
+    addDistanceWaypoints();
 
     auto end = std::chrono::high_resolution_clock::now();
     auto searchDuration = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
     toReturn.searchTime_ = searchDuration.count();
 
   }
-  if (debugLevel == 1) {
+  if (showVisualization) {
     std::string waveColor = (waveType == "Basic") ? "R" : "B";
-    debugGrid_.markWaves(gridMap_, waveColor);
-    debugGrid_.markPaths(initialPath_, smoothedPath_, waveType);
-    debugGrid_.outputGrid(outputPathPrefix_ + "_2-debug.png");
+    visualizationGrid_.markWaves(gridMap_, waveColor);
+    visualizationGrid_.markPaths(initialPath_, smoothedPath_, waveType);
+    visualizationGrid_.outputGrid(outputPathPrefix_ + "_vis.png");
   }
   return toReturn;
 }
 
 
-WaveNav::ppOutput WaveNav::planPath(Point &start, Point &goal, const std::string &waveType, int debugLevel) {
+WaveNav::ppOutput WaveNav::planPath(Point &start, Point &goal, const std::string &waveType, bool showVisualization) {
   GridCell startCell = pointToCell(start);
   GridCell goalCell = pointToCell(goal);
-  return WaveNav::planPath(startCell, goalCell, waveType, debugLevel);
+  return WaveNav::planPath(startCell, goalCell, waveType, showVisualization);
 }
 
 
-WaveNav::ppOutput WaveNav::planPath(GPS &start, GPS &goal, const std::string &waveType, int debugLevel) {
+WaveNav::ppOutput WaveNav::planPath(GPS &start, GPS &goal, const std::string &waveType, bool showVisualization) {
   GridCell startCell = gpsToCell(start);
   GridCell goalCell = gpsToCell(goal);
-  return WaveNav::planPath(startCell, goalCell, waveType, debugLevel);
+  return WaveNav::planPath(startCell, goalCell, waveType, showVisualization);
 }
 
 
@@ -94,8 +111,8 @@ void WaveNav::findInitialPath(const GridCell &start, const GridCell &goal) {
 
 /**
  * Finds the neighboring cell with the lowest weight.
- * This shows the path as determined by the wavefront
- * propagation.
+ * After wave propagation, repeatedly perform this function from the source node
+ * to find the entire initial path.
  *
  * @param curr - current GridCell
  * @return neighboring GridCell with lowest weight
@@ -181,7 +198,7 @@ void WaveNav::smoothPathHelper() {
  *
  * @param distanceInMeters
  */
-void WaveNav::addDistanceWaypoints(double distanceInMeters) {
+void WaveNav::addDistanceWaypoints() {
   auto it0 = smoothedPath_.begin();
   auto it1 = smoothedPath_.begin();
   ++it1;
@@ -189,9 +206,9 @@ void WaveNav::addDistanceWaypoints(double distanceInMeters) {
 
   while (it1 != it_end) {
     double lineLength = OccGrid::euclideanDistMeters(*it0, *it1);
-    if (lineLength > distanceInMeters) {
+    if (lineLength > maxDistanceBetweenWaypoints_) {
       std::vector<GridCell> line = OccGrid::drawLine(*it0, *it1);
-      int pointsToAdd = std::ceil(lineLength / distanceInMeters);
+      int pointsToAdd = std::ceil(lineLength / maxDistanceBetweenWaypoints_);
       auto pointSelector = line.size() / pointsToAdd;
       for (int i = 1; i * pointSelector < line.size(); ++i) {
         smoothedPath_.insert(it1, line.at(pointSelector * i));
@@ -212,6 +229,12 @@ std::vector<GridCell> WaveNav::getSmoothedPath() {
 }
 
 
+/**
+ * Finds the length of the smoothed path as the sum of euclidean distances
+ * between successive waypoints.
+ *
+ * @return
+ */
 double WaveNav::getSmoothedPathLength() {
   double pathLength = 0.0;
   auto it0 = smoothedPath_.begin();

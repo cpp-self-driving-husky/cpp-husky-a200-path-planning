@@ -1,6 +1,16 @@
-//
-// Created by ak on 8/15/19.
-//
+/**
+ * project: CATE
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: main.cpp
+ */
+
+/**
+ * Example of how to run a path search. This version is run from the command line with
+ * 4 parameters: source-latitude, source-longitude, target-latitude, target-longitude.
+ *
+ * Outputs a list of GPS coordinates along the optimal path.
+ */
 
 #include <iostream>
 #include "pathplanning/WaveNav.h"
@@ -10,11 +20,11 @@ namespace pp = pathplanner;
 
 int main(int argc, char *argv[]) {
   if (argc != 5) {
-    std::cerr << "Usage: " << argv[0] << "source-latitude source-longitude target-latitude target-longitude" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " source-latitude source-longitude target-latitude target-longitude\n";
     return 1;
   }
 
-  std::string mapFile = "../bitmaps/map_scale_2.pbm";
+  std::string mapFile = "../bitmaps/grown_map_scale_2.pbm";
   std::string outputPathStub = "output/run_map2_OFWF";
 
 
@@ -26,12 +36,9 @@ int main(int argc, char *argv[]) {
   pp::GPS target(target_longitude, target_latitude);
 
   pp::WaveNav myNav;
-  pp::WaveNav::ppOutput path;
 
   myNav = pp::WaveNav(mapFile, outputPathStub);
-  path = myNav.planPath(source, target, "OFWF", 1);
-
-//  int precision = std::numeric_limits<double>::max_digits10;
+  myNav.planPath(source, target, "OFWF", true);
 
   for (const auto &wayCell : myNav.getSmoothedPath()) {
     pp::GPS cellGPS = pp::cellToGPS(wayCell);

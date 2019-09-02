@@ -1,8 +1,8 @@
 /**
  * project: CATE
- * team: Behavioral (Path Planning)
- * author: Allen Kim
- * file: Coordinates.cpp
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: Coordinates.cpp
  */
 
 
