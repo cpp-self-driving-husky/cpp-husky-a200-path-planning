@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 3.5)
-project(Wavefront)
+project(Wavefront LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 #include_directories(${PROJECT_SOURCE_DIR}/lib)
 
+set(*SAN_SYMBOLIZER_PATH /usr/lib/llvm-7/bin/llvm-symbolizer)
 
 #set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
-set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -O1 -fno-omit-frame-pointer")
-set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -Wall -Wextra -Werror -O3 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror -fsanitize=address -g -v -O1 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -Werror -O3 -DNDEBUG")
 
 file(GLOB SOURCES "src/pathplanning/*.cpp")
 
@@ -28,14 +33,14 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 #add_library(pplibrary
 #        include/pathplanning/Coordinates.h
-#        include/pathplanning/Pixel.h
 #        include/pathplanning/OccGrid.h
-#        include/pathplanning/DebugGrid.h
+#        include/pathplanning/PathVisualization.h
 #        include/pathplanning/WaveNav.h
 #        )
 add_library(pplibrary SHARED ${SOURCES})
 
 add_executable(wavefront src/pathplanning/main.cpp)
+
 #target_link_libraries(wavefront ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 

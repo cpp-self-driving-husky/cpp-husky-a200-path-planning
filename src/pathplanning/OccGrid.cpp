@@ -1,8 +1,8 @@
 /**
  * project: CATE
- * team: Behavioral (Path Planning)
- * author: Allen Kim
- * file: OccGrid.cpp
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: OccGrid.cpp
  */
 
 #include "pathplanning/OccGrid.h"
@@ -92,13 +92,10 @@ OccGrid::OccGrid(const std::string &filename, double mapScale = 1) {
       }
     }
   } else {
-    std::cout << "Can't read image file format." << std::endl;
+    std::cerr << "Can't read image file format." << std::endl;
   }
   ifs.close();
 }
-
-
-OccGrid::~OccGrid() = default;
 
 
 int OccGrid::get(const int col, const int row) const {
@@ -143,8 +140,14 @@ void OccGrid::outputGrid(const std::string &filename) {
 
 
 /**
- * Expands obstacle boundaries by a certain radius. This is done so that the robot
- * can be represented as a Point rather than a 3 dimensional object.
+ * Expands obstacle boundaries by a certain radius. Radius is equal to half the
+ * robot's length. This allows us to represent the robot as point rather than
+ * an object with a radius.
+ *
+ * NOTE: this is a very expensive operation. The files named map_scale_*.pbm
+ *       contain maps that have been preprocessed with this function with
+ *       a radius of 0.5
+ *
  * @param radius - distance in meters to expand obstacles.
  */
 OccGrid OccGrid::growGrid(double radius) {
@@ -476,6 +479,8 @@ void OccGrid::getNeighborhood(const GridCell &cell,
       neighborhood.emplace_back(GridCell(tempCol, tempRow));
     }
   }
+
+  // reverse the neighborhood vector sometimes to avoid a bias towards the top left neighbor
   if ((cell.getRow() + cell.getCol()) % 2 == 1) {
     std::reverse(neighborhood.begin(), neighborhood.end());
   }
@@ -615,9 +620,9 @@ double OccGrid::euclideanDistMeters(const GridCell &c0, const GridCell &c1) {
 }
 
 
-// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+//MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 //                  Conversion Functions
-// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+//MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 
 GridCell pointToCell(const Point &pt) {
   return GridCell(xToCol(pt.x()), yToRow(pt.y()));

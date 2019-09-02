@@ -1,6 +1,9 @@
-//
-// Created by ak on 7/22/19.
-//
+/**
+ * project: CATE
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: TestDriver.cpp
+ */
 
 #include "pathplanning/TestDriver.h"
 
@@ -31,8 +34,8 @@ WaveNav::ppOutput findAnyPath(WaveNav &myNav,
                               const std::string &waveOption,
                               GridCell &start,
                               GridCell &goal,
-                              int debugLevel) {
-  return myNav.planPath(start, goal, waveOption, debugLevel);
+                              bool showVisualization) {
+  return myNav.planPath(start, goal, waveOption, showVisualization);
 }
 
 
@@ -51,7 +54,7 @@ void runTest(const std::string &mapFile,
              const std::string &goalKey,
              std::unordered_map <std::string, GridCell> &POIs,
              int trials,
-             int debugLevel) {
+             bool showVisualization) {
 
   WaveNav myNav;
   WaveNav::ppOutput path;
@@ -62,7 +65,7 @@ void runTest(const std::string &mapFile,
 
   for (int i = 0; i < trials; ++i) {
     myNav = WaveNav(mapFile, outputPathStub);
-    path = findAnyPath(myNav, waveType, POIs[startKey], POIs[goalKey], debugLevel);
+    path = findAnyPath(myNav, waveType, POIs[startKey], POIs[goalKey], showVisualization);
     cpuTimes.emplace_back(path.cpuTime_);
     searchTimes.emplace_back(path.searchTime_);
     if (i == trials - 1) {
@@ -88,7 +91,7 @@ int main() {
 //  boost::filesystem::create_directory(p);
 
   const int TRIALS = 1;
-  const int DEBUG = 1;
+  const bool VISUALIZATION = true;
   
 
   std::unordered_map<std::string, pp::GridCell> POIs;
@@ -112,7 +115,7 @@ int main() {
 //        outPath += "-";
 //        outPath += goalDest.substr(4, 2);
 //        outPath += "_OFWF";
-//        pp::runTest(inPath, "OFWF", outPath, startDest, goalDest, POIs, TRIALS, DEBUG);
+//        pp::runTest(inPath, "OFWF", outPath, startDest, goalDest, POIs, TRIALS, VISUALIZATION);
 //
 //        outPath = "output";
 //        outPath += std::to_string(pp::SCALE_MAP);
@@ -121,7 +124,7 @@ int main() {
 //        outPath += "-";
 //        outPath += goalDest.substr(4, 2);
 //        outPath += "_Basic";
-//        pp::runTest(inPath, "Basic", outPath, startDest, goalDest, POIs, TRIALS, DEBUG);
+//        pp::runTest(inPath, "Basic", outPath, startDest, goalDest, POIs, TRIALS, VISUALIZATION);
 //        std::cout << std::endl;
 //      }
 //    }
@@ -162,100 +165,100 @@ int main() {
   POIs.insert({"tr",tr});
 
   std::cout << "\ntestmap8\n";
-  pp::runTest("../bitmaps/testmap8.pbm", "OFWF",  "output/map8.1_OFWF",  "m", "um", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap8.pbm", "Basic", "output/map8.1_Basic", "m", "um", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap8.pbm", "OFWF",  "output/map8.2_OFWF",  "m", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap8.pbm", "Basic", "output/map8.2_Basic", "m", "mr", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/testmap8.pbm", "OFWF",  "output/map8.1_OFWF",  "m", "um", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap8.pbm", "Basic", "output/map8.1_Basic", "m", "um", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap8.pbm", "OFWF",  "output/map8.2_OFWF",  "m", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap8.pbm", "Basic", "output/map8.2_Basic", "m", "mr", POIs, TRIALS, VISUALIZATION);
 
 
 
   std::cout << "\ntestmap1\n";
-  pp::runTest("../bitmaps/testmap1.pbm", "OFWF",  "output/map1.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap1.pbm", "Basic", "output/map1.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap1.pbm", "OFWF",  "output/map1.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap1.pbm", "Basic", "output/map1.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap1.pbm", "OFWF",  "output/map1.2_OFWF",  "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap1.pbm", "Basic", "output/map1.2_Basic", "bl", "mr", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/testmap1.pbm", "OFWF",  "output/map1.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap1.pbm", "Basic", "output/map1.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap1.pbm", "OFWF",  "output/map1.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap1.pbm", "Basic", "output/map1.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap1.pbm", "OFWF",  "output/map1.2_OFWF",  "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap1.pbm", "Basic", "output/map1.2_Basic", "bl", "mr", POIs, TRIALS, VISUALIZATION);
 
   std::cout << "\ntestmap2\n";
-  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.2_OFWF",  "ml", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.2_Basic", "ml", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.3_OFWF",  "mr", "ml", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.3_Basic", "mr", "ml", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.2_OFWF",  "ml", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.2_Basic", "ml", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap2.pbm", "OFWF",  "output/map2.3_OFWF",  "mr", "ml", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap2.pbm", "Basic", "output/map2.3_Basic", "mr", "ml", POIs, TRIALS, VISUALIZATION);
 
   std::cout << "\ntestmap3\n";
-  pp::runTest("../bitmaps/testmap3.pbm", "OFWF",  "output/map3.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap3.pbm", "Basic", "output/map3.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap3.pbm", "OFWF",  "output/map3.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap3.pbm", "Basic", "output/map3.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap3.pbm", "OFWF",  "output/map3.2_OFWF",  "tl", "um", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap3.pbm", "Basic", "output/map3.2_Basic", "tl", "um", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/testmap3.pbm", "OFWF",  "output/map3.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap3.pbm", "Basic", "output/map3.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap3.pbm", "OFWF",  "output/map3.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap3.pbm", "Basic", "output/map3.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap3.pbm", "OFWF",  "output/map3.2_OFWF",  "tl", "um", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap3.pbm", "Basic", "output/map3.2_Basic", "tl", "um", POIs, TRIALS, VISUALIZATION);
 
   std::cout << "\ntestmap4\n";
-  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.2_OFWF",  "ml", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.2_Basic", "ml", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.3_OFWF",  "ml", "m",  POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.3_Basic", "ml", "m",  POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.4_OFWF",  "m",  "ml", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.4_Basic", "m",  "ml", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.2_OFWF",  "ml", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.2_Basic", "ml", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.3_OFWF",  "ml", "m",  POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.3_Basic", "ml", "m",  POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "OFWF",  "output/map4.4_OFWF",  "m",  "ml", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap4.pbm", "Basic", "output/map4.4_Basic", "m",  "ml", POIs, TRIALS, VISUALIZATION);
 
   std::cout << "\ntestmap5\n";
-  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.2_OFWF",  "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.2_Basic", "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.3_OFWF",  "bl", "m",  POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.3_Basic", "bl", "m",  POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.2_OFWF",  "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.2_Basic", "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap5.pbm", "OFWF",  "output/map5.3_OFWF",  "bl", "m",  POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap5.pbm", "Basic", "output/map5.3_Basic", "bl", "m",  POIs, TRIALS, VISUALIZATION);
 
   std::cout << "\ntestmap6\n";
-  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.2_OFWF",  "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.2_Basic", "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.3_OFWF",  "bl", "m",  POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.3_Basic", "bl", "m",  POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.4_OFWF",  "tl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.4_Basic", "tl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.5_OFWF",  "m",  "um", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.5_Basic", "m",  "um", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.2_OFWF",  "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.2_Basic", "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.3_OFWF",  "bl", "m",  POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.3_Basic", "bl", "m",  POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.4_OFWF",  "tl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.4_Basic", "tl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "OFWF",  "output/map6.5_OFWF",  "m",  "um", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/testmap6.pbm", "Basic", "output/map6.5_Basic", "m",  "um", POIs, TRIALS, VISUALIZATION);
 
   std::cout << "\nbigmaze\n";
-  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.2_OFWF",  "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.2_Basic", "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.3_OFWF",  "bl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.3_Basic", "bl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.4_OFWF",  "tl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.4_Basic", "tl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.5_OFWF",  "m",  "um", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.5_Basic", "m",  "um", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.2_OFWF",  "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.2_Basic", "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.3_OFWF",  "bl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.3_Basic", "bl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.4_OFWF",  "tl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.4_Basic", "tl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "OFWF",  "output/big.5_OFWF",  "m",  "um", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/mazebig1860.pbm", "Basic", "output/big.5_Basic", "m",  "um", POIs, TRIALS, VISUALIZATION);
 
   std::cout << "\ntite maze\n";
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.0_OFWF",  "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.0_Basic", "bl", "tr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.1_OFWF",  "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.1_Basic", "tl", "br", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.2_OFWF",  "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.2_Basic", "bl", "mr", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.3_OFWF",  "bl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.3_Basic", "bl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.4_OFWF",  "tl", "cl", POIs, TRIALS, DEBUG);
-  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.4_Basic", "tl", "cl", POIs, TRIALS, DEBUG);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.0_OFWF",  "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.0_Basic", "bl", "tr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.1_OFWF",  "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.1_Basic", "tl", "br", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.2_OFWF",  "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.2_Basic", "bl", "mr", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.3_OFWF",  "bl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.3_Basic", "bl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "OFWF",  "output/maze.4_OFWF",  "tl", "cl", POIs, TRIALS, VISUALIZATION);
+  pp::runTest("../bitmaps/tightmaze1860.pbm", "Basic", "output/maze.4_Basic", "tl", "cl", POIs, TRIALS, VISUALIZATION);
 
 
   return 0;

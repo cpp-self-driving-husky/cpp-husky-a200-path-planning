@@ -1,8 +1,8 @@
 /**
  * project: CATE
- * team: Behavioral (Path Planning)
- * author: Allen Kim
- * file: WavefrontNavigator.h
+ *    team: Behavioral (Path Planning)
+ *  author: Allen Kim
+ *    file: WaveNav.h
  */
 
 
@@ -18,13 +18,14 @@
 #include <list>
 #include <queue>
 #include <string>
+#include <sys/stat.h>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "pathplanning/Coordinates.h"
 #include "pathplanning/OccGrid.h"
-#include "pathplanning/DebugGrid.h"
+#include "pathplanning/PathVisualization.h"
 
 /**
  * WaveNav class handles the path planning. A WaveNav object is created with an occupancy map file
@@ -61,10 +62,10 @@ public:
   };
   WaveNav() = default;
   WaveNav(const std::string &inputPath, const std::string &outputPathPrefix);
-  ~WaveNav();
-  WaveNav::ppOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType, int debugLevel);
-  ppOutput planPath(Point &start, Point &goal, const std::string &waveType, int debugLevel);
-  ppOutput planPath(GPS &start, GPS &goal, const std::string &waveType, int debugLevel);
+  virtual ~WaveNav() = default;
+  ppOutput planPath(GridCell &start, GridCell &goal, const std::string &waveType, bool showVisualization);
+  ppOutput planPath(Point &start, Point &goal, const std::string &waveType, bool showVisualization);
+  ppOutput planPath(GPS &start, GPS &goal, const std::string &waveType, bool showVisualization);
   std::vector<GridCell> getInitialPath();
   std::vector<GridCell> getSmoothedPath();
 
@@ -72,15 +73,16 @@ private:
   std::string inputPath_;
   std::string outputPathPrefix_;
   OccGrid gridMap_;
-  DebugGrid debugGrid_;
+  PathVisualization visualizationGrid_;
   std::list<GridCell> initialPath_;
   std::list<GridCell> smoothedPath_;
+  double maxDistanceBetweenWaypoints_;
 
   void findInitialPath(const GridCell &start, const GridCell &goal);
   GridCell findMinNeighbor(const GridCell &curr);
   void smoothPath();
   void smoothPathHelper();
-  void addDistanceWaypoints(double distanceInMeters);
+  void addDistanceWaypoints();
   double getSmoothedPathLength();
 };
 
