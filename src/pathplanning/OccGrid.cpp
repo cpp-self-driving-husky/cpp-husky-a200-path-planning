@@ -5,7 +5,7 @@
  *    file: OccGrid.cpp
  */
 
-#include "pathplanning/OccGrid.h"
+#include "../../include/pathplanning/OccGrid.h"
 
 namespace pathplanner {
 
@@ -340,7 +340,55 @@ bool OccGrid::isNear(const GridCell &c1, const GridCell &c2) {
 
 
 /**
- * Finds the closest open GridCell. Use when a start or goal Point lies within obstacles.
+ * "Normalizes" problem GridCell coordinates.
+ *
+ * There are 2 types of problems: (1) coordinates point outside the map area.
+ *                                (2) coordinates point to an occupied cell.
+ * For both of these cases, this function finds the nearest unoccupied cell within the map.
+ * Then it sets the GridCell's coordinates to the unoccupied coordinates.
+ *
+ * This allows the path planner to work given any 2 coordinates.
+ *
+ * @param cell
+ */
+void OccGrid::normCell(GridCell &cell) {
+  fitInGrid(cell);
+  if (get(cell) == 1) {
+    cell = findClosestFreeCell(cell);
+  }
+}
+
+
+/**
+ * Helper function for normCell().
+ * Fixes cell coordinates if they point outside the map.
+ *
+ * @param cell
+ */
+void OccGrid::fitInGrid(GridCell &cell) {
+  int row {cell.getRow()};
+  int col {cell.getCol()};
+  if (row < 0 || row >= gridHeight_ || col < 0 || col >= gridWidth_) {
+    std::cout << "Grid index out of bounds. Using closest border cell" << std::endl;
+    if (row < 0) {
+      cell.setRow(0);
+    }
+    if (row >= gridHeight_) {
+      cell.setRow(gridHeight_ - 1);
+    }
+    if (col < 0) {
+      cell.setCol(0);
+    }
+    if (col >= gridWidth_) {
+      cell.setCol(gridWidth_ - 1);
+    }
+  }
+}
+
+
+/**
+ * Helper function for normCell().
+ * Finds the closest open GridCell. Used when a start or goal Point lies within obstacles.
  * Basically, searches in the 4 cardinal directions for an open cell.
  *
  * @param cell
@@ -373,6 +421,16 @@ GridCell OccGrid::findClosestFreeCell(GridCell &cell) {
 }
 
 
+/**
+ * Helper function for findClosestFreeCell().
+ * Counts the number of cells you must travel in a direction until you find
+ * the first free cell.
+ *
+ * @param cell
+ * @param direction
+ * @return number of steps and final GridCell. If the number of steps is INT_MAX,
+ *         that means you've reached the edge of the map without finding a free cell.
+ */
 std::pair<int, GridCell> OccGrid::findFree(GridCell &cell, const std::string &direction) {
   int stepCounter = 0;
   int currCol {cell.getCol()};
@@ -401,43 +459,7 @@ std::pair<int, GridCell> OccGrid::findFree(GridCell &cell, const std::string &di
 
 
 /**
- * Normalizes a GridCell. If the GridCell Points outside the grid, it gets reassigned to the closest edge cell on the grid.
- * Then, if the GridCell is occupied, it gets reassigned to the closest open cell on the grid. This is so you can find
- * a path between any 2 Points in the map.
- *
- * @param cell
- */
-void OccGrid::normCell(GridCell &cell) {
-  fitInGrid(cell);
-  if (get(cell) == 1) {
-    cell = findClosestFreeCell(cell);
-  }
-}
-
-
-void OccGrid::fitInGrid(GridCell &cell) {
-  int row {cell.getRow()};
-  int col {cell.getCol()};
-  if (row < 0 || row >= gridHeight_ || col < 0 || col >= gridWidth_) {
-    std::cout << "Grid index out of bounds. Using closest border cell" << std::endl;
-    if (row < 0) {
-      cell.setRow(0);
-    }
-    if (row >= gridHeight_) {
-      cell.setRow(gridHeight_ - 1);
-    }
-    if (col < 0) {
-      cell.setCol(0);
-    }
-    if (col >= gridWidth_) {
-      cell.setCol(gridWidth_ - 1);
-    }
-  }
-}
-
-
-/**
- * Finds the maximum value in a grid.
+ * Finds the maximum value in a grid after waves are propagated.
  *
  * @return maximum value
  */

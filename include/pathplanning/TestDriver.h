@@ -11,9 +11,9 @@
 #include <iomanip>
 #include <numeric>
 
-#include "pathplanning/WaveNav.h"
-#include "pathplanning/Coordinates.h"
-#include "pathplanning/OccGrid.h"
+#include "WaveNav.h"
+#include "Coordinates.h"
+#include "OccGrid.h"
 
 namespace pathplanner {
 }

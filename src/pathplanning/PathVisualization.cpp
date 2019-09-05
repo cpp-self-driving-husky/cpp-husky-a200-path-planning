@@ -5,7 +5,7 @@
  *    file: PathVisualization.cpp
  */
 
-#include "pathplanning/PathVisualization.h"
+#include "../../include/pathplanning/PathVisualization.h"
 
 namespace pathplanner {
 
@@ -21,22 +21,33 @@ PathVisualization::PathVisualization() = default;
  */
 PathVisualization::PathVisualization(const std::string &filename) {
   mat_ = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
-  gridHeight_ = mat_.rows;
-  gridWidth_ = mat_.cols;
-  originalMat_ = mat_.clone();
+  if (!mat_.data) {
+    std::cout << "Visualization could not load " << filename << ".\n";
+  } else {
+    gridHeight_ = mat_.rows;
+    gridWidth_ = mat_.cols;
+    originalMat_ = mat_.clone();
+  }
 }
 
 
 /**
- * Outputs the image as a png and displays the image.
+ * Outputs the image as a png.
  *
  * @param outputPath
  */
-void PathVisualization::outputGrid(const std::string &outputPath) {
+void PathVisualization::outputVis(const std::string &outputPath) {
   std::vector<int> compression_params;
   compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
   compression_params.push_back(3);
   cv::imwrite(outputPath, mat_, compression_params);
+}
+
+
+/**
+ * Displays the image on screen.
+ */
+void PathVisualization::displayVis() {
   cv::imshow("Path Visualization", mat_);
   cv::waitKey(0);
 }

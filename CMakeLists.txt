@@ -1,58 +1,49 @@
-cmake_minimum_required(VERSION 3.5)
-project(Wavefront LANGUAGES CXX)
+## [main]
 
+cmake_minimum_required(VERSION 3.5)
+project(Pathplanner VERSION 1.0.0
+                    LANGUAGES CXX)
+
+# If you set any CMAKE_ variables, that can go here.
+# (But usually don't do this, except maybe for C++ standard)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-
-
-include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${PROJECT_SOURCE_DIR}/include)
-#include_directories(${PROJECT_SOURCE_DIR}/lib)
-
-
-#set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Werror -fsanitize=address -g -v -fstandalone-debug -O1 -fno-omit-frame-pointer")
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror -O1 -g -v -fsanitize=address -fno-omit-frame-pointer ")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -Werror -O3 -DNDEBUG")
-
-file(GLOB SOURCES "src/pathplanning/*.cpp")
-
-
+# Find packages go here.
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-#find_package(Boost 1.65 COMPONENTS system filesystem REQUIRED)
-#
-#message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
-#message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
-#message(STATUS "Boost_VERSION: ${Boost_VERSION}")
-#include_directories(${Boost_INCLUDE_DIRS})
-#link_directories(${Boost_LIBRARY_DIR})
+# You should usually split this into folders, but this is a simple example
 
-#add_library(pplibrary
-#        include/pathplanning/Coordinates.h
-#        include/pathplanning/OccGrid.h
-#        include/pathplanning/PathVisualization.h
-#        include/pathplanning/WaveNav.h
-#        )
-add_library(pplibrary SHARED ${SOURCES})
+# This is a "default" library, and will match the *** variable setting.
+# Other common choices are STATIC, SHARED, and MODULE
+# Including header files here helps IDEs but is not required.
+# Output libname matches target name, with the usual extensions on your system
+add_library(pathplanning SHARED
+        src/pathplanning/Coordinates.cpp
+        src/pathplanning/OccGrid.cpp
+        src/pathplanning/PathVisualization.cpp
+        src/pathplanning/WaveNav.cpp
+        include/pathplanning/Coordinates.h
+        include/pathplanning/OccGrid.h
+        include/pathplanning/PathVisualization.h
+        include/pathplanning/WaveNav.h
+        )
 
+# Link each target with other targets or add options, etc.
+
+# Adding something we can run - Output name matches target name
 add_executable(wavefront src/pathplanning/main.cpp)
 
-#target_link_libraries(wavefront ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+# Make sure you link your targets with this command. It can also link libraries and
+# even flags, so linking a target that does not exist will not give a configure-time error.
+target_link_libraries(wavefront PRIVATE pathplanning ${OpenCV_LIBS})
 
+## [main]
 
-#find_package(PkgConfig)
-#if (PKG_CONFIG_FOUND)
-#    pkg_check_modules(PLAYER "playerc++")
-#    if (PLAYER_FOUND)
-##        target_link_libraries(test ${PLAYER_LIBRARIES})
-#        add_definitions(${PLAYER_CFLAGS} ${PLAYER_CFLAGS_OTHER})
-#    endif ()
-#endif ()
-
-target_link_libraries(wavefront pplibrary ${OpenCV_LIBS})
-#target_include_directories(wavefront PUBLIC ${PLAYER_INCLUDE_DIRS})
-#target_compile_options(wavefront PUBLIC ${PLAYER_CFLAGS_OTHER})
+# This part is so the Modern CMake book can verify this example builds. For your code,
+# you'll probably want tests too
+# enable_testing()
+# add_test(NAME MyExample COMMAND MyExample)
 

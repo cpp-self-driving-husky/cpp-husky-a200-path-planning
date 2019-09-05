@@ -23,9 +23,9 @@
 #include <utility>
 #include <vector>
 
-#include "pathplanning/Coordinates.h"
-#include "pathplanning/OccGrid.h"
-#include "pathplanning/PathVisualization.h"
+#include "Coordinates.h"
+#include "OccGrid.h"
+#include "PathVisualization.h"
 
 /**
  * WaveNav class handles the path planning. A WaveNav object is created with an occupancy map file

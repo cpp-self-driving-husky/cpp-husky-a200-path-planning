@@ -5,7 +5,7 @@
  *    file: WaveNav.cpp
  */
 
-#include "pathplanning/WaveNav.h"
+#include "../../include/pathplanning/WaveNav.h"
 
 namespace pathplanner {
 
@@ -74,7 +74,8 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
     std::string waveColor = (waveType == "Basic") ? "R" : "B";
     visualizationGrid_.markWaves(gridMap_, waveColor);
     visualizationGrid_.markPaths(initialPath_, smoothedPath_, waveType);
-    visualizationGrid_.outputGrid(outputPathPrefix_ + "_vis.png");
+    visualizationGrid_.outputVis(outputPathPrefix_ + "_vis.png");
+    visualizationGrid_.displayVis();
   }
   return toReturn;
 }
