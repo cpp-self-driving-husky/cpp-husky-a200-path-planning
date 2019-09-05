@@ -81,6 +81,15 @@ WaveNav::ppOutput WaveNav::planPath(GridCell &start, GridCell &goal, const std::
 }
 
 
+/**
+ * Overloaded planPath() for (x, y) coordinates
+ *
+ * @param start
+ * @param goal
+ * @param waveType
+ * @param showVisualization
+ * @return
+ */
 WaveNav::ppOutput WaveNav::planPath(Point &start, Point &goal, const std::string &waveType, bool showVisualization) {
   GridCell startCell = pointToCell(start);
   GridCell goalCell = pointToCell(goal);
@@ -88,6 +97,15 @@ WaveNav::ppOutput WaveNav::planPath(Point &start, Point &goal, const std::string
 }
 
 
+/**
+ * Overloaded planPath() for GPS coordinates
+ *
+ * @param start
+ * @param goal
+ * @param waveType
+ * @param showVisualization
+ * @return
+ */
 WaveNav::ppOutput WaveNav::planPath(GPS &start, GPS &goal, const std::string &waveType, bool showVisualization) {
   GridCell startCell = gpsToCell(start);
   GridCell goalCell = gpsToCell(goal);
@@ -149,7 +167,11 @@ GridCell WaveNav::findMinNeighbor(const GridCell &curr) {
 
 
 /**
- * Path simplification which solves the following: given a sequence of cells (c1, ... , cn) representing a path between
+ * Path simplification based on "string tightening" method.
+ * From a jagged path where all turns are in multiples of 45 degrees, this removes
+ * waypoints
+ *
+ * Solves the following: given a sequence of cells (c1, ... , cn) representing a path between
  * start and goal cells, the solution will satisfy:
  *    (1) has same start and goal cells
  *    (2) there is a clear line of sight between consecutive solution cells
