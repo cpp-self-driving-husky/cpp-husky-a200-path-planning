@@ -6,7 +6,7 @@
  */
 
 
-#include "pathplanning/Coordinates.h"
+#include "../../include/pathplanning/Coordinates.h"
 
 namespace pathplanner {
 

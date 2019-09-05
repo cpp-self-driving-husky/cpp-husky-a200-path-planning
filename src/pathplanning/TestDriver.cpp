@@ -5,10 +5,9 @@
  *    file: TestDriver.cpp
  */
 
-#include "pathplanning/TestDriver.h"
+#include "../../include/pathplanning/TestDriver.h"
 
 namespace pathplanner {
-
 
 
 void loadDestinations(const std::string &filename, std::unordered_map<std::string, GridCell> *destinations) {

@@ -19,7 +19,8 @@ public:
   PathVisualization();
   explicit PathVisualization(const std::string &filename);
   virtual ~PathVisualization() = default;
-  void outputGrid(const std::string &outputPath);
+  void outputVis(const std::string &outputPath);
+  void displayVis();
   void markWaves(const OccGrid &waveGrid, const std::string &waveColor);
   void markCell(const GridCell &cell, const cv::Vec3b &color);
   void markCells(const std::vector<GridCell> &cells, const cv::Vec3b &color);

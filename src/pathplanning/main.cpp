@@ -13,7 +13,7 @@
  */
 
 #include <iostream>
-#include "pathplanning/WaveNav.h"
+#include "../../include/pathplanning/WaveNav.h"
 
 namespace pp = pathplanner;
 
@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
   std::string mapFile = "../bitmaps/grown_map_scale_2.pbm";
   std::string outputPathStub = "output/run_map2_OFWF";
 
-
   double source_latitude = std::atof(argv[1]);
   double source_longitude = std::atof(argv[2]);
   double target_latitude = std::atof(argv[3]);
@@ -34,14 +33,15 @@ int main(int argc, char *argv[]) {
   pp::GPS source(source_longitude, source_latitude);
   pp::GPS target(target_longitude, target_latitude);
 
-  pp::WaveNav myNav;
-
-  myNav = pp::WaveNav(mapFile, outputPathStub);
+  pp::WaveNav myNav = pp::WaveNav(mapFile, outputPathStub);
   myNav.planPath(source, target, "OFWF", true);
 
   for (const auto &wayCell : myNav.getSmoothedPath()) {
     pp::GPS cellGPS = pp::cellToGPS(wayCell);
-    std::cout << std::fixed << std::setprecision(6) << "(" << cellGPS.getLatitude() << ", " << cellGPS.getLongitude() << ")" << std::endl;
+    std::cout << std::fixed << std::setprecision(6) \
+        << "(" << cellGPS.getLatitude() << ", " \
+        << cellGPS.getLongitude() << ")" \
+        << std::endl;
   }
   return 0;
 }
